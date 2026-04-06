@@ -71,13 +71,13 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   };
 
   return (
-    <div className={cn('flex h-full min-h-0 lg:gap-3 overflow-hidden overscroll-contain', className)}>
+    <div className={cn('flex h-full min-h-0 large:gap-3 overflow-hidden overscroll-contain', className)}>
       {/* List Panel - Rounded window like sidebar on desktop, full on mobile */}
       <div className={cn(
         'flex-shrink-0 min-h-0 transition-all duration-200 overflow-hidden',
         'rounded-xl bg-background',
-        listOpen ? 'w-full lg:w-80 xl:w-96' : 'w-0',
-        showMobile && 'hidden lg:flex'
+        listOpen ? 'w-full large:w-80 xlarge:w-96' : 'w-0',
+        showMobile && 'hidden large:flex'
       )}>
         <ConversationList
           inbox={inbox}
@@ -103,15 +103,15 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
 
       {/* Chat Panel - Rounded window like sidebar on desktop, clean on mobile */}
       <div className={cn(
-        'flex-1 min-w-0 min-h-0 hidden lg:flex relative overflow-hidden',
-        'lg:rounded-xl lg:border lg:border-border bg-background lg:shadow-sm',
+        'flex-1 min-w-0 min-h-0 hidden large:flex relative overflow-hidden',
+        'large:rounded-xl large:border large:border-border bg-background large:shadow-sm',
         showMobile && 'flex'
       )}>
           {/* Show list button when collapsed AND no chat selected */}
           {!listOpen && !selected && !selectedId && (
             <button
               onClick={() => setListOpen(true)}
-              className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 p-1.5 sm:p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
+              className="absolute top-3 left-3 compact:top-4 compact:left-4 z-10 p-1.5 compact:p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
               title="Show messages"
             >
               <PanelLeft className="h-4 w-4" strokeWidth={1.5} />
@@ -144,7 +144,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
                 </div>
               </div>
               {/* Messages skeleton */}
-              <div className="flex-1 p-4 flex flex-col-reverse gap-2 sm:gap-3">
+              <div className="flex-1 p-4 flex flex-col-reverse gap-2 compact:gap-3">
                 <Skeleton className="h-9 w-36 rounded-2xl rounded-br-md self-end" />
                 <Skeleton className="h-12 w-44 rounded-2xl rounded-bl-md self-start" />
                 <Skeleton className="h-8 w-28 rounded-2xl rounded-br-md self-end" />
@@ -152,13 +152,13 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full w-full bg-sidebar/30">
-              <div className="text-center space-y-3 sm:space-y-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-sidebar/80 flex items-center justify-center border border-border/30">
-                  <MessageCircle className="w-7 h-7 sm:w-9 sm:h-9 text-muted-foreground/50 stroke-[1.5]" />
+              <div className="text-center space-y-3 compact:space-y-4">
+                <div className="w-16 h-16 compact:w-20 compact:h-20 mx-auto rounded-full bg-sidebar/80 flex items-center justify-center border border-border/30">
+                  <MessageCircle className="w-7 h-7 compact:w-9 compact:h-9 text-muted-foreground/50 stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-subhead sm:text-callout font-semibold text-foreground/80">No conversation selected</p>
-                  <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
+                  <p className="text-subhead compact:text-callout font-semibold text-foreground/80">No conversation selected</p>
+                  <p className="text-caption1 compact:text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
                 </div>
               </div>
             </div>

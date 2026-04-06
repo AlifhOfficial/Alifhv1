@@ -80,15 +80,15 @@ function SettingRow({
   return (
     <div 
       className={cn(
-        "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 py-2.5 sm:py-3",
+        "flex flex-col compact:flex-row compact:items-center compact:justify-between gap-2 compact:gap-0 py-2.5 compact:py-3",
         !isLast && "border-b border-border/30"
       )}
     >
-      <div className="flex-1 min-w-0 sm:pr-4">
-        <p className="text-caption1 sm:text-subhead text-foreground">{title}</p>
-        <p className="text-caption2 sm:text-caption1 text-muted-foreground/70 mt-0.5">{description}</p>
+      <div className="flex-1 min-w-0 compact:pr-4">
+        <p className="text-caption1 compact:text-subhead text-foreground">{title}</p>
+        <p className="text-caption2 compact:text-caption1 text-muted-foreground/70 mt-0.5">{description}</p>
       </div>
-      <div className="self-end sm:self-auto">
+      <div className="self-end compact:self-auto">
         {children}
       </div>
     </div>
@@ -122,11 +122,11 @@ export function AvailabilitySettings({
 }: AvailabilitySettingsProps) {
   if (isLoading) {
     return (
-      <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
+      <div className="space-y-4 compact:space-y-6 mt-3 compact:mt-4">
         {/* Booking Preferences skeleton */}
         <section>
-          <Skeleton className="h-5 w-40 mb-2 sm:mb-3" />
-          <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-4">
+          <Skeleton className="h-5 w-40 mb-2 compact:mb-3" />
+          <div className="rounded-xl border border-border/40 bg-card p-3 compact:p-4 space-y-4">
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -141,8 +141,8 @@ export function AvailabilitySettings({
 
         {/* Slot Settings skeleton */}
         <section>
-          <Skeleton className="h-5 w-28 mb-2 sm:mb-3" />
-          <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-4">
+          <Skeleton className="h-5 w-28 mb-2 compact:mb-3" />
+          <div className="rounded-xl border border-border/40 bg-card p-3 compact:p-4 space-y-4">
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -157,8 +157,8 @@ export function AvailabilitySettings({
 
         {/* Weekly Schedule skeleton */}
         <section>
-          <Skeleton className="h-5 w-32 mb-2 sm:mb-3" />
-          <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-3">
+          <Skeleton className="h-5 w-32 mb-2 compact:mb-3" />
+          <div className="rounded-xl border border-border/40 bg-card p-3 compact:p-4 space-y-3">
             {[...Array(7)].map((_, i) => (
               <div key={i} className="flex items-center justify-between py-2">
                 <Skeleton className="h-4 w-20" />
@@ -203,15 +203,15 @@ export function AvailabilitySettings({
   const bufferBetweenBookings = settings?.bufferBetweenBookings ?? 15;
 
   return (
-    <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
+    <div className="space-y-4 compact:space-y-6 mt-3 compact:mt-4">
       {/* Booking Preferences */}
       <section>
-        <div className="flex items-center gap-2 mb-2 sm:mb-3">
-          <h3 className="text-subhead sm:text-subhead font-semibold text-foreground">Booking Preferences</h3>
+        <div className="flex items-center gap-2 mb-2 compact:mb-3">
+          <h3 className="text-subhead compact:text-subhead font-semibold text-foreground">Booking Preferences</h3>
           {savingSettings && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4">
+        <div className="rounded-xl border border-border/40 bg-card p-3 compact:p-4">
           <SettingRow 
             title="Accept Bookings" 
             description="Allow customers to book test drives"
@@ -239,9 +239,9 @@ export function AvailabilitySettings({
 
       {/* Slot Settings */}
       <section>
-        <h3 className="text-subhead sm:text-subhead font-semibold text-foreground mb-2 sm:mb-3">Slot Settings</h3>
+        <h3 className="text-subhead compact:text-subhead font-semibold text-foreground mb-2 compact:mb-3">Slot Settings</h3>
         
-        <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4">
+        <div className="rounded-xl border border-border/40 bg-card p-3 compact:p-4">
           <SettingRow 
             title="Slot Duration" 
             description="Length of each booking time slot"
@@ -251,7 +251,7 @@ export function AvailabilitySettings({
               onValueChange={(v) => onUpdateSettings({ defaultSlotDuration: parseInt(v) })}
               disabled={savingSettings}
             >
-              <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-caption1 sm:text-subhead bg-muted/30 border-border/40">
+              <SelectTrigger className="w-24 compact:w-28 h-8 compact:h-9 text-caption1 compact:text-subhead bg-muted/30 border-border/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -275,7 +275,7 @@ export function AvailabilitySettings({
               onValueChange={(v) => onUpdateSettings({ bufferBetweenBookings: parseInt(v) })}
               disabled={savingSettings}
             >
-              <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-caption1 sm:text-subhead bg-muted/30 border-border/40">
+              <SelectTrigger className="w-24 compact:w-28 h-8 compact:h-9 text-caption1 compact:text-subhead bg-muted/30 border-border/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -293,9 +293,9 @@ export function AvailabilitySettings({
 
       {/* Booking Limits */}
       <section>
-        <h3 className="text-subhead sm:text-subhead font-semibold text-foreground mb-2 sm:mb-3">Booking Limits</h3>
+        <h3 className="text-subhead compact:text-subhead font-semibold text-foreground mb-2 compact:mb-3">Booking Limits</h3>
         
-        <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4">
+        <div className="rounded-xl border border-border/40 bg-card p-3 compact:p-4">
           <SettingRow 
             title="Same Day Booking" 
             description="Allow customers to book for today"
@@ -316,7 +316,7 @@ export function AvailabilitySettings({
               onValueChange={(v) => onUpdateSettings({ minLeadTimeHours: parseInt(v) })}
               disabled={savingSettings}
             >
-              <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-caption1 sm:text-subhead bg-muted/30 border-border/40">
+              <SelectTrigger className="w-24 compact:w-28 h-8 compact:h-9 text-caption1 compact:text-subhead bg-muted/30 border-border/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -339,7 +339,7 @@ export function AvailabilitySettings({
               onValueChange={(v) => onUpdateSettings({ maxLeadTimeDays: parseInt(v) })}
               disabled={savingSettings}
             >
-              <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-caption1 sm:text-subhead bg-muted/30 border-border/40">
+              <SelectTrigger className="w-24 compact:w-28 h-8 compact:h-9 text-caption1 compact:text-subhead bg-muted/30 border-border/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -355,7 +355,7 @@ export function AvailabilitySettings({
 
       {/* Weekly Schedule */}
       <section>
-        <h3 className="text-subhead sm:text-subhead font-semibold text-foreground mb-2 sm:mb-3">Weekly Schedule</h3>
+        <h3 className="text-subhead compact:text-subhead font-semibold text-foreground mb-2 compact:mb-3">Weekly Schedule</h3>
         
         <div className="rounded-xl border border-border/40 bg-card overflow-hidden">
           {DAY_NAMES.map((day, idx) => {
@@ -368,11 +368,11 @@ export function AvailabilitySettings({
               <div 
                 key={idx}
                 className={cn(
-                  "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 px-3 sm:px-4 py-2.5 sm:py-3",
+                  "flex flex-col compact:flex-row compact:items-center compact:justify-between gap-2 compact:gap-0 px-3 compact:px-4 py-2.5 compact:py-3",
                   !isLast && "border-b border-border/30"
                 )}
               >
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 compact:gap-3">
                   {/* Toggle */}
                   <div className="relative">
                     <Toggle
@@ -388,7 +388,7 @@ export function AvailabilitySettings({
                   </div>
                   
                   <span className={cn(
-                    "text-caption1 sm:text-subhead w-20 sm:w-24",
+                    "text-caption1 compact:text-subhead w-20 compact:w-24",
                     isActive ? "text-foreground" : "text-muted-foreground/50"
                   )}>
                     {day}
@@ -396,13 +396,13 @@ export function AvailabilitySettings({
                 </div>
 
                 {isActive && rule ? (
-                  <div className="flex items-center gap-1.5 sm:gap-2 self-end sm:self-auto">
+                  <div className="flex items-center gap-1.5 compact:gap-2 self-end compact:self-auto">
                     <Select 
                       value={rule.startTime}
                       onValueChange={(v) => onUpdateDay(idx, { startTime: v })}
                       disabled={isSaving}
                     >
-                      <SelectTrigger className="w-[90px] sm:w-[100px] h-7 sm:h-8 text-caption2 sm:text-caption1 bg-muted/30 border-border/40">
+                      <SelectTrigger className="w-[90px] compact:w-[100px] h-7 compact:h-8 text-caption2 compact:text-caption1 bg-muted/30 border-border/40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -411,13 +411,13 @@ export function AvailabilitySettings({
                         ))}
                       </SelectContent>
                     </Select>
-                    <span className="text-muted-foreground/40 text-caption2 sm:text-caption1">to</span>
+                    <span className="text-muted-foreground/40 text-caption2 compact:text-caption1">to</span>
                     <Select 
                       value={rule.endTime}
                       onValueChange={(v) => onUpdateDay(idx, { endTime: v })}
                       disabled={isSaving}
                     >
-                      <SelectTrigger className="w-[90px] sm:w-[100px] h-7 sm:h-8 text-caption2 sm:text-caption1 bg-muted/30 border-border/40">
+                      <SelectTrigger className="w-[90px] compact:w-[100px] h-7 compact:h-8 text-caption2 compact:text-caption1 bg-muted/30 border-border/40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

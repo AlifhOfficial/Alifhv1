@@ -38,24 +38,24 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
 
   return (
     <section id="showroom-contact" className={`${theme.sectionSpacing} overflow-hidden`}>
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-6 compact:mb-8">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             Contact
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             {showroom.appointmentCtaText || 'Get in Touch'}
           </h2>
         </div>
 
         {/* Main Content - Map + Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 mb-6">
+        <div className="grid grid-cols-1 large:grid-cols-5 gap-4 compact:gap-6 mb-6">
           
           {/* Map - Takes more space */}
           {hasLocation && (
-            <div className="lg:col-span-3 order-2 lg:order-1">
+            <div className="large:col-span-3 order-2 large:order-1">
               <LeafletMap 
                 lat={partner?.locationLat || 25.2048} 
                 lng={partner?.locationLng || 55.2708}
@@ -65,7 +65,7 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
           )}
           
           {/* Contact Info Cards - Stacked */}
-          <div className={`${hasLocation ? 'lg:col-span-2' : 'lg:col-span-5'} flex flex-col gap-3 sm:gap-4 order-1 lg:order-2`}>
+          <div className={`${hasLocation ? 'large:col-span-2' : 'large:col-span-5'} flex flex-col gap-3 compact:gap-4 order-1 large:order-2`}>
             
             {/* Location Card */}
             {fullAddress && (
@@ -73,10 +73,10 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                 href={mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group p-4 sm:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 sm:gap-4 flex-1"
+                className="group p-4 compact:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 compact:gap-4 flex-1"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
-                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                <div className="w-9 h-9 compact:w-10 compact:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
+                  <MapPin className="w-4 h-4 compact:w-5 compact:h-5 text-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-callout font-semibold text-foreground mb-1">
@@ -96,10 +96,10 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
             {displayPhone && (
               <a 
                 href={`tel:${displayPhone}`}
-                className="group p-4 sm:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 sm:gap-4 flex-1"
+                className="group p-4 compact:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 compact:gap-4 flex-1"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
-                  <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                <div className="w-9 h-9 compact:w-10 compact:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
+                  <Phone className="w-4 h-4 compact:w-5 compact:h-5 text-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-callout font-semibold text-foreground mb-1">
@@ -201,7 +201,7 @@ function LeafletMap({ lat, lng, markerTitle }: LeafletMapProps) {
   return (
     <div 
       ref={mapRef} 
-      className="relative aspect-[4/3] sm:aspect-video lg:aspect-[21/9] w-full rounded-xl sm:rounded-2xl overflow-hidden bg-muted z-0"
+      className="relative aspect-[4/3] compact:aspect-video large:aspect-[21/9] w-full rounded-xl compact:rounded-2xl overflow-hidden bg-muted z-0"
     />
   );
 }
@@ -209,18 +209,18 @@ function LeafletMap({ lat, lng, markerTitle }: LeafletMapProps) {
 // Skeleton
 function ShowroomContactSkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="text-center mb-10">
           <Skeleton className="h-3 w-20 mx-auto mb-4" />
           <Skeleton className="h-8 w-40 mx-auto" />
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 mb-8">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
         </div>
-        <Skeleton className="aspect-[4/3] sm:aspect-video lg:aspect-[21/9] rounded-xl" />
+        <Skeleton className="aspect-[4/3] compact:aspect-video large:aspect-[21/9] rounded-xl" />
       </div>
     </section>
   );

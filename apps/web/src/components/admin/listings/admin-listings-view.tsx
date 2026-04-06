@@ -325,7 +325,7 @@ export function AdminListingsView() {
         <div className="border-b border-border/40 pb-2">
           <h3 className="text-headline tracking-tight">Overview</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border-y border-border divide-x divide-border">
+        <div className="grid grid-cols-2 regular:grid-cols-3 large:grid-cols-6 border-y border-border divide-x divide-border">
           <div 
             className="p-8 text-center"
           >
@@ -442,7 +442,7 @@ export function AdminListingsView() {
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <div className="flex flex-col compact:flex-row gap-4 items-start compact:items-center">
         {/* Search */}
         <div className="relative flex-1 w-full">
           <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -600,7 +600,7 @@ export function AdminListingsView() {
               This will move it to the deleted state and remove it from public views.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2 compact:gap-0">
             <button 
               onClick={closeDeleteModal}
               disabled={isDeleting}

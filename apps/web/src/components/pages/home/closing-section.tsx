@@ -9,7 +9,7 @@ export function ClosingSection() {
     <section className="relative bg-background">
 
       {/* Section 1: Philosophy with Infographic */}
-      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           {/* Header */}
@@ -17,7 +17,7 @@ export function ClosingSection() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Built by car people
             </span>
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               We get it.
             </h2>
           </div>
@@ -33,14 +33,14 @@ export function ClosingSection() {
           </p>
 
           {/* CTA - Main page CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col compact:flex-row items-center justify-center gap-3">
             <Link
               href="/listings"
-              className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+              className="w-full compact:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
             >
               Browse Cars
             </Link>
-            <PublicSellButton className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center">
+            <PublicSellButton className="w-full compact:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center">
               Sell Your Car
             </PublicSellButton>
           </div>
@@ -57,7 +57,7 @@ export function ClosingSection() {
 
 function CarPeopleInfographic() {
   return (
-    <MacOSWindow url="revvup.ae" contentClassName="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
+    <MacOSWindow url="revvup.ae" contentClassName="relative w-full aspect-[4/3] compact:aspect-[16/9] regular:aspect-[2.4/1]">
       <Image
         src={revx9}
         alt="Revvup closing showcase"

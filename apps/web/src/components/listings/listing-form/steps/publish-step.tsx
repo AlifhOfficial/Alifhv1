@@ -175,7 +175,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
         <SectionHeader title="Pricing" />
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-6">
           <FieldWrapper label="Price" required error={errors.price}>
             <div className="relative">
               <input
@@ -223,7 +223,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
         <SectionHeader title="Location" />
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-6">
           <FieldWrapper label="Emirate" required error={errors.emirate}>
             <Combobox
               options={emirateOptions}

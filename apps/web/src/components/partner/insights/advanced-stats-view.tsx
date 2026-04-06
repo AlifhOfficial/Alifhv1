@@ -399,7 +399,7 @@ function _StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
 
 function _AdvancedStatsSkeleton() {
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
         {/* Header Skeleton */}
         <header>
           <div className="flex items-start justify-between gap-4">
@@ -412,9 +412,9 @@ function _AdvancedStatsSkeleton() {
         </header>
 
         {/* Stats Grid Skeleton */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y md:divide-y-0 divide-border/40 bg-sidebar">
+        <div className="grid grid-cols-2 regular:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y regular:divide-y-0 divide-border/40 bg-sidebar">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="p-5 sm:p-6 space-y-2">
+            <div key={i} className="p-5 compact:p-6 space-y-2">
               <Skeleton className="h-4 w-20" />
               <Skeleton className="h-7 w-16" />
             </div>
@@ -423,11 +423,11 @@ function _AdvancedStatsSkeleton() {
 
         {/* Main Grid Skeleton */}
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
+          <div className="col-span-12 large:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
             <Skeleton className="h-4 w-32 mb-4" />
             <Skeleton className="h-32 w-full" />
           </div>
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          <div className="col-span-12 large:col-span-4 flex flex-col gap-4">
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <Skeleton className="h-4 w-24 mb-3" />
               <Skeleton className="h-20 w-full" />
@@ -442,7 +442,7 @@ function _AdvancedStatsSkeleton() {
         {/* Inventory + Sales Row Skeleton */}
         <div className="grid grid-cols-12 gap-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+            <div key={i} className="col-span-12 compact:col-span-6 large:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-24 w-full" />
             </div>
@@ -454,7 +454,7 @@ function _AdvancedStatsSkeleton() {
           <Skeleton className="h-5 w-32" />
           <div className="grid grid-cols-12 gap-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="col-span-12 md:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
+              <div key={i} className="col-span-12 regular:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-20 w-full" />
               </div>
@@ -465,7 +465,7 @@ function _AdvancedStatsSkeleton() {
         {/* Composition Skeleton */}
         <section className="space-y-4">
           <Skeleton className="h-5 w-40" />
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid regular:grid-cols-2 gap-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
                 <Skeleton className="h-4 w-28" />
@@ -485,7 +485,7 @@ function _AdvancedStatsSkeleton() {
         {/* Engagement Skeleton */}
         <section className="space-y-4">
           <Skeleton className="h-5 w-32" />
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid regular:grid-cols-2 gap-4">
             {[...Array(2)].map((_, i) => (
               <div key={i} className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
                 <Skeleton className="h-4 w-28" />
@@ -496,7 +496,7 @@ function _AdvancedStatsSkeleton() {
         </section>
 
         {/* Footer Skeleton */}
-        <footer className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6 border-t border-border/20">
+        <footer className="flex flex-col compact:flex-row items-start compact:items-center justify-between gap-3 pt-6 border-t border-border/20">
           <Skeleton className="h-4 w-48" />
           <Skeleton className="h-4 w-32" />
         </footer>
@@ -539,7 +539,7 @@ interface StatCardProps {
 
 function _StatCard({ icon: Icon, label, value, subtext, trend, iconColor = 'text-muted-foreground' }: StatCardProps) {
   return (
-    <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+    <div className="p-5 compact:p-6 flex flex-col gap-1.5">
       <div className="flex items-center gap-2">
         <Icon className={cn("w-4 h-4", iconColor)} />
         <span className="text-subhead font-semibold text-muted-foreground/70">{label}</span>
@@ -933,7 +933,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
   if (!stats) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+        <div className="max-w-5xl mx-auto px-4 compact:px-6 py-8 compact:py-12 space-y-6">
           <header>
             <div className="space-y-2">
               <h1 className="text-title2 font-bold tracking-tight">Analytics</h1>
@@ -984,14 +984,14 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
   }));
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-callout sm:text-headline font-semibold text-foreground">Analytics</h1>
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
-            <div className="mt-2 flex items-center gap-1.5 text-caption2 sm:text-caption1 text-muted-foreground/55">
+            <h1 className="text-callout compact:text-headline font-semibold text-foreground">Analytics</h1>
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
+            <div className="mt-2 flex items-center gap-1.5 text-caption2 compact:text-caption1 text-muted-foreground/55">
               <Clock className="h-3.5 w-3.5" />
               <span>
                 Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
@@ -1004,7 +1004,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
         <div className="grid grid-cols-12 gap-4">
           
           {/* Views Summary - Large Card */}
-          <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
+          <div className="col-span-12 large:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-subhead font-semibold text-muted-foreground/70">Total Views</h3>
@@ -1033,7 +1033,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           </div>
 
           {/* Right Stack - Revenue + Favorites */}
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          <div className="col-span-12 large:col-span-4 flex flex-col gap-4">
             {/* Revenue Card */}
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <div className="flex items-center gap-2 mb-3">
@@ -1063,7 +1063,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
         {/* Inventory + Sales Row */}
         <div className="grid grid-cols-12 gap-4">
           {/* Active Inventory Card */}
-          <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="col-span-12 compact:col-span-6 large:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
               <Package className="w-4 h-4 text-primary" />
               <span className="text-subhead font-semibold text-muted-foreground/70">Active Inventory</span>
@@ -1085,7 +1085,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           </div>
 
           {/* Sales Performance Card */}
-          <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="col-span-12 compact:col-span-6 large:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
               <span className="text-subhead font-semibold text-muted-foreground/70">Sales This Month</span>
@@ -1111,7 +1111,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           </div>
 
           {/* Bookings Card with Donut */}
-          <div className="col-span-12 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="col-span-12 large:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="w-4 h-4 text-emerald-500" />
               <span className="text-subhead font-bold tracking-tight">Bookings</span>
@@ -1168,7 +1168,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <SectionHeader title="Monthly Trends" />
           <div className="grid grid-cols-12 gap-4">
             {/* Trend Comparison Card */}
-            <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
+            <div className="col-span-12 large:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-5">
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
                 <span className="text-subhead font-semibold text-muted-foreground/70">Month over Month</span>
@@ -1201,7 +1201,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             </div>
 
             {/* Sell-Through & Speed */}
-            <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+            <div className="col-span-12 large:col-span-4 flex flex-col gap-4">
               <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
                 <span className="text-caption1 text-muted-foreground/60">Sell-Through Rate</span>
                 <p className="text-title1 font-bold text-emerald-500 mt-2">{sales.sellThroughRate}%</p>
@@ -1219,7 +1219,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
         {/* Inventory Composition with Donut Charts */}
         <section className="space-y-4">
           <SectionHeader title="Inventory Composition" />
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid regular:grid-cols-2 gap-4">
             <CompositionDonutCard
               data={conditionData}
               title="By Condition"
@@ -1257,7 +1257,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <SectionHeader title="Engagement" />
           <div className="grid grid-cols-12 gap-4">
             {/* Engagement Metrics */}
-            <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
+            <div className="col-span-12 large:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-5">
                 <Zap className="w-4 h-4 text-violet-500" />
                 <span className="text-subhead font-semibold text-muted-foreground/70">Engagement Metrics</span>
@@ -1301,7 +1301,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             </div>
 
             {/* Top Performing Listings */}
-            <div className="col-span-12 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
+            <div className="col-span-12 large:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-4 h-4 text-primary" />
                 <span className="text-subhead font-bold tracking-tight">Top Performing</span>
@@ -1342,7 +1342,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
         {/* Inventory Summary with Mini Charts */}
         <section className="space-y-4">
           <SectionHeader title="Inventory Summary" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 regular:grid-cols-4 gap-4">
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <span className="text-caption1 text-muted-foreground/60">Avg Model Year</span>
               <div className="flex items-end justify-between mt-2">

@@ -202,7 +202,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
 
             {/* Decoded specs grid */}
             {decodedFields.length > 0 && (
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 pt-3 border-t border-border/20">
+              <div className="grid grid-cols-3 compact:grid-cols-6 gap-4 pt-3 border-t border-border/20">
                 {decodedFields.map(({ label, value }) => (
                   <div key={label} className="space-y-1">
                     <p className="text-caption2 font-semibold text-sidebar-foreground/70 uppercase tracking-wider">
@@ -226,7 +226,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
         </h3>
 
         <div className="rounded-xl bg-sidebar-accent/30 p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-6">
           {/* Make */}
           <FieldWrapper label="Make" required error={errors.make}>
             <Combobox

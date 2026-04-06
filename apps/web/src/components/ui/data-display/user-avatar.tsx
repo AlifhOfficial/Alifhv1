@@ -46,7 +46,7 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   alt?: string;
   
   /** Avatar size */
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: "compact" | "regular" | "large" | "xlarge" | "xxlarge" | "xs" | "sm" | "md" | "lg" | "xl";
   
   /**
    * @deprecated No longer used - always shows initials when no photo
@@ -57,12 +57,27 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   updatedAt?: Date | string | number | null;
 }
 
-const sizeClasses: Record<NonNullable<UserAvatarProps["size"]>, string> = {
-  xs: "h-6 w-6 text-caption1",
-  sm: "h-8 w-8 text-caption1",
-  md: "h-10 w-10 text-subhead",
-  lg: "h-12 w-12 text-callout",
-  xl: "h-16 w-16 text-headline",
+type CanonicalAvatarSize = "compact" | "regular" | "large" | "xlarge" | "xxlarge";
+
+const sizeClasses: Record<CanonicalAvatarSize, string> = {
+  compact: "h-6 w-6 text-caption1",
+  regular: "h-8 w-8 text-caption1",
+  large: "h-10 w-10 text-subhead",
+  xlarge: "h-12 w-12 text-callout",
+  xxlarge: "h-16 w-16 text-headline",
+};
+
+const sizeMap: Record<NonNullable<UserAvatarProps["size"]>, CanonicalAvatarSize> = {
+  compact: "compact",
+  regular: "regular",
+  large: "large",
+  xlarge: "xlarge",
+  xxlarge: "xxlarge",
+  xs: "compact",
+  sm: "regular",
+  md: "large",
+  lg: "xlarge",
+  xl: "xxlarge",
 };
 
 /** Generate initials from a name */
@@ -81,7 +96,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     profileAvatar, // deprecated, kept for backward compat
     name,
     alt = "User avatar", 
-    size = "md",
+    size = "large",
      
     useGeneratedAvatar: _useGeneratedAvatar, // deprecated, ignored
     updatedAt,
@@ -101,7 +116,12 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     React.useEffect(() => setImageError(false), [resolvedUrl]);
 
     // Calculate sizes
-    const _pixelSize = size === "xs" ? 24 : size === "sm" ? 32 : size === "md" ? 40 : size === "lg" ? 48 : 64;
+    const canonicalSize = sizeMap[size];
+    const _pixelSize = canonicalSize === "compact" ? 24
+      : canonicalSize === "regular" ? 32
+      : canonicalSize === "large" ? 40
+      : canonicalSize === "xlarge" ? 48
+      : 64;
 
     // Show image if available, otherwise show initials
     const showImage = resolvedUrl && !imageError;
@@ -111,7 +131,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
         ref={ref}
         className={cn(
           "relative inline-flex items-center justify-center overflow-hidden rounded-full bg-card border border-border/40 flex-shrink-0",
-          sizeClasses[size],
+          sizeClasses[canonicalSize],
           className
         )}
         {...props}

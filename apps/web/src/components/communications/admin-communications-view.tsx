@@ -625,7 +625,7 @@ export function AdminCommunicationsView() {
           </div>
 
           {/* Status & Type */}
-          <div className="py-3 px-5 flex flex-col sm:flex-row gap-3">
+          <div className="py-3 px-5 flex flex-col compact:flex-row gap-3">
             <div className="flex-1">
               <p className="text-caption1 text-muted-foreground/70 mb-1.5">Status</p>
               <select

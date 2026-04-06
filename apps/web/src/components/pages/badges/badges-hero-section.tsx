@@ -8,7 +8,7 @@ import { signin } from '@/components/pages/marketing-image-assets';
 
 export function BadgesHeroSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -16,7 +16,7 @@ export function BadgesHeroSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Recognition
           </span>
-          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Badges at Revvup.
             <br />
             <span className="text-muted-foreground">Earned. Not bought.</span>
@@ -24,7 +24,7 @@ export function BadgesHeroSection() {
         </div>
 
         {/* Hero Image */}
-        <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
+        <div className="relative w-full aspect-[4/3] compact:aspect-[16/9] regular:aspect-[2.4/1] overflow-hidden rounded-lg">
           <Image
             src={signin}
             alt="Revvup Badges"

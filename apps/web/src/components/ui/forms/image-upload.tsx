@@ -108,7 +108,7 @@ function SortableImage({ id, url, index, onRemove, blobOverride }: SortableImage
         type="button"
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 p-1.5 bg-black/60 text-white rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/80 cursor-grab active:cursor-grabbing touch-none"
+        className="absolute top-2 left-2 p-1.5 bg-black/60 text-white rounded-full opacity-100 compact:opacity-0 compact:group-hover:opacity-100 transition-opacity hover:bg-black/80 cursor-grab active:cursor-grabbing touch-none"
       >
         <GripVertical className="w-4 h-4" />
       </button>
@@ -120,7 +120,7 @@ function SortableImage({ id, url, index, onRemove, blobOverride }: SortableImage
           e.stopPropagation();
           onRemove();
         }}
-        className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/80"
+        className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-100 compact:opacity-0 compact:group-hover:opacity-100 transition-opacity hover:bg-black/80"
       >
         <X className="w-4 h-4" />
       </button>
@@ -402,7 +402,7 @@ export function ImageUpload({
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={value} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 regular:grid-cols-4 gap-4">
               {value.map((url, index) => (
                 <SortableImage
                   key={url}
@@ -420,7 +420,7 @@ export function ImageUpload({
 
       {/* Optimistic previews — shown immediately while uploading in background */}
       {pendingPreviews.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 regular:grid-cols-4 gap-4">
           {pendingPreviews.map((blobUrl) => (
             <div key={blobUrl} className="relative aspect-video rounded-xl overflow-hidden bg-muted/50">
               <img src={blobUrl} alt="Uploading…" className="w-full h-full object-cover opacity-75" />

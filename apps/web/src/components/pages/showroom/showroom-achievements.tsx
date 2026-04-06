@@ -31,18 +31,18 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
-        <div className="mb-8 px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 px-4 compact:px-6 large:px-8">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.achievementsSectionTitle || 'Recognition'}
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Awards & Milestones
           </h2>
         </div>
 
         {(achievementsSectionVideoEmbedUrl || achievementsSectionImage) && (
-          <div className="mb-8 px-4 sm:px-6 lg:px-8">
-            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
+          <div className="mb-8 px-4 compact:px-6 large:px-8">
+            <div className="relative aspect-[16/9] large:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
               {achievementsSectionVideoEmbedUrl ? (
                 <iframe
                   src={`${achievementsSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
@@ -68,13 +68,13 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
         <div className="relative group/scroll">
           <div 
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
+            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 compact:px-6 large:px-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {achievements.map((achievement, index) => (
               <div 
                 key={achievement.id} 
-                className="flex-shrink-0 w-[340px] sm:w-[380px] min-h-[280px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group flex flex-col"
+                className="flex-shrink-0 w-[340px] compact:w-[380px] min-h-[280px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group flex flex-col"
               >
                 {/* Top Row - Year & Image */}
                 <div className="flex items-start justify-between mb-6">
@@ -124,7 +124,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
         </div>
 
         {/* Description - Below Carousel */}
-        <div className="mt-8 px-4 sm:px-6 lg:px-8">
+        <div className="mt-8 px-4 compact:px-6 large:px-8">
           <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Years of dedication, recognized.
           </p>
@@ -132,7 +132,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 
         {/* Progress Dots (mobile) */}
         {achievements.length > 1 && (
-          <div className="flex justify-center gap-1.5 mt-4 sm:hidden">
+          <div className="flex justify-center gap-1.5 mt-4 compact:hidden">
             {achievements.slice(0, 5).map((_, idx) => (
               <div 
                 key={idx} 
@@ -152,8 +152,8 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 // Skeleton
 function ShowroomAchievementsSkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="text-center mb-10">
           <Skeleton className="h-3 w-24 mx-auto mb-4" />
           <Skeleton className="h-8 w-56 mx-auto" />

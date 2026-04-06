@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8 min-h-screen flex flex-col justify-center">
       <div className="max-w-[1600px] mx-auto w-full">
         
         {/* Header */}
@@ -19,7 +19,7 @@ export default function NotFound() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             404
           </span>
-          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Wrong turn.
             <br />
             <span className="text-muted-foreground">This page doesn't exist.</span>
@@ -27,16 +27,16 @@ export default function NotFound() {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="flex flex-col compact:flex-row items-center justify-center gap-3">
           <Link
             href="/"
-            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+            className="w-full compact:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
           >
             Back to Home
           </Link>
           <Link
             href="/listings"
-            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+            className="w-full compact:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
           >
             Browse Cars
           </Link>

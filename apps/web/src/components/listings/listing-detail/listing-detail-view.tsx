@@ -85,7 +85,7 @@ export function ListingDetailView({
     return (
       <div className="min-h-screen bg-background">
         <main className="pt-20">
-          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8 py-8">
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
               <h1 className="text-title2 font-bold text-foreground mb-2">Listing Not Found</h1>
               <p className="text-muted-foreground font-medium mb-6">This listing may have been removed or is no longer available.</p>
@@ -112,7 +112,7 @@ export function ListingDetailView({
       return (
         <div className="min-h-screen bg-background">
           <main className="pt-20">
-            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8 py-8">
               <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
                 <h1 className="text-title2 font-bold text-foreground mb-2">Listing Not Available</h1>
                 <p className="text-muted-foreground font-medium mb-6">This listing is not currently public.</p>
@@ -168,12 +168,16 @@ export function ListingDetailView({
       return;
     }
 
+    // Match mobile behavior: prefer listing.userId, fallback to seller userId for user listings.
+    const contactUserId =
+      listing.userId || (sellerData?.type === 'user' ? sellerData.userId : undefined);
+
+    if (!contactUserId) {
+      return;
+    }
+
     setIsStartingChat(true);
     try {
-      // For staff listings, message the currently assigned staff member
-      // userId is updated when listings are reassigned
-      const contactUserId = listing.userId;
-      
       const { conversationId } = await createConversation({
         otherUserId: contactUserId,
         listingId: listing.id,
@@ -255,7 +259,7 @@ export function ListingDetailView({
       )}
       
       <main className="pt-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 compact:px-6 large:px-8 overflow-x-hidden">
           {/* Admin Preview Banner */}
           {isAdminPreview && listing && (
             <div className="mb-4 rounded-xl border border-warning/30 bg-warning-muted p-4">
@@ -280,7 +284,7 @@ export function ListingDetailView({
           
           {/* Breadcrumb */}
           {isLoading ? (
-            <div className="flex items-center gap-2 py-4 mb-2 sm:mb-3 h-14 overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-2 py-4 mb-2 compact:mb-3 h-14 overflow-x-auto scrollbar-hide">
               <Skeleton className="h-4 w-16" />
               <span className="text-muted-foreground/40">/</span>
               <Skeleton className="h-4 w-20" />
@@ -288,7 +292,7 @@ export function ListingDetailView({
               <Skeleton className="h-4 w-24" />
             </div>
           ) : listing ? (
-            <nav className="flex items-center py-4 mb-2 sm:mb-3 h-14 overflow-x-auto scrollbar-hide">
+            <nav className="flex items-center py-4 mb-2 compact:mb-3 h-14 overflow-x-auto scrollbar-hide">
               <div className="flex items-center gap-2 text-subhead font-bold tracking-tight overflow-x-auto scrollbar-hide whitespace-nowrap min-w-0 max-w-full">
                 {breadcrumbItems.map((item, index) => {
                   const isLast = index === breadcrumbItems.length - 1;
@@ -315,7 +319,7 @@ export function ListingDetailView({
                           {item.label}
                         </Link>
                       ) : (
-                        <span className="text-foreground whitespace-nowrap max-w-[40vw] sm:max-w-[28vw] truncate">
+                        <span className="text-foreground whitespace-nowrap max-w-[40vw] compact:max-w-[28vw] truncate">
                           {item.label}
                         </span>
                       )}
@@ -327,9 +331,9 @@ export function ListingDetailView({
           ) : null}
 
           {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
+          <div className="grid grid-cols-1 large:grid-cols-5 gap-6 large:gap-10 pb-6 large:pb-8">
             {/* Main Column - Car Details (60%) */}
-            <div className="lg:col-span-3 min-w-0">
+            <div className="large:col-span-3 min-w-0">
               {listing ? (
                 <CarCardDetailed listing={listing} kycVerified={sellerKycVerified} />
               ) : (
@@ -338,8 +342,8 @@ export function ListingDetailView({
             </div>
 
             {/* Sidebar - Clean stacked cards (40%) */}
-            <div className="lg:col-span-2 min-w-0">
-              <div className="lg:sticky lg:top-24 space-y-6">
+            <div className="large:col-span-2 min-w-0">
+              <div className="large:sticky large:top-24 space-y-6">
                 {/* 1. Seller Profile - show skeleton until seller data loads */}
                 {hasSellerData && sellerData ? (
                   <SellerProfileCard sellerData={sellerData} />

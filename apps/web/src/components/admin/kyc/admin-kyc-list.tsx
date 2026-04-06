@@ -178,7 +178,7 @@ export function AdminKycList() {
           <h3 className="text-headline tracking-tight">Overview</h3>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
+        <div className="grid grid-cols-2 regular:grid-cols-4 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
             <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total</span>
             <span className="text-title2 font-semibold text-foreground">{stats?.total ?? 0}</span>
@@ -278,7 +278,7 @@ export function AdminKycList() {
                 </div>
 
                 {/* Extracted Info & Scores */}
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pt-4 border-t border-border text-subhead">
+                <div className="grid grid-cols-2 regular:grid-cols-6 gap-4 pt-4 border-t border-border text-subhead">
                   {/* Extracted Name */}
                   <div>
                     <p className="text-caption1 text-muted-foreground mb-1">Extracted Name</p>

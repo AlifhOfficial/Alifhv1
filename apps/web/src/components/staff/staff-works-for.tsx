@@ -64,11 +64,11 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
 
   if (isLoading) {
     return (
-      <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
-        <div className="flex items-start gap-5 lg:gap-8">
-          <div className="w-20 h-20 lg:w-28 lg:h-28 bg-secondary/50 rounded-2xl shrink-0 animate-pulse" />
-          <div className="flex-1 pt-2 lg:pt-3 space-y-3">
-            <div className="h-7 lg:h-9 w-48 bg-secondary/50 rounded animate-pulse" />
+      <div className="py-8 large:py-12 space-y-8 large:space-y-10">
+        <div className="flex items-start gap-5 large:gap-8">
+          <div className="w-20 h-20 large:w-28 large:h-28 bg-secondary/50 rounded-2xl shrink-0 animate-pulse" />
+          <div className="flex-1 pt-2 large:pt-3 space-y-3">
+            <div className="h-7 large:h-9 w-48 bg-secondary/50 rounded animate-pulse" />
             <div className="h-4 w-36 bg-secondary/50 rounded animate-pulse" />
             <div className="flex gap-2 pt-1">
               <div className="h-6 w-20 bg-secondary/50 rounded animate-pulse" />
@@ -76,7 +76,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 large:grid-cols-2 gap-4 large:gap-6">
           <div className="h-52 bg-secondary/50 rounded-xl animate-pulse" />
           <div className="h-52 bg-secondary/50 rounded-xl animate-pulse" />
         </div>
@@ -86,7 +86,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
 
   if (error || !profile) {
     return (
-      <div className="py-8 lg:py-12">
+      <div className="py-8 large:py-12">
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Building2 className="w-12 h-12 text-muted-foreground/40 mb-5" />
           <h3 className="text-callout mb-2">Unable to Load Dealership</h3>
@@ -104,19 +104,19 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
   const badges = profile.badges ?? [];
 
   return (
-    <div className="py-8 lg:py-12 space-y-8 lg:space-y-10">
+    <div className="py-8 large:py-12 space-y-8 large:space-y-10">
 
       {/* Header - Avatar + Brand Info */}
-      <div className="flex items-start gap-4 lg:gap-6">
+      <div className="flex items-start gap-4 large:gap-6">
         <BrandAvatar
           logoUrl={profile.logo}
           brandName={profile.brandName}
           size="lg"
-          className="w-14 h-14 lg:w-18 lg:h-18 shrink-0"
+          className="w-14 h-14 large:w-18 large:h-18 shrink-0"
         />
-        <div className="flex-1 min-w-0 pt-0.5 lg:pt-1">
+        <div className="flex-1 min-w-0 pt-0.5 large:pt-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-headline lg:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
+            <h1 className="text-headline large:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {isBlackTier ? (
               <span className="flex-shrink-0 px-1.5 h-5 inline-flex items-center text-[9px] font-black tracking-widest uppercase bg-black text-white rounded-sm">
                 BLK
@@ -125,7 +125,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
               <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
             )}
           </div>
-          <p className="text-caption1 lg:text-subhead text-muted-foreground mt-1 truncate">{profile.companyNameLegal}</p>
+          <p className="text-caption1 large:text-subhead text-muted-foreground mt-1 truncate">{profile.companyNameLegal}</p>
 
           {/* Status & Tier badges */}
           <div className="flex items-center gap-2 mt-2">
@@ -164,7 +164,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
       )}
 
       {/* Info Grid - 2 columns on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 large:grid-cols-2 gap-6 large:gap-8">
 
         {/* Contact Information */}
         <section>
@@ -214,7 +214,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
         </section>
 
         {/* Business Info + Public Presence */}
-        <div className="flex flex-col gap-6 lg:gap-8">
+        <div className="flex flex-col gap-6 large:gap-8">
           {(profile.experienceYears || profile.googleRating) && (
             <section>
               <h3 className="text-subhead font-semibold tracking-tight text-foreground mb-3">Business Info</h3>

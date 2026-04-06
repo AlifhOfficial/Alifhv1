@@ -45,7 +45,7 @@ export function AdminPartnersList() {
             <h3 className="text-headline tracking-tight">Overview</h3>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
+          <div className="grid grid-cols-2 regular:grid-cols-4 border-y border-border divide-x divide-border bg-background">
             <div className="p-8 flex flex-col gap-3">
               <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total</span>
               <span className="text-title2 font-semibold text-foreground">{counts.total}</span>

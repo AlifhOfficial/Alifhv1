@@ -27,11 +27,11 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header - Above Media */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="px-4 compact:px-6 large:px-8 mb-8">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.brandStoryTitle || 'Our Story'}
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             The Story Behind
             <br />
             <span className="text-muted-foreground">{partner?.brandName}</span>
@@ -39,7 +39,7 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
         </div>
 
         {/* Media */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="px-4 compact:px-6 large:px-8 mb-12">
           <StoryMedia 
             embedUrl={embedUrl}
             imageUrl={embedUrl ? undefined : storyImage}
@@ -48,7 +48,7 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
         </div>
 
         {/* Description - Below Media */}
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-4 compact:px-6 large:px-8">
           <div className="space-y-4">
             {showroom.brandStoryContent.split('\n\n').slice(0, 3).map((paragraph, idx) => (
               <p key={idx} className="text-callout text-muted-foreground leading-relaxed">{paragraph}</p>
@@ -73,7 +73,7 @@ interface StoryMediaProps {
 function StoryMedia({ embedUrl, imageUrl, title }: StoryMediaProps) {
   if (embedUrl) {
     return (
-      <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
+      <div className="relative aspect-[16/9] large:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
         <iframe
           src={`${embedUrl}?autoplay=1&mute=1&loop=1`}
           title={title}
@@ -87,7 +87,7 @@ function StoryMedia({ embedUrl, imageUrl, title }: StoryMediaProps) {
 
   if (imageUrl) {
     return (
-      <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
+      <div className="relative aspect-[16/9] large:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
         <img
           src={imageUrl}
           alt={title}
@@ -100,7 +100,7 @@ function StoryMedia({ embedUrl, imageUrl, title }: StoryMediaProps) {
   }
 
   return (
-    <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
+    <div className="relative aspect-[16/9] large:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
       <div className="absolute inset-0 flex items-center justify-center">
         <Play className="w-12 h-12 text-muted-foreground/30" />
       </div>
@@ -111,13 +111,13 @@ function StoryMedia({ embedUrl, imageUrl, title }: StoryMediaProps) {
 // Skeleton
 function ShowroomStorySkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="text-center mb-10">
           <Skeleton className="h-3 w-20 mx-auto mb-4" />
           <Skeleton className="h-8 w-48 mx-auto" />
         </div>
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid large:grid-cols-2 gap-12">
           <div className="space-y-4">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />

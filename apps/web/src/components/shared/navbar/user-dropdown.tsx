@@ -139,7 +139,7 @@ export function ProfileMenu({
     
     return (
       <div className="relative flex items-center gap-2.5" data-menu-container>
-        <span className="text-subhead font-bold tracking-tight text-foreground hidden sm:inline">
+        <span className="text-subhead font-bold tracking-tight text-foreground hidden compact:inline">
           {firstName}
         </span>
         
@@ -163,13 +163,13 @@ export function ProfileMenu({
 
         {showMenu && (
           <div 
-            className="absolute right-0 top-full mt-2 w-52 lg:w-52 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden max-h-[80vh] overflow-y-auto"
+            className="absolute right-0 top-full mt-2 w-52 large:w-52 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             data-menu-container
           >
             {/* Mobile Navigation - Only visible on mobile */}
             {navItems && navItems.length > 0 && (
-              <div className="lg:hidden py-1.5 border-b border-sidebar-border">
+              <div className="large:hidden py-1.5 border-b border-sidebar-border">
                 {navItems.map((item) => (
                   <div key={item.label}>
                     {item.submenu && !item.hideSubmenu ? (
@@ -329,13 +329,13 @@ export function ProfileMenu({
 
       {showMenu && (
         <div 
-          className="absolute right-0 top-full mt-2 w-52 lg:w-44 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 max-h-[80vh] overflow-y-auto"
+          className="absolute right-0 top-full mt-2 w-52 large:w-44 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 max-h-[80vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
           data-menu-container
         >
           {/* Mobile Navigation - Only visible on mobile */}
           {navItems && navItems.length > 0 && (
-            <div className="lg:hidden py-1.5 border-b border-sidebar-border">
+            <div className="large:hidden py-1.5 border-b border-sidebar-border">
               {navItems.map((item) => (
                 <div key={item.label}>
                   {item.submenu && !item.hideSubmenu ? (

@@ -44,7 +44,7 @@ export function TermsOfService() {
   }, []);
 
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}
@@ -95,7 +95,7 @@ export function TermsOfService() {
             Contents
           </h2>
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+            <div className="grid grid-cols-1 compact:grid-cols-2 gap-x-6 gap-y-2">
               {TOC_ITEMS.map((item, index) => (
                 <button
                   key={item.id}

@@ -33,19 +33,19 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header - Above Image */}
-        <div className="mb-8 px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 px-4 compact:px-6 large:px-8">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.testimonialsSectionTitle || 'Client Stories'}
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             What Our Clients Say
           </h2>
         </div>
 
         {/* Section Media */}
         {(testimonialsSectionVideoEmbedUrl || sectionImage) && (
-          <div className="px-4 sm:px-6 lg:px-8 mb-12">
-            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
+          <div className="px-4 compact:px-6 large:px-8 mb-12">
+            <div className="relative aspect-[16/9] large:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
               {testimonialsSectionVideoEmbedUrl ? (
                 <iframe
                   src={`${testimonialsSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
@@ -68,7 +68,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         )}
         
         {/* Description - Below Image */}
-        <div className="mb-8 px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 px-4 compact:px-6 large:px-8">
           <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Real experiences from real people.
           </p>
@@ -77,7 +77,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         {/* Testimonials Carousel */}
         <div 
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
+          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 compact:px-6 large:px-8"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {testimonials.map((testimonial, index) => (
@@ -112,7 +112,7 @@ function TestimonialCard({
     (testimonial.customerImage?.startsWith('https://') ? testimonial.customerImage : getAppThumbUrl(testimonial.customerImage));
 
   return (
-    <div className="flex-shrink-0 w-[320px] sm:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col">
+    <div className="flex-shrink-0 w-[320px] compact:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col">
       {/* Rating */}
       <div className="flex items-center gap-1 mb-4">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -172,13 +172,13 @@ function TestimonialCard({
 // Skeleton
 function ShowroomTestimonialsSkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="text-center mb-10">
           <Skeleton className="h-3 w-24 mx-auto mb-4" />
           <Skeleton className="h-8 w-52 mx-auto" />
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid compact:grid-cols-2 large:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="rounded-xl bg-sidebar p-6 space-y-4">
               <Skeleton className="h-4 w-full" />

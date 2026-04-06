@@ -29,7 +29,7 @@ function FoundingProgramButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-callout font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+        className="w-full compact:w-auto h-12 px-10 bg-primary text-primary-foreground text-callout font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
         Apply for Founding Program
       </button>
@@ -45,7 +45,7 @@ function FoundingProgramButton() {
 
 export function PartnerClosingSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
 
         {/* Header */}
@@ -53,7 +53,7 @@ export function PartnerClosingSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Ready?
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Join the Founding Program.
             <br />
             <span className="text-muted-foreground">Limited spots. Shape the platform.</span>
@@ -79,9 +79,9 @@ export function PartnerClosingSection() {
 
 function JoinRevvupInfographic() {
   return (
-    <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[560px] xl:min-h-[680px] p-4 sm:p-8 lg:p-16">
+    <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[300px] compact:min-h-[400px] large:min-h-[560px] xlarge:min-h-[680px] p-4 compact:p-8 large:p-16">
       <div className="text-center">
-        <p className="text-title1 sm:text-display1 lg:text-display3 xl:text-display5 font-bold text-white tracking-tight">
+        <p className="text-title1 compact:text-display1 large:text-display3 xlarge:text-display5 font-bold text-white tracking-tight">
           Your Move.
         </p>
       </div>

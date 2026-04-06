@@ -7,7 +7,7 @@ import { CheckCircle2 } from 'lucide-react';
 
 export function PricingCompareSection() {
   return (
-    <section className="pt-16 pb-16 px-4 sm:px-6 lg:px-8">
+    <section className="pt-16 pb-16 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
 
         {/* Simple inline comparison */}

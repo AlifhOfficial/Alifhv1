@@ -189,7 +189,7 @@ function SidebarFooterContent({
         <SidebarMenuItem>
           <div className="relative" data-footer-menu>
             <SidebarMenuButton 
-              size="lg" 
+              size="large" 
               className="cursor-pointer hover:bg-sidebar-accent"
               tooltip={displayName}
               onClick={(e) => {

@@ -187,7 +187,7 @@ export function MessageInput({
   return (
     <div className={cn(
       'flex-shrink-0 bg-background',
-      compact ? 'px-2.5 py-2' : 'px-3 sm:px-4 py-2.5 sm:py-3'
+      compact ? 'px-2.5 py-2' : 'px-3 compact:px-4 py-2.5 compact:py-3'
     )}>
       <div className={cn(
         'flex items-center gap-2',
@@ -201,20 +201,20 @@ export function MessageInput({
             disabled={disabled}
             className={cn(
               'flex-shrink-0 rounded-full border border-border bg-sidebar transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
-              compact ? 'w-8 h-8' : 'w-10 h-10 sm:w-11 sm:h-11',
+              compact ? 'w-8 h-8' : 'w-10 h-10 compact:w-11 compact:h-11',
               'text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/50'
             )}
             aria-label="Share location"
             title="Share location"
           >
-            <MapPin className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'} />
+            <MapPin className={compact ? 'w-4 h-4' : 'w-4 h-4 compact:w-5 compact:h-5'} />
           </button>
         )}
 
         {/* Text Input - Pill shaped */}
         <div className={cn(
           'flex-1 bg-sidebar border border-border rounded-full min-w-0 overflow-hidden flex items-center',
-          compact ? 'px-4 h-8' : 'px-4 sm:px-5 h-10 sm:h-11'
+          compact ? 'px-4 h-8' : 'px-4 compact:px-5 h-10 compact:h-11'
         )}>
           <textarea
             ref={textareaRef}
@@ -228,7 +228,7 @@ export function MessageInput({
             tabIndex={0}
             className={cn(
               'w-full bg-transparent text-foreground placeholder:text-muted-foreground/50 resize-none overflow-hidden focus:outline-none focus:ring-0 font-medium',
-              compact ? 'max-h-16 text-footnote' : 'max-h-20 sm:max-h-24 lg:max-h-32 text-footnote sm:text-subhead'
+              compact ? 'max-h-16 text-footnote' : 'max-h-20 compact:max-h-24 large:max-h-32 text-footnote compact:text-subhead'
             )}
             style={{
               minHeight: '20px',
@@ -244,20 +244,20 @@ export function MessageInput({
           disabled={!text.trim() || disabled}
           className={cn(
             'flex-shrink-0 rounded-full border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
-            compact ? 'w-8 h-8' : 'w-10 h-10 sm:w-11 sm:h-11',
+            compact ? 'w-8 h-8' : 'w-10 h-10 compact:w-11 compact:h-11',
             text.trim() && !disabled
               ? 'bg-primary border-primary text-primary-foreground hover:bg-primary/90'
               : 'bg-sidebar border-border text-muted-foreground/50'
           )}
           aria-label="Send message"
         >
-          <Send className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'} />
+          <Send className={compact ? 'w-4 h-4' : 'w-4 h-4 compact:w-5 compact:h-5'} />
         </button>
       </div>
 
       {/* Hint - hide in compact mode and on mobile */}
       {!compact && (
-        <p className="hidden sm:block text-caption1 font-medium text-muted-foreground/50 mt-1.5 sm:mt-2 px-1">
+        <p className="hidden compact:block text-caption1 font-medium text-muted-foreground/50 mt-1.5 compact:mt-2 px-1">
           Enter to send · Shift+Enter for new line
         </p>
       )}

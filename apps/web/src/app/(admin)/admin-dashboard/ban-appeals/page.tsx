@@ -100,7 +100,7 @@ export default function AdminBanAppealsPage() {
             <h3 className="text-headline tracking-tight">Overview</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 border-y border-border divide-x divide-border bg-background">
+          <div className="grid grid-cols-1 regular:grid-cols-3 border-y border-border divide-x divide-border bg-background">
             <button
               onClick={() => setSelectedStatus('pending')}
               className={`p-8 flex flex-col gap-3 hover:bg-secondary/20 transition-colors ${

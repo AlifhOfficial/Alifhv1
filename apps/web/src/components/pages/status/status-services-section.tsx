@@ -115,7 +115,7 @@ function ServiceCard({ service }: { service: Service }) {
 
 export function StatusServicesSection({ services }: StatusServicesSectionProps) {
   return (
-    <section className="pb-12 px-4 sm:px-6 lg:px-8">
+    <section className="pb-12 px-4 compact:px-6 large:px-8">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}

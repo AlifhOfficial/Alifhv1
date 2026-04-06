@@ -10,7 +10,7 @@ import { m3, m5, m8 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerPainPointSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -18,7 +18,7 @@ export function PartnerPainPointSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The marketplace game
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Commission. Credits. Upsells.
             <br />
             <span className="text-muted-foreground">Sound familiar?</span>
@@ -34,7 +34,7 @@ export function PartnerPainPointSection() {
         </p>
 
         {/* Comparison Grid */}
-        <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-5xl mx-auto">
+        <div className="grid compact:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-5xl mx-auto">
           
           {/* Others */}
           <div className="p-8 bg-sidebar">
@@ -91,26 +91,26 @@ export function PartnerPainPointSection() {
 function MarketplaceGameInfographic() {
   return (
     <>
-      <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] overflow-visible">
+      <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col regular:flex-row aspect-[3/4] compact:aspect-[4/3] regular:aspect-[16/9] large:aspect-[2.4/1] overflow-visible">
           {/* Left - Others: Cluttered fees with stacked cars */}
-          <div className="flex-1 p-4 sm:p-6 lg:p-14 pt-6 sm:pt-8 lg:pt-16 pb-6 sm:pb-8 lg:pb-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 overflow-visible">
-            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
+          <div className="flex-1 p-4 compact:p-6 large:p-14 pt-6 compact:pt-8 large:pt-16 pb-6 compact:pb-8 large:pb-16 flex flex-col items-center justify-center border-b regular:border-b-0 regular:border-r border-white/5 overflow-visible">
+            <span className="text-[9px] compact:text-caption2 large:text-caption1 text-white/30 mb-4 compact:mb-6 large:mb-8">Others</span>
             
-            <div className="relative w-full max-w-3xl py-3 sm:py-4">
+            <div className="relative w-full max-w-3xl py-3 compact:py-4">
               {/* 3 car cards - stacked/overlapping */}
-              <div className="relative h-32 sm:h-44 lg:h-56 xl:h-80 w-full flex items-center justify-center">
+              <div className="relative h-32 compact:h-44 large:h-56 xlarge:h-80 w-full flex items-center justify-center">
                 {/* Card 1 - back left - hidden on mobile */}
-                <div className="hidden sm:block absolute left-2 lg:left-4 xl:left-8 top-4 sm:top-6 lg:top-8 w-20 sm:w-28 lg:w-40 xl:w-56 aspect-[4/3] rounded-md lg:rounded-lg overflow-hidden border border-white/10 shadow-lg -rotate-3 opacity-60 sm:opacity-70">
+                <div className="hidden compact:block absolute left-2 large:left-4 xlarge:left-8 top-4 compact:top-6 large:top-8 w-20 compact:w-28 large:w-40 xlarge:w-56 aspect-[4/3] rounded-md large:rounded-lg overflow-hidden border border-white/10 shadow-lg -rotate-3 opacity-60 compact:opacity-70">
                   <Image src={m3} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 0px, (max-width: 1280px) 160px, 224px" />
                 </div>
                 
                 {/* Card 2 - back right - hidden on mobile */}
-                <div className="hidden sm:block absolute right-2 lg:right-4 xl:right-8 top-4 sm:top-6 lg:top-8 w-20 sm:w-28 lg:w-40 xl:w-56 aspect-[4/3] rounded-md lg:rounded-lg overflow-hidden border border-white/10 shadow-lg rotate-3 opacity-60 sm:opacity-70">
+                <div className="hidden compact:block absolute right-2 large:right-4 xlarge:right-8 top-4 compact:top-6 large:top-8 w-20 compact:w-28 large:w-40 xlarge:w-56 aspect-[4/3] rounded-md large:rounded-lg overflow-hidden border border-white/10 shadow-lg rotate-3 opacity-60 compact:opacity-70">
                   <Image src={m5} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 0px, (max-width: 1280px) 160px, 224px" />
                 </div>
                 
                 {/* Card 3 - front center */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-0 sm:top-0 w-36 sm:w-36 lg:w-48 xl:w-72 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 shadow-xl z-10">
+                <div className="absolute left-1/2 -translate-x-1/2 top-0 compact:top-0 w-36 compact:w-36 large:w-48 xlarge:w-72 aspect-[4/3] rounded-lg large:rounded-xl overflow-hidden border border-white/10 shadow-xl z-10">
                   <Image src={m8} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 144px, (max-width: 1280px) 192px, 288px" />
                 </div>
                 
@@ -120,45 +120,45 @@ function MarketplaceGameInfographic() {
                   style={{ animation: 'cursor-move 3s ease-in-out infinite' }}
                 >
                   <div className="relative">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" viewBox="0 0 24 24" fill="currentColor">
+                    <svg className="w-4 h-4 compact:w-5 compact:h-5 large:w-7 large:h-7 xlarge:w-8 xlarge:h-8 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M4 4l16 6.5-6.5 2-2 6.5z"/>
                     </svg>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-1 h-1 sm:w-1.5 sm:h-1.5 lg:w-2.5 lg:h-2.5 rounded-full bg-destructive animate-pulse" />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-1 h-1 compact:w-1.5 compact:h-1.5 large:w-2.5 large:h-2.5 rounded-full bg-destructive animate-pulse" />
                   </div>
                 </div>
               </div>
               
               {/* Fee badges - floating around the cards */}
-              <div className="absolute top-0 sm:top-1 lg:top-0 left-4 sm:left-6 lg:left-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-destructive text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-bold text-white shadow-lg -rotate-6 z-20">
+              <div className="absolute top-0 compact:top-1 large:top-0 left-4 compact:left-6 large:left-10 px-1.5 compact:px-2 large:px-3 py-0.5 compact:py-1 large:py-1.5 rounded-md bg-destructive text-[7px] compact:text-[9px] large:text-caption1 xlarge:text-subhead font-bold text-white shadow-lg -rotate-6 z-20">
                 Premium 299
               </div>
-              <div className="absolute top-0 sm:top-1 lg:top-0 right-4 sm:right-6 lg:right-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-orange-500 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold text-white shadow-lg rotate-6 z-20">
+              <div className="absolute top-0 compact:top-1 large:top-0 right-4 compact:right-6 large:right-10 px-1.5 compact:px-2 large:px-3 py-0.5 compact:py-1 large:py-1.5 rounded-md bg-orange-500 text-[7px] compact:text-[9px] large:text-caption1 xlarge:text-subhead font-semibold text-white shadow-lg rotate-6 z-20">
                 Boost 149
               </div>
-              <div className="absolute bottom-0 sm:bottom-1 lg:bottom-0 left-1/2 -translate-x-1/2 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-rose-600 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold text-white shadow-lg z-20">
+              <div className="absolute bottom-0 compact:bottom-1 large:bottom-0 left-1/2 -translate-x-1/2 px-1.5 compact:px-2 large:px-3 py-0.5 compact:py-1 large:py-1.5 rounded-md bg-rose-600 text-[7px] compact:text-[9px] large:text-caption1 xlarge:text-subhead font-semibold text-white shadow-lg z-20">
                 5% commission
               </div>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-caption2 xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-8">Click this. Pay that.</p>
+            <p className="text-[8px] compact:text-[9px] large:text-caption2 xlarge:text-caption1 text-white/30 mt-4 compact:mt-6 large:mt-8">Click this. Pay that.</p>
           </div>
           
           {/* Right - Revvup: Clean proposition */}
-          <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
+          <div className="w-full regular:w-[200px] large:w-[280px] xlarge:w-[360px] p-6 compact:p-10 large:p-16 flex flex-col items-center justify-center min-h-[160px] compact:min-h-0">
+            <span className="text-[9px] compact:text-caption2 large:text-caption1 text-primary mb-4 compact:mb-6 large:mb-10">Revvup</span>
             
             <div className="flex flex-col items-center">
               {/* Giant zero */}
               <div 
-                className="text-display1 sm:text-display2 lg:text-display4 xl:text-display5 font-bold text-primary leading-none"
+                className="text-display1 compact:text-display2 large:text-display4 xlarge:text-display5 font-bold text-primary leading-none"
                 style={{ animation: 'glow-zero 3s ease-in-out infinite' }}
               >
                 0
               </div>
-              <span className="text-caption1 sm:text-subhead lg:text-callout text-primary/80 font-medium mt-1 sm:mt-2">paid visibility</span>
+              <span className="text-caption1 compact:text-subhead large:text-callout text-primary/80 font-medium mt-1 compact:mt-2">paid visibility</span>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-caption2 xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Quality ranks higher</p>
+            <p className="text-[8px] compact:text-[9px] large:text-caption2 xlarge:text-caption1 text-white/30 mt-4 compact:mt-6 large:mt-10">Quality ranks higher</p>
           </div>
       </MacOSWindow>
     </>

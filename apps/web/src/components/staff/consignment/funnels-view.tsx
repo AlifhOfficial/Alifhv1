@@ -153,12 +153,12 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Lead Funnels</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">Lead Funnels</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">
             Create saved searches to find consignment leads
           </p>
         </div>
@@ -183,29 +183,29 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
               setTimeout(() => setIsSyncing(false), 500);
             }}
             disabled={isSyncing || isFetching}
-            className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+            className="p-1.5 compact:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
             title={cooldownRemaining > 0 ? `Wait ${cooldownRemaining}s` : isSyncing ? 'Syncing...' : 'Sync funnels'}
           >
-            <RefreshCw className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground", (isSyncing || isFetching) && "animate-spin")} />
+            <RefreshCw className={cn("w-3.5 h-3.5 compact:w-4 compact:h-4 text-muted-foreground", (isSyncing || isFetching) && "animate-spin")} />
           </button>
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2"
+            className="h-9 compact:h-10 px-3 compact:px-4 rounded-lg compact:rounded-xl bg-primary text-primary-foreground text-caption1 compact:text-subhead transition-colors hover:bg-primary/90 flex items-center gap-1.5 compact:gap-2"
           >
-            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">New Funnel</span>
-            <span className="sm:hidden">New</span>
+            <Plus className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
+            <span className="hidden compact:inline">New Funnel</span>
+            <span className="compact:hidden">New</span>
           </button>
         </div>
       </div>
 
       {/* Stats */}
       {!isLoading && data?.funnels && data.funnels.length > 0 && (
-        <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-10">
+        <div className="flex flex-wrap items-center gap-4 compact:gap-6 large:gap-10">
           <div>
-            <span className="text-caption2 sm:text-caption1 text-muted-foreground">Funnels</span>
-            <p className="text-callout sm:text-headline lg:text-title3 font-semibold tracking-tight mt-0.5 sm:mt-1 text-primary">{data.funnels.length}</p>
+            <span className="text-caption2 compact:text-caption1 text-muted-foreground">Funnels</span>
+            <p className="text-callout compact:text-headline large:text-title3 font-semibold tracking-tight mt-0.5 compact:mt-1 text-primary">{data.funnels.length}</p>
           </div>
         </div>
       )}
@@ -223,26 +223,26 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
           
           {/* Funnel Cards Skeleton */}
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-lg sm:rounded-xl border border-border/40 p-3 sm:p-4">
+            <div key={i} className="rounded-lg compact:rounded-xl border border-border/40 p-3 compact:p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   {/* Chevron + Title */}
-                  <div className="flex items-center gap-2 sm:gap-3 mb-1">
-                    <Skeleton className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded flex-shrink-0" />
-                    <Skeleton className="h-4 sm:h-5 w-32 sm:w-40" />
+                  <div className="flex items-center gap-2 compact:gap-3 mb-1">
+                    <Skeleton className="w-3.5 h-3.5 compact:w-4 compact:h-4 rounded flex-shrink-0" />
+                    <Skeleton className="h-4 compact:h-5 w-32 compact:w-40" />
                   </div>
                   {/* Description */}
-                  <Skeleton className="h-3 w-48 sm:w-56 mb-2 ml-5 sm:ml-7" />
+                  <Skeleton className="h-3 w-48 compact:w-56 mb-2 ml-5 compact:ml-7" />
                   {/* Filter Tags */}
-                  <div className="flex gap-1 sm:gap-1.5 ml-5 sm:ml-7">
-                    <Skeleton className="h-5 w-14 sm:w-16 rounded-md" />
-                    <Skeleton className="h-5 w-16 sm:w-20 rounded-md" />
-                    <Skeleton className="h-5 w-12 sm:w-14 rounded-md" />
+                  <div className="flex gap-1 compact:gap-1.5 ml-5 compact:ml-7">
+                    <Skeleton className="h-5 w-14 compact:w-16 rounded-md" />
+                    <Skeleton className="h-5 w-16 compact:w-20 rounded-md" />
+                    <Skeleton className="h-5 w-12 compact:w-14 rounded-md" />
                   </div>
                 </div>
                 {/* Active Badge + Menu */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <Skeleton className="h-5 sm:h-6 w-14 sm:w-16 rounded-full" />
+                  <Skeleton className="h-5 compact:h-6 w-14 compact:w-16 rounded-full" />
                   <Skeleton className="h-6 w-6 rounded" />
                 </div>
               </div>
@@ -253,7 +253,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
 
       {/* Error State */}
       {error && (
-        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
+        <div className="mb-6 compact:mb-8 p-3 compact:p-4 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead">
           Failed to load funnels. Please try again.
         </div>
       )}
@@ -270,7 +270,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90"
+              className="px-4 py-2 rounded-lg compact:rounded-xl bg-primary text-primary-foreground text-caption1 compact:text-subhead transition-colors hover:bg-primary/90"
             >
               Create Funnel
             </button>
@@ -280,7 +280,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
 
       {/* Funnels as Rows */}
       {!isLoading && !error && data?.funnels && data.funnels.length > 0 && (
-        <div className="space-y-2 sm:space-y-3">
+        <div className="space-y-2 compact:space-y-3">
           {data.funnels.map((funnel) => (
             <FunnelRow
               key={funnel.id}
@@ -359,9 +359,9 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
   });
 
   return (
-    <div className="rounded-lg sm:rounded-xl border border-border/40 bg-card hover:border-border/60 transition-all overflow-hidden">
+    <div className="rounded-lg compact:rounded-xl border border-border/40 bg-card hover:border-border/60 transition-all overflow-hidden">
       {/* Funnel Header */}
-      <div className="w-full p-3 sm:p-4 border-b border-border/30">
+      <div className="w-full p-3 compact:p-4 border-b border-border/30">
         <div className="flex items-start justify-between gap-3">
           {/* Left: Toggle + Title, Description, Tags - Clickable for collapse */}
           <button
@@ -369,33 +369,33 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             onClick={() => setIsExpanded(!isExpanded)}
             className="min-w-0 flex-1 text-left"
           >
-            <div className="flex items-center gap-2 sm:gap-3 mb-1">
+            <div className="flex items-center gap-2 compact:gap-3 mb-1">
               <ChevronDown className={cn(
-                "w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
+                "w-3.5 h-3.5 compact:w-4 compact:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
                 !isExpanded && "-rotate-90"
               )} />
-              <h3 className="text-subhead sm:text-callout font-semibold tracking-tight truncate">{funnel.name}</h3>
+              <h3 className="text-subhead compact:text-callout font-semibold tracking-tight truncate">{funnel.name}</h3>
             </div>
             
             {funnel.description && (
-              <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 line-clamp-1 mb-2 ml-5 sm:ml-7">
+              <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 line-clamp-1 mb-2 ml-5 compact:ml-7">
                 {funnel.description}
               </p>
             )}
 
             {/* Filter Tags */}
-            <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
+            <div className="flex flex-wrap gap-1 compact:gap-1.5 ml-5 compact:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 compact:px-2 py-0.5 text-caption2 compact:text-caption1 bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-caption2 sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
+                <span className="text-caption2 compact:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 compact:px-2 py-0.5 text-caption2 compact:text-caption1 bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -403,9 +403,9 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
           </button>
 
           {/* Right: Active Badge + Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1 compact:gap-2 flex-shrink-0">
             <span className={cn(
-              'shrink-0 px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-semibold rounded-full mr-1 sm:mr-2',
+              'shrink-0 px-1.5 compact:px-2 py-0.5 text-caption2 compact:text-caption1 font-semibold rounded-full mr-1 compact:mr-2',
               funnel.isActive 
                 ? 'bg-success-muted text-success' 
                 : 'bg-muted/50 text-muted-foreground'
@@ -415,19 +415,19 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <button
               type="button"
               onClick={onEdit}
-              className="p-1.5 sm:p-2 text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
+              className="p-1.5 compact:p-2 text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
               title="Edit funnel"
             >
-              <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Edit2 className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
             </button>
             <button
               type="button"
               onClick={onDelete}
               disabled={isDeleting}
-              className="p-1.5 sm:p-2 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
+              className="p-1.5 compact:p-2 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
               title="Delete funnel"
             >
-              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Trash2 className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
             </button>
           </div>
         </div>
@@ -435,35 +435,35 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
 
       {/* Car Previews - Collapsible */}
       {isExpanded && (
-      <div className="p-3 sm:p-4">
+      <div className="p-3 compact:p-4">
         {previewLoading ? (
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:overflow-visible scrollbar-hide">
+          <div className="flex gap-2 compact:gap-3 overflow-x-auto pb-2 compact:pb-0 compact:grid compact:grid-cols-2 regular:grid-cols-3 large:grid-cols-4 xlarge:grid-cols-5 compact:overflow-visible scrollbar-hide">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex-shrink-0 w-[140px] sm:w-auto">
+              <div key={i} className="flex-shrink-0 w-[140px] compact:w-auto">
                 <div className="rounded-lg border border-border/40 bg-card overflow-hidden">
                   <Skeleton className="aspect-[4/3]" />
-                  <div className="p-2 sm:p-2.5">
-                    <Skeleton className="h-3 sm:h-4 w-24 sm:w-32 mb-1.5" />
-                    <Skeleton className="h-3 sm:h-4 w-16 sm:w-20" />
+                  <div className="p-2 compact:p-2.5">
+                    <Skeleton className="h-3 compact:h-4 w-24 compact:w-32 mb-1.5" />
+                    <Skeleton className="h-3 compact:h-4 w-16 compact:w-20" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : !previewData?.listings || previewData.listings.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
-            <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground/20 mb-2" />
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground/50">No matching vehicles yet</p>
+          <div className="flex flex-col items-center justify-center py-6 compact:py-8 text-center">
+            <ImageIcon className="w-6 h-6 compact:w-8 compact:h-8 text-muted-foreground/20 mb-2" />
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground/50">No matching vehicles yet</p>
           </div>
         ) : (
           <>
             {/* Simple Preview Grid */}
-            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:overflow-visible scrollbar-hide">
+            <div className="flex gap-2 compact:gap-3 overflow-x-auto pb-2 compact:pb-0 compact:grid compact:grid-cols-2 regular:grid-cols-3 large:grid-cols-4 xlarge:grid-cols-5 compact:overflow-visible scrollbar-hide">
               {previewData.listings.map((listing) => (
                 <Link
                   key={listing.id}
                   href={`/listings/${listing.id}`}
-                  className="flex-shrink-0 w-[140px] sm:w-auto group"
+                  className="flex-shrink-0 w-[140px] compact:w-auto group"
                 >
                   <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 transition-all">
                     {/* Image */}
@@ -478,16 +478,16 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-secondary">
-                          <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground/20" />
+                          <ImageIcon className="w-6 h-6 compact:w-8 compact:h-8 text-muted-foreground/20" />
                         </div>
                       )}
                     </div>
                     {/* Info */}
-                    <div className="p-2 sm:p-2.5">
-                      <p className="text-caption1 sm:text-subhead font-semibold truncate">
+                    <div className="p-2 compact:p-2.5">
+                      <p className="text-caption1 compact:text-subhead font-semibold truncate">
                         {listing.year} {listing.make} {listing.model}
                       </p>
-                      <p className="text-caption1 sm:text-subhead font-bold text-primary">
+                      <p className="text-caption1 compact:text-subhead font-bold text-primary">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>
@@ -497,11 +497,11 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             </div>
 
             {/* View All Button */}
-            <div className="mt-3 sm:mt-4 flex justify-end">
+            <div className="mt-3 compact:mt-4 flex justify-end">
               <button
                 type="button"
                 onClick={onViewAll}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-caption1 sm:text-subhead font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-2.5 compact:px-3 py-1 compact:py-1.5 text-caption1 compact:text-subhead font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
               >
                 View All →
               </button>

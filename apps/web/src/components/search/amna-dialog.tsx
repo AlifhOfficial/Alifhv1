@@ -94,7 +94,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
     <Dialog open={open} onOpenChange={(v) => { if (!loading) onOpenChange(v); }}>
       <DialogContent
         className={cn(
-          'sm:max-w-[480px] p-0 gap-0 overflow-hidden',
+          'compact:max-w-[480px] p-0 gap-0 overflow-hidden',
           'border-2 border-violet-500/40 rounded-2xl',
           'shadow-lg',
         )}

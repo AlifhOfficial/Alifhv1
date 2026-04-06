@@ -46,14 +46,14 @@ interface ShowroomViewProps {
  */
 function InventorySkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="flex items-center justify-between mb-8">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-20" />
         </div>
         {/* Car cards grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="space-y-3">
               <Skeleton className="aspect-[16/10] rounded-xl" />
@@ -74,10 +74,10 @@ function ShowroomSkeleton() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section Skeleton - matches showroom-hero layout */}
-      <section className="py-16 sm:py-20 lg:py-24">
+      <section className="py-16 compact:py-20 large:py-24">
         <div className="max-w-[1600px] mx-auto">
           {/* Brand Name & Tagline - Top, Centered */}
-          <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
+          <div className="px-4 compact:px-6 large:px-8 mb-8 text-center">
             {/* Brand name label */}
             <Skeleton className="h-3 w-20 mx-auto mb-3" />
             {/* Tagline */}
@@ -85,21 +85,21 @@ function ShowroomSkeleton() {
           </div>
           
           {/* Hero Media - 21/9 aspect ratio */}
-          <div className="px-4 sm:px-6 lg:px-8">
+          <div className="px-4 compact:px-6 large:px-8">
             <Skeleton className="w-full aspect-[21/9] rounded-2xl" />
           </div>
         </div>
       </section>
       
       {/* Inventory Preview Skeleton */}
-      <section className="py-16 sm:py-20 lg:py-24">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 compact:py-20 large:py-24">
+        <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
           <div className="flex items-center justify-between mb-8">
             <Skeleton className="h-6 w-32" />
             <Skeleton className="h-4 w-20" />
           </div>
           {/* Car cards grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="space-y-3">
                 <Skeleton className="aspect-[16/10] rounded-xl" />
@@ -112,9 +112,9 @@ function ShowroomSkeleton() {
       </section>
       
       {/* Story Section Skeleton */}
-      <section className="py-16 sm:py-20 lg:py-24">
+      <section className="py-16 compact:py-20 large:py-24">
         <div className="max-w-[1600px] mx-auto">
-          <div className="px-4 sm:px-6 lg:px-8 mb-8">
+          <div className="px-4 compact:px-6 large:px-8 mb-8">
             <div className="max-w-3xl">
               <Skeleton className="h-3 w-16 mb-3" />
               <Skeleton className="h-8 w-64 mb-2" />
@@ -126,7 +126,7 @@ function ShowroomSkeleton() {
               </div>
             </div>
           </div>
-          <div className="px-4 sm:px-6 lg:px-8">
+          <div className="px-4 compact:px-6 large:px-8">
             <Skeleton className="w-full aspect-[21/9] rounded-2xl" />
           </div>
         </div>

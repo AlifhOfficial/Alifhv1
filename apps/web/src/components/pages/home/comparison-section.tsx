@@ -14,7 +14,7 @@ const COMPARISON_DATA = [
 
 export function ComparisonSection() {
   return (
-    <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -22,7 +22,7 @@ export function ComparisonSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The Difference
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Us vs them.
             <br />
             <span className="text-muted-foreground">You decide.</span>
@@ -35,7 +35,7 @@ export function ComparisonSection() {
         </div>
 
         {/* Clean Comparison Grid - like partner compare */}
-        <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-4xl mx-auto">
+        <div className="grid compact:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-4xl mx-auto">
           
           {/* Others */}
           <div className="p-8 bg-sidebar">
@@ -78,64 +78,64 @@ export function ComparisonSection() {
 function ComparisonInfographic() {
   return (
     <>
-      <MacOSWindow url="car-listings.com" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
+      <MacOSWindow url="car-listings.com" contentClassName="flex flex-col regular:flex-row aspect-[3/4] compact:aspect-[4/3] regular:aspect-[16/9] large:aspect-[2.4/1]">
         {/* Left - Others: Cluttered feed with media */}
-        <div className="w-full md:w-[40%] flex flex-col border-b md:border-b-0 md:border-r border-white/5 p-4 sm:p-6 lg:p-12">
-          <span className="text-caption2 sm:text-caption1 text-white/40 mb-3 sm:mb-4 lg:mb-6">Elsewhere</span>
+        <div className="w-full regular:w-[40%] flex flex-col border-b regular:border-b-0 regular:border-r border-white/5 p-4 compact:p-6 large:p-12">
+          <span className="text-caption2 compact:text-caption1 text-white/40 mb-3 compact:mb-4 large:mb-6">Elsewhere</span>
           
           <div className="flex-1 flex items-center justify-center overflow-hidden">
             <div 
-              className="w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[260px] space-y-2 sm:space-y-2.5 lg:space-y-3"
+              className="w-full max-w-[200px] compact:max-w-[240px] large:max-w-[260px] space-y-2 compact:space-y-2.5 large:space-y-3"
               style={{ animation: 'scroll-feed 6s ease-in-out infinite' }}
             >
               {/* Ad banner */}
-              <div className="h-6 sm:h-7 lg:h-8 rounded-md sm:rounded-lg bg-warning/15 border border-warning/30 flex items-center justify-center">
-                <span className="text-[7px] sm:text-[8px] lg:text-caption2 text-warning/70 font-medium tracking-wide">SPONSORED</span>
+              <div className="h-6 compact:h-7 large:h-8 rounded-md compact:rounded-lg bg-warning/15 border border-warning/30 flex items-center justify-center">
+                <span className="text-[7px] compact:text-[8px] large:text-caption2 text-warning/70 font-medium tracking-wide">SPONSORED</span>
               </div>
               
               {/* Listing with image */}
-              <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-md sm:rounded-lg bg-white/5 border border-white/10">
-                <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-1.5 sm:mb-2">
+              <div className="p-1.5 compact:p-2 large:p-2.5 rounded-md compact:rounded-lg bg-white/5 border border-white/10">
+                <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-1.5 compact:mb-2">
                   <Image src={m8} alt="" className="w-full h-full object-cover opacity-70 grayscale-[30%]" sizes="(max-width: 768px) 200px, 260px" />
                 </div>
-                <div className="h-1.5 sm:h-2 lg:h-2.5 w-3/4 rounded bg-white/15" />
+                <div className="h-1.5 compact:h-2 large:h-2.5 w-3/4 rounded bg-white/15" />
               </div>
               
               {/* Your listing - buried and faded */}
-              <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-md sm:rounded-lg bg-white/5 border border-white/5 opacity-40">
-                <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-1.5 sm:mb-2">
+              <div className="p-1.5 compact:p-2 large:p-2.5 rounded-md compact:rounded-lg bg-white/5 border border-white/5 opacity-40">
+                <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-1.5 compact:mb-2">
                   <Image src={m12} alt="" className="w-full h-full object-cover opacity-50 grayscale" sizes="(max-width: 768px) 200px, 260px" />
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="h-1 sm:h-1.5 lg:h-2 w-1/2 rounded bg-white/10" />
-                  <p className="text-[6px] sm:text-[7px] lg:text-[9px] text-white/40">Your listing</p>
+                  <div className="h-1 compact:h-1.5 large:h-2 w-1/2 rounded bg-white/10" />
+                  <p className="text-[6px] compact:text-[7px] large:text-[9px] text-white/40">Your listing</p>
                 </div>
               </div>
               
               {/* Ad */}
-              <div className="h-5 sm:h-6 lg:h-7 rounded-md sm:rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
-                <span className="text-[6px] sm:text-[7px] lg:text-[9px] text-white/30">AD</span>
+              <div className="h-5 compact:h-6 large:h-7 rounded-md compact:rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                <span className="text-[6px] compact:text-[7px] large:text-[9px] text-white/30">AD</span>
               </div>
             </div>
           </div>
           
-          <p className="text-[7px] sm:text-[8px] lg:text-caption1 text-white/30 mt-2 sm:mt-3 lg:mt-5 text-center">Buried in the noise</p>
+          <p className="text-[7px] compact:text-[8px] large:text-caption1 text-white/30 mt-2 compact:mt-3 large:mt-5 text-center">Buried in the noise</p>
         </div>
         
         {/* Right - Revvup: Clean "No Noise" */}
-        <div className="w-full md:w-[60%] flex flex-col p-4 sm:p-6 lg:p-12 min-h-[180px] sm:min-h-0">
-          <span className="text-caption2 sm:text-caption1 text-primary mb-3 sm:mb-4 lg:mb-6">Revvup</span>
+        <div className="w-full regular:w-[60%] flex flex-col p-4 compact:p-6 large:p-12 min-h-[180px] compact:min-h-0">
+          <span className="text-caption2 compact:text-caption1 text-primary mb-3 compact:mb-4 large:mb-6">Revvup</span>
           
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-title1 sm:text-display1 lg:text-display3 xl:text-display5 font-bold text-white tracking-tight">
+              <p className="text-title1 compact:text-display1 large:text-display3 xlarge:text-display5 font-bold text-white tracking-tight">
                 No Noise
               </p>
-              <p className="text-subhead sm:text-callout lg:text-title3 text-white/40 mt-2 sm:mt-4 lg:mt-6">Just cars.</p>
+              <p className="text-subhead compact:text-callout large:text-title3 text-white/40 mt-2 compact:mt-4 large:mt-6">Just cars.</p>
             </div>
           </div>
           
-          <p className="text-[8px] sm:text-[9px] lg:text-caption1 text-primary/70 text-center">Your car. Seen. Sold.</p>
+          <p className="text-[8px] compact:text-[9px] large:text-caption1 text-primary/70 text-center">Your car. Seen. Sold.</p>
         </div>
       </MacOSWindow>
     </>

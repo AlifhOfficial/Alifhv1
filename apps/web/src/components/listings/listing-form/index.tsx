@@ -166,11 +166,11 @@ export function ListingForm({
   };
   
   return (
-    <div className="pb-12 sm:pb-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div className="pb-12 compact:pb-16">
+      <div className="max-w-4xl mx-auto px-4 compact:px-6 py-6 compact:py-8">
       {/* Header with cancel and progress bars */}
-      <header className="mb-6 sm:mb-8">
-        <div className="flex items-center justify-between mb-4 sm:mb-5">
+      <header className="mb-6 compact:mb-8">
+        <div className="flex items-center justify-between mb-4 compact:mb-5">
           {/* Progress Bars - macOS welcome style with varying widths */}
           <div className="flex items-center gap-1.5 mr-4">
             {editableSteps.map((step, index) => {
@@ -202,7 +202,7 @@ export function ListingForm({
             <button
               onClick={onCancel}
               disabled={isSubmitting}
-              className="text-caption1 sm:text-subhead text-destructive hover:text-destructive transition-colors"
+              className="text-caption1 compact:text-subhead text-destructive hover:text-destructive transition-colors"
             >
               Cancel
             </button>
@@ -210,16 +210,16 @@ export function ListingForm({
         </div>
         
         {/* Title - step specific */}
-        <h1 className="text-callout sm:text-title3 font-semibold tracking-tight text-sidebar-foreground">
+        <h1 className="text-callout compact:text-title3 font-semibold tracking-tight text-sidebar-foreground">
           {mode === 'edit' ? 'Edit Listing' : stepTitles[currentStep]}
         </h1>
-        <p className="text-caption2 sm:text-subhead text-sidebar-foreground/60 mt-0.5">
+        <p className="text-caption2 compact:text-subhead text-sidebar-foreground/60 mt-0.5">
           Step {currentStepIndex + 1} of {editableSteps.length}
         </p>
       </header>
 
       {/* Form Content */}
-      <main className="mb-6 sm:mb-8">
+      <main className="mb-6 compact:mb-8">
         {currentStep === 'vin' && mode !== 'edit' && (
           <VINStep 
             data={formData} 
@@ -241,14 +241,14 @@ export function ListingForm({
           if (currentStep === 'vin' && key === 'vin') return false;
           return true;
         }).length > 0 && (
-          <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-xl border border-destructive/30 bg-destructive/5">
-            <p className="text-caption2 sm:text-caption1 font-bold text-destructive mb-1.5 sm:mb-2">Please fix:</p>
+          <div className="mt-4 compact:mt-6 p-3 compact:p-4 rounded-xl border border-destructive/30 bg-destructive/5">
+            <p className="text-caption2 compact:text-caption1 font-bold text-destructive mb-1.5 compact:mb-2">Please fix:</p>
             <ul className="space-y-1">
               {Object.entries(errors)
                 .filter(([field]) => !(currentStep === 'vin' && field === 'vin'))
                 .map(([field, error]) => (
-                <li key={field} className="text-caption2 sm:text-caption1 text-destructive/90 flex items-center gap-1.5 sm:gap-2">
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-destructive shrink-0" />
+                <li key={field} className="text-caption2 compact:text-caption1 text-destructive/90 flex items-center gap-1.5 compact:gap-2">
+                  <span className="w-1 h-1 compact:w-1.5 compact:h-1.5 rounded-full bg-destructive shrink-0" />
                   {error}
                 </li>
               ))}
@@ -258,28 +258,28 @@ export function ListingForm({
       </main>
 
       {/* Navigation Footer */}
-      <footer className="flex items-center justify-between pt-4 sm:pt-6">
+      <footer className="flex items-center justify-between pt-4 compact:pt-6">
         <div>
           {currentStepIndex > 0 && (
             <button
               type="button"
               onClick={handleBack}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-caption1 sm:text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+              className="flex items-center gap-1.5 compact:gap-2 px-3 compact:px-4 py-2 compact:py-2.5 rounded-full text-caption1 compact:text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowLeft className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
               Back
             </button>
           )}
         </div>
         
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 compact:gap-3">
           {onSaveDraft && canSaveDraft && (
             <button
               type="button"
               onClick={handleSaveDraft}
               disabled={isSubmitting}
-              className="hidden sm:block px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-caption1 sm:text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+              className="hidden compact:block px-4 compact:px-5 py-2 compact:py-2.5 rounded-full text-caption1 compact:text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
             >
               Save Draft
             </button>
@@ -290,10 +290,10 @@ export function ListingForm({
               type="button"
               onClick={handleNext}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-primary text-primary-foreground text-caption1 sm:text-subhead font-semibold hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-1.5 compact:gap-2 px-4 compact:px-6 py-2.5 compact:py-3 rounded-full bg-primary text-primary-foreground text-caption1 compact:text-subhead font-semibold hover:bg-primary/90 transition-colors"
             >
               Continue
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
             </button>
           ) : (
             <button
@@ -301,7 +301,7 @@ export function ListingForm({
               onClick={handleSubmit}
               disabled={isSubmitting}
               className={cn(
-                "flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-caption1 sm:text-subhead font-semibold transition-colors disabled:opacity-50",
+                "flex items-center gap-1.5 compact:gap-2 px-4 compact:px-6 py-2.5 compact:py-3 rounded-full text-caption1 compact:text-subhead font-semibold transition-colors disabled:opacity-50",
                 mode === 'edit' 
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : "bg-success text-white hover:bg-success/90"
@@ -309,9 +309,9 @@ export function ListingForm({
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                  <span className="hidden sm:inline">{mode === 'edit' ? 'Updating...' : 'Publishing...'}</span>
-                  <span className="sm:hidden">...</span>
+                  <Loader2 className="w-3.5 h-3.5 compact:w-4 compact:h-4 animate-spin" />
+                  <span className="hidden compact:inline">{mode === 'edit' ? 'Updating...' : 'Publishing...'}</span>
+                  <span className="compact:hidden">...</span>
                 </>
               ) : mode === 'edit' ? (
                 <span className="whitespace-nowrap">Update Listing</span>

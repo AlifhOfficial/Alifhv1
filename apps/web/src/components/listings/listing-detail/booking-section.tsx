@@ -47,7 +47,7 @@ function BookingSectionSkeleton({ className }: { className?: string }) {
     <div className={cn("space-y-4", className)}>
       <Skeleton className="h-3 w-16" />
       <Skeleton className="h-12 w-full rounded-full" />
-      <Skeleton className="h-4 w-full sm:w-40 mx-auto" />
+      <Skeleton className="h-4 w-full compact:w-40 mx-auto" />
     </div>
   );
 }

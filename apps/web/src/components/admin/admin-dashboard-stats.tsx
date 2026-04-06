@@ -83,7 +83,7 @@ export function AdminDashboardStats() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
+        <div className="grid grid-cols-2 regular:grid-cols-4 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
             <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total Users</span>
             <span className="text-title2 font-semibold text-primary">{stats.users.total.toLocaleString()}</span>
@@ -116,7 +116,7 @@ export function AdminDashboardStats() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border divide-x divide-border bg-background">
+        <div className="grid grid-cols-2 regular:grid-cols-5 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
             <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total</span>
             <span className="text-title2 font-semibold text-primary">{stats.partners.total.toLocaleString()}</span>
@@ -146,7 +146,7 @@ export function AdminDashboardStats() {
           <h3 className="text-headline tracking-tight">Quick Actions</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 regular:grid-cols-3 gap-4">
           <Link 
             href="/admin-dashboard/users"
             className="group rounded-xl border border-border p-6 hover:border-primary/40 hover:bg-secondary/10 transition-all"

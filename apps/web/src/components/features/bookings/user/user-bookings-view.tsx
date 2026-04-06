@@ -168,12 +168,12 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">My Bookings</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Your scheduled test drives</p>
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">My Bookings</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">Your scheduled test drives</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -188,9 +188,9 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 mb-6 sm:mb-8">
+      <div className="flex flex-col gap-3 mb-6 compact:mb-8">
         {/* Search & Sort Row */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 compact:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -201,7 +201,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                 setSearchQuery(e.target.value);
                 handleSearchChange(e.target.value);
               }}
-              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+              className="w-full h-9 compact:h-10 pl-9 compact:pl-10 pr-8 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
             />
             {searchQuery && (
               <button
@@ -221,7 +221,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
             setError(null);
             updateRoute({ sort: v as BookingSort, page: 1 });
           }}>
-            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-caption1 sm:text-subhead shrink-0">
+            <SelectTrigger className="h-9 compact:h-10 w-24 compact:w-28 border-0 bg-secondary/50 rounded-lg compact:rounded-xl text-caption1 compact:text-subhead shrink-0">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -232,7 +232,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
         </div>
 
         {/* Status Pills - Horizontal scroll on mobile */}
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+        <div className="-mx-4 px-4 compact:mx-0 compact:px-0 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
             {mainStatusTabs.map((tab) => {
               const isActive = selectedStatus === tab.key;
@@ -244,7 +244,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                     setError(null);
                     updateRoute({ status: tab.key, page: 1 });
                     }}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
+                  className={`px-2.5 compact:px-3 py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all capitalize whitespace-nowrap ${
                     isActive
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -262,7 +262,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
+                  className={`px-2.5 compact:px-3 py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                     isSecondaryStatusSelected
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -303,7 +303,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
 
       {/* Error */}
       {error && (
-        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
+        <div className="mb-6 compact:mb-8 p-3 compact:p-4 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead">
           {error}
         </div>
       )}
@@ -323,22 +323,22 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
         if (totalPages <= 1) return null;
         
         return (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 sm:pt-6 border-t border-border/40 mt-4 sm:mt-6">
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground text-center sm:text-left">
+          <div className="flex flex-col compact:flex-row compact:items-center justify-between gap-3 pt-4 compact:pt-6 border-t border-border/40 mt-4 compact:mt-6">
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground text-center compact:text-left">
               Page {currentPage} of {totalPages} · {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
             </p>
             <div className="flex items-center justify-center gap-2">
               <button
                 onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1 || isLoading}
-                className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-caption2 compact:text-caption1 rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
               <button
                 onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                 disabled={currentPage === totalPages || isLoading}
-                className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-caption2 compact:text-caption1 rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

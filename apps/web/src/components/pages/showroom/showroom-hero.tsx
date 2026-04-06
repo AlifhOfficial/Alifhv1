@@ -70,11 +70,11 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Brand Name & Tagline - Top, Centered */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
+        <div className="px-4 compact:px-6 large:px-8 mb-8 text-center">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {partner.brandName}
           </span>
-          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             {(() => {
               const tagline = showroom.heroTagline || `Welcome to ${partner.brandName}`;
               const words = tagline.split(' ');
@@ -99,8 +99,8 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
         {/* ================================================================== */}
         {/* HERO MEDIA - Consistent with other sections */}
         {/* ================================================================== */}
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="relative w-full aspect-[16/9] lg:aspect-[21/9] overflow-hidden rounded-xl bg-sidebar border border-border/40 group">
+        <div className="px-4 compact:px-6 large:px-8">
+          <div className="relative w-full aspect-[16/9] large:aspect-[21/9] overflow-hidden rounded-xl bg-sidebar border border-border/40 group">
             
             {/* Media Layer */}
             {showUploadedVideo ? (
@@ -199,10 +199,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
         {/* ================================================================== */}
         {/* CONTENT BLOCK - Below media */}
         {/* ================================================================== */}
-        <div className="px-4 sm:px-6 lg:px-8 pt-12 lg:pt-16">
+        <div className="px-4 compact:px-6 large:px-8 pt-12 large:pt-16">
           
           {/* Philosophy + CTAs Row */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12">
+          <div className="flex flex-col large:flex-row large:items-start large:justify-between gap-8 large:gap-12">
             
             {/* Philosophy */}
             <div className="flex-1 max-w-2xl">
@@ -219,7 +219,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex flex-col compact:flex-row items-start compact:items-center gap-3">
               {showroom.heroCtaLink ? (
                 <a
                   href={showroom.heroCtaLink}
@@ -262,12 +262,12 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
 
           {/* Stats Row - Bold, Card-like presentation */}
           {hasStats && (
-            <div className="mt-12 lg:mt-16">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="mt-12 large:mt-16">
+              <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-4 gap-4">
                 
                 {showroom.yearsInBusiness && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 compact:text-title1 font-semibold text-foreground tabular-nums">
                       {showroom.yearsInBusiness}+
                     </span>
                     <p className="text-subhead text-muted-foreground mt-1">
@@ -278,7 +278,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {showroom.totalCarsSold && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 compact:text-title1 font-semibold text-foreground tabular-nums">
                       {showroom.totalCarsSold.toLocaleString()}+
                     </span>
                     <p className="text-subhead text-muted-foreground mt-1">
@@ -289,7 +289,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {partner.googleRating && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 compact:text-title1 font-semibold text-foreground tabular-nums">
                       {partner.googleRating.toFixed(1)}
                     </span>
                     <p className="text-subhead text-muted-foreground mt-1">
@@ -300,7 +300,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {partner.googleReviewCount > 0 && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 compact:text-title1 font-semibold text-foreground tabular-nums">
                       {partner.googleReviewCount.toLocaleString()}
                     </span>
                     <p className="text-subhead text-muted-foreground mt-1">
@@ -323,12 +323,12 @@ function ShowroomHeroSkeleton() {
   return (
     <section className="pt-28 pb-20">
       <div className="max-w-[1600px] mx-auto">
-        <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
+        <div className="px-4 compact:px-6 large:px-8 mb-8 text-center">
           <Skeleton className="h-4 w-24 mx-auto mb-4" />
           <Skeleton className="h-10 w-80 max-w-full mx-auto" />
         </div>
-        <div className="px-4 sm:px-6 lg:px-8">
-          <Skeleton className="w-full aspect-[16/9] lg:aspect-[21/9] rounded-xl" />
+        <div className="px-4 compact:px-6 large:px-8">
+          <Skeleton className="w-full aspect-[16/9] large:aspect-[21/9] rounded-xl" />
         </div>
       </div>
     </section>

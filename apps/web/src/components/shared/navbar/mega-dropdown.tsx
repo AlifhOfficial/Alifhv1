@@ -30,7 +30,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
     <>
       {/* Glassmorphic overlay backdrop */}
       <div
-        className={`fixed inset-0 top-14 sm:top-16 z-30 bg-background/80 backdrop-blur-2xl transition-opacity duration-300 will-change-[opacity] ${
+        className={`fixed inset-0 top-14 compact:top-16 z-30 bg-background/80 backdrop-blur-2xl transition-opacity duration-300 will-change-[opacity] ${
           activeDropdown ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         }`}
         onClick={onClose}
@@ -38,7 +38,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
       
       {/* Dropdown content */}
       <div
-        className={`fixed left-0 right-0 top-14 sm:top-16 z-40 transition-[opacity,transform] duration-300 will-change-[opacity,transform] ${
+        className={`fixed left-0 right-0 top-14 compact:top-16 z-40 transition-[opacity,transform] duration-300 will-change-[opacity,transform] ${
           activeDropdown ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
         }`}
         onMouseEnter={onMouseEnter}

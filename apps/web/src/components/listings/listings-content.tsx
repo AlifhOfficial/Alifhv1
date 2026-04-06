@@ -167,24 +167,24 @@ export function ListingsContent({
   return (
     <div>
       {/* Mobile: mobile card, grid, or minimal */}
-      <div className="md:hidden">
+      <div className="regular:hidden">
         {showSkeletons ? (
           viewMode === 'minimal' ? (
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 compact:grid-cols-2 compact:grid-cols-2 regular:grid-cols-3 gap-3 compact:gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
                 <CarCardMinimal.Skeleton key={i} />
               ))}
             </div>
           ) : (
             /* Mobile grid/list view - use responsive CarCard */
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 compact:grid-cols-2 gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <CarCard.Skeleton key={i} />
               ))}
             </div>
           )
         ) : viewMode === 'minimal' ? (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 compact:grid-cols-2 compact:grid-cols-2 regular:grid-cols-3 gap-3 compact:gap-4">
             {listings.map((listing, index) => (
               <CarCardMinimal
                 key={listing.id}
@@ -206,7 +206,7 @@ export function ListingsContent({
           </div>
         ) : (
           /* Mobile grid/list view - use responsive CarCard */
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-3">
             {listings.map((listing, index) => (
               <CarCard
                 key={listing.id}
@@ -237,7 +237,7 @@ export function ListingsContent({
       </div>
 
       {/* Tablet/Desktop (md+): respects viewMode */}
-      <div className="hidden md:block">
+      <div className="hidden regular:block">
         {showSkeletons ? (
           viewMode === 'list' ? (
             <div className="space-y-3">

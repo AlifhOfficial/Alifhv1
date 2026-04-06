@@ -21,19 +21,34 @@ interface BrandAvatarProps {
   /** Brand name for alt text and initials fallback */
   brandName: string;
   /** Avatar size */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'compact' | 'regular' | 'large' | 'xlarge' | 'xxlarge' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   /** Additional CSS classes */
   className?: string;
   /** Updated timestamp for cache busting (Date, string, or timestamp) */
   updatedAt?: Date | string | number | null;
 }
 
-const sizeClasses = {
-  xs: 'w-6 h-6 text-caption1',
-  sm: 'w-8 h-8 text-caption1',
-  md: 'w-10 h-10 text-subhead',
-  lg: 'w-12 h-12 text-callout',
-  xl: 'w-16 h-16 text-headline',
+type CanonicalBrandAvatarSize = 'compact' | 'regular' | 'large' | 'xlarge' | 'xxlarge';
+
+const sizeClasses: Record<CanonicalBrandAvatarSize, string> = {
+  compact: 'w-6 h-6 text-caption1',
+  regular: 'w-8 h-8 text-caption1',
+  large: 'w-10 h-10 text-subhead',
+  xlarge: 'w-12 h-12 text-callout',
+  xxlarge: 'w-16 h-16 text-headline',
+};
+
+const sizeMap: Record<NonNullable<BrandAvatarProps['size']>, CanonicalBrandAvatarSize> = {
+  compact: 'compact',
+  regular: 'regular',
+  large: 'large',
+  xlarge: 'xlarge',
+  xxlarge: 'xxlarge',
+  xs: 'compact',
+  sm: 'regular',
+  md: 'large',
+  lg: 'xlarge',
+  xl: 'xxlarge',
 };
 
 /**
@@ -52,7 +67,7 @@ function getInitials(name: string): string {
 export function BrandAvatar({ 
   logoUrl, 
   brandName, 
-  size = 'lg',
+  size = 'xlarge',
   className = '',
   updatedAt
 }: BrandAvatarProps) {
@@ -77,7 +92,7 @@ export function BrandAvatar({
     <div 
       className={cn(
         "relative rounded-full bg-card border border-border/40 flex items-center justify-center flex-shrink-0 overflow-hidden",
-        sizeClasses[size],
+        sizeClasses[sizeMap[size]],
         className
       )}
     >

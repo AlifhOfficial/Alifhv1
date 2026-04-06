@@ -306,12 +306,12 @@ export function PartnerBookingsClient({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Bookings</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">{partnerName}</p>
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">Bookings</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">{partnerName}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -326,18 +326,18 @@ export function PartnerBookingsClient({
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div className="flex flex-col gap-3 compact:gap-4 mb-6 compact:mb-8">
         {/* Row 1: Search + Staff */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="flex flex-col compact:flex-row items-stretch compact:items-center gap-3 compact:gap-4">
         {/* Search */}
-        <div className="relative flex-1 sm:max-w-xs">
+        <div className="relative flex-1 compact:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 compact:h-10 pl-10 pr-8 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -351,21 +351,21 @@ export function PartnerBookingsClient({
 
         {/* Staff Combobox */}
         {allStaffForDisplay.length > 0 && (
-          <div className="w-full sm:w-48">
+          <div className="w-full compact:w-48">
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
               onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
-              className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0"
+              className="h-9 compact:h-10 rounded-lg compact:rounded-xl bg-secondary/50 border-0"
             />
           </div>
         )}
         </div>
 
         {/* Row 2: Status Pills - Horizontal scroll on mobile */}
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+        <div className="-mx-4 px-4 compact:mx-0 compact:px-0 overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
           {mainStatusTabs.map((tab) => {
             const isActive = statusFilter === tab.key;
@@ -373,14 +373,14 @@ export function PartnerBookingsClient({
               <button
                 key={tab.key}
                 onClick={() => handleStatusFilterChange(tab.key)}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all whitespace-nowrap ${
+                className={`px-2.5 compact:px-3 py-1 compact:py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {tab.label}
-                <span className="ml-1 sm:ml-1.5 text-muted-foreground">{tab.count}</span>
+                <span className="ml-1 compact:ml-1.5 text-muted-foreground">{tab.count}</span>
               </button>
             );
           })}
@@ -390,7 +390,7 @@ export function PartnerBookingsClient({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
+                  className={`px-2.5 compact:px-3 py-1 compact:py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                     isSecondaryStatusSelected
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -429,8 +429,8 @@ export function PartnerBookingsClient({
 
       {/* Error */}
       {error && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
-          <p className="text-caption1 sm:text-subhead text-destructive font-medium">{error}</p>
+        <div className="flex flex-col items-center justify-center py-16 compact:py-20">
+          <p className="text-caption1 compact:text-subhead text-destructive font-medium">{error}</p>
           <button
             onClick={() => router.refresh()}
             className="mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
@@ -447,7 +447,7 @@ export function PartnerBookingsClient({
             <div key={i} className="p-4">
               <div className="flex gap-4">
                 {/* Image skeleton */}
-                <Skeleton className="w-28 sm:w-36 aspect-[4/3] rounded-lg flex-shrink-0" />
+                <Skeleton className="w-28 compact:w-36 aspect-[4/3] rounded-lg flex-shrink-0" />
                 
                 {/* Content skeleton */}
                 <div className="flex-1 min-w-0 flex flex-col">
@@ -510,7 +510,7 @@ export function PartnerBookingsClient({
                   {/* Main Card - Overview */}
                   <div className="flex gap-4 p-4">
                     {/* Image */}
-                    <div className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
+                    <div className="relative w-28 compact:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
                       {getAppThumbUrl(booking.listingThumbnail) ? (
                         <img
                           src={getAppThumbUrl(booking.listingThumbnail)!}
@@ -529,7 +529,7 @@ export function PartnerBookingsClient({
                       {/* Header */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
+                          <p className="text-subhead compact:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                             {booking.listingTitle || `${booking.listingYear || ''} ${booking.listingMake || ''} ${booking.listingModel || ''}`.trim() || 'Vehicle'}
                           </p>
                           <div className="flex items-center gap-1.5 mt-0.5">
@@ -567,7 +567,7 @@ export function PartnerBookingsClient({
                           </span>
                         </span>
                         {booking.listingPrice && (
-                          <span className="hidden sm:flex items-center gap-1.5 text-muted-foreground">
+                          <span className="hidden compact:flex items-center gap-1.5 text-muted-foreground">
                             <span className="text-caption1">AED</span>
                             <span className="font-medium text-foreground tabular-nums">
                               {booking.listingPrice.toLocaleString()}
@@ -619,7 +619,7 @@ export function PartnerBookingsClient({
                   {/* Expanded Details */}
                   {isExpanded && (
                     <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200 border-t border-border/20 bg-muted/10">
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <div className="grid regular:grid-cols-2 gap-6">
                         {/* Contact Info */}
                         <div className="space-y-3">
                           <p className="text-caption1 text-muted-foreground">Contact</p>
@@ -805,7 +805,7 @@ export function PartnerBookingsClient({
 
       {/* Empty - No Data */}
       {!isLoading && !error && !hasActiveFilters && bookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-16 compact:py-20 text-center">
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Calendar className="w-4 h-4 text-muted-foreground/40" />
           </div>
@@ -816,7 +816,7 @@ export function PartnerBookingsClient({
 
       {/* Empty - No Results */}
       {!isLoading && !error && hasActiveFilters && bookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-16 compact:py-20 text-center">
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Search className="w-4 h-4 text-muted-foreground/40" />
           </div>

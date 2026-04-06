@@ -38,16 +38,16 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Favorites</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">{validFavoriteIds.length} saved</p>
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">Favorites</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">{validFavoriteIds.length} saved</p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={isLoading}
-          className="p-1.5 sm:p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
+          className="p-1.5 compact:p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
           aria-label="Refresh favorites"
         >
           <RefreshCw className={`h-4 w-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
@@ -55,7 +55,7 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
       </div>
 
       {isLoading && (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 large:grid-cols-3 gap-3 compact:gap-4">
           {[...Array(6)].map((_, i) => (
             <CarCard.Skeleton key={i} />
           ))}
@@ -63,8 +63,8 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
       )}
 
       {error && (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 sm:p-4">
-          <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
+        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 compact:p-4">
+          <p className="text-caption1 compact:text-subhead text-destructive">{error}</p>
         </div>
       )}
 
@@ -81,7 +81,7 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 large:grid-cols-3 gap-3 compact:gap-4">
               {validFavoriteIds.map((listingId) => {
                 const listing = listingsById.get(listingId)!;
 

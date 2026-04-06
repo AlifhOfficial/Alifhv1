@@ -9,7 +9,7 @@ import { AdminPartnersList } from "@/components/admin/partners";
 export default function AdminPartnersPage() {
   return (
     <DashboardDisplayArea>
-      <div className="p-6 md:p-10">
+      <div className="p-6 regular:p-10">
         <AdminPartnersList />
       </div>
     </DashboardDisplayArea>

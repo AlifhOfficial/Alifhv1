@@ -86,7 +86,7 @@ export function BookingList({
           <div key={i} className="p-4">
             <div className="flex gap-4">
               {/* Image skeleton */}
-              <Skeleton className="w-28 sm:w-36 aspect-[4/3] rounded-lg flex-shrink-0" />
+              <Skeleton className="w-28 compact:w-36 aspect-[4/3] rounded-lg flex-shrink-0" />
               
               {/* Content skeleton */}
               <div className="flex-1 min-w-0 flex flex-col">

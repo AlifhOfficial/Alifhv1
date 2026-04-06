@@ -20,9 +20,9 @@ interface BrandHeroProps {
 }
 
 const heightClasses = {
-  sm: 'h-40',
-  md: 'h-56',
-  lg: 'h-72',
+  compact: 'h-40',
+  regular: 'h-56',
+  large: 'h-72',
 };
 
 export function BrandHero({ 

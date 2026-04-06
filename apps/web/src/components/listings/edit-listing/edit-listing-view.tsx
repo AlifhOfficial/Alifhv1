@@ -127,30 +127,30 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
       {(listing.lifecycleStatus === 'archived' && (listing.specialNotes?.suspensionReason || moderationReason)) ||
        (listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason)) ||
        error ? (
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 space-y-3 sm:space-y-4">
+        <div className="max-w-2xl mx-auto px-4 compact:px-6 pt-4 compact:pt-6 space-y-3 compact:space-y-4">
           {listing.lifecycleStatus === 'archived' &&
             (listing.specialNotes?.suspensionReason || moderationReason) && (
-              <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
-                <p className="text-caption1 sm:text-subhead text-destructive">
+              <div className="rounded-xl compact:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 compact:p-4">
+                <p className="text-caption1 compact:text-subhead text-destructive">
                   Suspended: {listing.specialNotes?.suspensionReason || moderationReason}
                 </p>
-                <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-1 sm:mt-1.5">
+                <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-1 compact:mt-1.5">
                   You can edit and resubmit this listing, but it will stay hidden until an admin unsuspends it.
                 </p>
               </div>
             )}
 
           {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
-            <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
-              <p className="text-caption1 sm:text-subhead text-destructive">
+            <div className="rounded-xl compact:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 compact:p-4">
+              <p className="text-caption1 compact:text-subhead text-destructive">
                 Rejected: {listing.rejectionReason || listing.specialNotes?.rejectionReason}
               </p>
             </div>
           )}
 
           {error && (
-            <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
-              <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
+            <div className="rounded-xl compact:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 compact:p-4">
+              <p className="text-caption1 compact:text-subhead text-destructive">{error}</p>
             </div>
           )}
         </div>

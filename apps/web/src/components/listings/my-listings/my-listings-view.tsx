@@ -464,14 +464,14 @@ export function MyListingsView({
     : '/user-dashboard/listings/new';
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-callout sm:text-headline font-semibold text-foreground">
+            <h1 className="text-callout compact:text-headline font-semibold text-foreground">
               {listingType === 'work' ? 'Inventory' : 'My Listings'}
             </h1>
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">
               {listingType === 'work' 
                 ? 'Manage your dealership inventory' 
                 : 'Manage your personal car listings'}
@@ -479,8 +479,8 @@ export function MyListingsView({
           </div>
           <div className="flex items-center gap-2">
             {listingType === 'work' && blackQuota && (
-              <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
-                <span className="text-caption2 sm:text-caption1">
+              <div className="flex items-center gap-2 px-2 compact:px-3 py-1 compact:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
+                <span className="text-caption2 compact:text-caption1">
                   {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
                 </span>
               </div>
@@ -489,18 +489,18 @@ export function MyListingsView({
             <button 
               onClick={() => startTransition(() => router.refresh())} 
               disabled={isLoading}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+              className="p-1.5 compact:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               aria-label="Refresh"
             >
-              <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 compact:w-4 compact:h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 mb-6 sm:mb-8">
+      <div className="flex flex-col gap-3 mb-6 compact:mb-8">
         {/* Row 1: Search + Sort + New */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 compact:gap-3">
           {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -509,7 +509,7 @@ export function MyListingsView({
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+              className="w-full h-9 compact:h-10 pl-9 compact:pl-10 pr-8 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
             />
             {searchQuery && (
               <button
@@ -523,7 +523,7 @@ export function MyListingsView({
 
           {/* Sort */}
           <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
-            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-caption1 sm:text-subhead shrink-0">
+            <SelectTrigger className="h-9 compact:h-10 w-24 compact:w-28 border-0 bg-secondary/50 rounded-lg compact:rounded-xl text-caption1 compact:text-subhead shrink-0">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -536,15 +536,15 @@ export function MyListingsView({
 
           {/* New Listing */}
           <Link href={newListingUrl}>
-            <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">New</span>
+            <button className="h-9 compact:h-10 px-3 compact:px-4 rounded-lg compact:rounded-xl bg-primary text-primary-foreground text-caption1 compact:text-subhead transition-colors hover:bg-primary/90 flex items-center gap-1.5 compact:gap-2 shrink-0">
+              <Plus className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
+              <span className="hidden compact:inline">New</span>
             </button>
           </Link>
         </div>
 
         {/* Row 2: Status Pills - Horizontal scroll */}
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+        <div className="-mx-4 px-4 compact:mx-0 compact:px-0 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
             {mainStatusTabs.map((tab) => {
               const isActive = selectedStatus === tab.key;
@@ -553,7 +553,7 @@ export function MyListingsView({
                 <button
                   key={tab.key}
                   onClick={() => handleStatusChange(tab.key)}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
+                  className={`px-2.5 compact:px-3 py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all capitalize whitespace-nowrap ${
                     isActive
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -561,7 +561,7 @@ export function MyListingsView({
                 >
                   {tab.label === 'All' ? 'All' : tab.label.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}
                   {count !== undefined && count > 0 && (
-                    <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
+                    <span className="ml-1 compact:ml-1.5 text-muted-foreground">{count}</span>
                   )}
                 </button>
               );
@@ -572,7 +572,7 @@ export function MyListingsView({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
+                    className={`px-2.5 compact:px-3 py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                       isSecondaryStatusSelected
                         ? 'bg-background text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
@@ -610,11 +610,11 @@ export function MyListingsView({
       </div>
 
       {/* Count & Actions */}
-      <div className="flex items-center justify-between mb-3 sm:mb-6">
-        <p className="text-caption2 sm:text-caption1 text-muted-foreground">
+      <div className="flex items-center justify-between mb-3 compact:mb-6">
+        <p className="text-caption2 compact:text-caption1 text-muted-foreground">
           {totalListings} listing{totalListings !== 1 ? 's' : ''}
-          {hasActiveFilters && <span className="hidden xs:inline"> (filtered)</span>}
-          {totalPages > 1 && <span className="ml-2 hidden sm:inline">· Page {currentPage} of {totalPages}</span>}
+          {hasActiveFilters && <span className="hidden compact:inline"> (filtered)</span>}
+          {totalPages > 1 && <span className="ml-2 hidden compact:inline">· Page {currentPage} of {totalPages}</span>}
         </p>
           
         {/* Bulk Clear Button */}
@@ -622,7 +622,7 @@ export function MyListingsView({
          ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
           <button
             onClick={handleBulkClear}
-            className="text-caption2 sm:text-caption1 text-muted-foreground hover:text-foreground transition-colors"
+            className="text-caption2 compact:text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear all
           </button>
@@ -631,7 +631,7 @@ export function MyListingsView({
 
       {/* Error */}
       {error && (
-        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
+        <div className="mb-6 compact:mb-8 p-3 compact:p-4 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead">
           {error}
         </div>
       )}
@@ -641,9 +641,9 @@ export function MyListingsView({
         <div className="space-y-1">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex gap-4 p-4">
-              <Skeleton className="w-28 sm:w-36 md:w-44 aspect-[4/3] rounded-lg shrink-0" />
+              <Skeleton className="w-28 compact:w-36 regular:w-44 aspect-[4/3] rounded-lg shrink-0" />
               <div className="flex-1 min-w-0 space-y-2">
-                <Skeleton className="h-4 sm:h-5 w-3/4" />
+                <Skeleton className="h-4 compact:h-5 w-3/4" />
                 <Skeleton className="h-3 w-1/3" />
                 <Skeleton className="h-5 w-16 rounded-full mt-auto" />
               </div>
@@ -660,7 +660,7 @@ export function MyListingsView({
             <h3 className="text-subhead font-semibold text-foreground mb-1">No listings yet</h3>
             <p className="text-caption1 text-muted-foreground/60 leading-relaxed mb-4">Create your first listing to get started</p>
             <Link href={newListingUrl}>
-              <button className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90">
+              <button className="px-4 py-2 rounded-lg compact:rounded-xl bg-primary text-primary-foreground text-caption1 compact:text-subhead transition-colors hover:bg-primary/90">
                 Create Listing
               </button>
             </Link>
@@ -689,7 +689,7 @@ export function MyListingsView({
       {/* Listings */}
       {!isLoading && !error && listings.length > 0 && (
         <>
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3 compact:space-y-4">
             {listings.map((listing) => (
               <ListingCard
                 key={listing.id}
@@ -710,22 +710,22 @@ export function MyListingsView({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-border/30">
+            <div className="flex flex-col compact:flex-row items-center justify-center gap-2 compact:gap-3 mt-6 compact:mt-8 pt-4 compact:pt-6 border-t border-border/30">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-caption2 sm:text-caption1 bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 rounded-md compact:rounded-lg text-caption2 compact:text-caption1 bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
-                <span className="text-caption2 sm:text-caption1 text-muted-foreground tabular-nums">
+                <span className="text-caption2 compact:text-caption1 text-muted-foreground tabular-nums">
                   {currentPage} / {totalPages}
                 </span>
                 <button
                   onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-caption2 sm:text-caption1 bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 rounded-md compact:rounded-lg text-caption2 compact:text-caption1 bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>

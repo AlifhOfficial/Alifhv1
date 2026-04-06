@@ -98,14 +98,14 @@ export function PartnerRequestAdminList() {
         </section>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
-          <div className="p-6 md:p-8 flex flex-col gap-1">
+        <div className="grid grid-cols-2 regular:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
+          <div className="p-6 regular:p-8 flex flex-col gap-1">
             <small className="text-muted-foreground">Total</small>
             <h2>{counts?.total || 0}</h2>
           </div>
           <button
             onClick={() => setStatusFilter(statusFilter === 'pending' ? undefined : 'pending')}
-            className={`p-6 md:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
+            className={`p-6 regular:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
               statusFilter === 'pending' ? 'bg-secondary/40' : ''
             }`}
           >
@@ -114,7 +114,7 @@ export function PartnerRequestAdminList() {
           </button>
           <button
             onClick={() => setStatusFilter(statusFilter === 'approved' ? undefined : 'approved')}
-            className={`p-6 md:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
+            className={`p-6 regular:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
               statusFilter === 'approved' ? 'bg-secondary/40' : ''
             }`}
           >
@@ -123,7 +123,7 @@ export function PartnerRequestAdminList() {
           </button>
           <button
             onClick={() => setStatusFilter(statusFilter === 'rejected' ? undefined : 'rejected')}
-            className={`p-6 md:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
+            className={`p-6 regular:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
               statusFilter === 'rejected' ? 'bg-secondary/40' : ''
             }`}
           >
@@ -167,7 +167,7 @@ export function PartnerRequestAdminList() {
                 >
                   {/* Header */}
                   <div className="p-8 border-b border-border/40">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div className="flex flex-col regular:flex-row regular:items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-3 mb-2">
                           <h3 className="text-foreground">{request.companyNameLegal}</h3>
@@ -199,7 +199,7 @@ export function PartnerRequestAdminList() {
 
                   {/* Details Grid */}
                   <div className="p-8 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 regular:grid-cols-2 gap-8">
                       {/* Company Info */}
                       <div className="space-y-4">
                         <h3 className="text-subhead text-muted-foreground">Company Information</h3>
@@ -247,7 +247,7 @@ export function PartnerRequestAdminList() {
                         <h3 className="text-subhead text-muted-foreground mb-4">Uploaded Documents</h3>
                         <button
                           onClick={() => viewDocument(request.tradeLicenseDocumentUrl)}
-                          className="group flex items-center gap-4 p-4 rounded-xl border border-border/40 hover:bg-secondary/30 transition-all w-full md:w-auto"
+                          className="group flex items-center gap-4 p-4 rounded-xl border border-border/40 hover:bg-secondary/30 transition-all w-full regular:w-auto"
                         >
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
                             <FileText className="w-4 h-4 text-muted-foreground" />
@@ -263,7 +263,7 @@ export function PartnerRequestAdminList() {
 
                     {/* Actions */}
                     {request.status === 'pending' && !rejectingId && !approvingId && (
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-6 border-t border-border/40">
+                      <div className="flex flex-col compact:flex-row items-stretch compact:items-center gap-3 pt-6 border-t border-border/40">
                         <button
                           onClick={() => setApprovingId(request.id)}
                           disabled={isReviewing}
@@ -295,7 +295,7 @@ export function PartnerRequestAdminList() {
                             className="w-full p-4 bg-background border border-border/40 rounded-xl focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 resize-none text-foreground"
                           />
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div className="flex flex-col compact:flex-row items-stretch compact:items-center gap-3">
                           <button
                             onClick={() => {
                               if (rejectionReason.trim()) {
@@ -353,7 +353,7 @@ export function PartnerRequestAdminList() {
                             </p>
                           )}
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div className="flex flex-col compact:flex-row items-stretch compact:items-center gap-3">
                           <button
                             onClick={() => handleReview(request.id, 'approved', undefined, trialMonths)}
                             disabled={isReviewing}

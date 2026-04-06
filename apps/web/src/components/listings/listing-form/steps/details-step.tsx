@@ -184,7 +184,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
         <SectionHeader title="Essentials" />
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 large:grid-cols-3 gap-6">
           <FieldWrapper label="Mileage" required error={errors.mileage}>
             <div className="relative">
               <input
@@ -234,7 +234,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
         <SectionHeader title="Appearance" optional />
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 large:grid-cols-3 gap-6">
           <FieldWrapper label="Body Type">
             <Combobox
               options={bodyTypeOptions}
@@ -288,7 +288,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
         <SectionHeader title="Powertrain" optional />
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 large:grid-cols-3 gap-6">
           <FieldWrapper label="Fuel Type">
             <Combobox
               options={fuelOptions}
@@ -390,7 +390,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
         <SectionHeader title="Status" optional />
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-6">
           <FieldWrapper label="Warranty">
             <Combobox
               options={warrantyOptions}

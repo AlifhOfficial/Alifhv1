@@ -72,7 +72,7 @@ export function AuthErrorModal({
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col compact:flex-row gap-2">
           {errorInfo.action ? (
             <>
               <button

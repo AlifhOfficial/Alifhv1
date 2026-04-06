@@ -29,12 +29,11 @@ const config: Config = {
   ],
   theme: {
   	screens: {
-  		'xs': '480px',
-  		'sm': '640px',
-  		'md': '768px',
-  		'lg': '1024px',
-  		'xl': '1280px',
-  		'2xl': '1536px',
+  		'compact': '600px',
+  		'regular': '900px',
+  		'large': '1200px',
+  		'xlarge': '1440px',
+  		'xxlarge': '1920px',
   	},
   	// ── Complete Apple HIG type scale (replaces ALL Tailwind defaults) ──
   	// Mapping from Tailwind defaults:

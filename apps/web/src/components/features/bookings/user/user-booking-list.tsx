@@ -75,9 +75,9 @@ export function UserBookingList({
       <div className="space-y-1">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="flex gap-4 p-4">
-            <Skeleton className="w-28 sm:w-36 aspect-[4/3] rounded-lg shrink-0" />
+            <Skeleton className="w-28 compact:w-36 aspect-[4/3] rounded-lg shrink-0" />
             <div className="flex-1 min-w-0 space-y-2">
-              <Skeleton className="h-4 sm:h-5 w-3/4" />
+              <Skeleton className="h-4 compact:h-5 w-3/4" />
               <Skeleton className="h-3 w-1/3" />
               <div className="flex gap-3 mt-2">
                 <Skeleton className="h-3 w-16" />
@@ -111,13 +111,13 @@ export function UserBookingList({
   return (
     <div>
       {/* Section Header */}
-      <p className="text-caption2 sm:text-caption1 text-muted-foreground mb-4 sm:mb-6">
+      <p className="text-caption2 compact:text-caption1 text-muted-foreground mb-4 compact:mb-6">
         {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
         {searchQuery && <span> matching "{searchQuery}"</span>}
       </p>
 
       {/* List */}
-      <div className="space-y-2 sm:space-y-1">
+      <div className="space-y-2 compact:space-y-1">
       {bookings.map(booking => (
         <UserBookingCard
           key={booking.id}

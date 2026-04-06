@@ -110,13 +110,13 @@ export function StaffProfile() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
+      <div className="max-w-6xl mx-auto px-4 compact:px-6 py-8 compact:py-16">
         {/* Back */}
         <Skeleton className="h-4 w-12 mb-6" />
         
         {/* Header */}
-        <header className="mb-8 sm:mb-16">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
+        <header className="mb-8 compact:mb-16">
+          <div className="flex flex-col compact:flex-row compact:items-start compact:justify-between gap-4 compact:gap-0 mb-6 compact:mb-8">
             <div>
               <Skeleton className="h-7 w-40 mb-2" />
               <Skeleton className="h-4 w-56" />
@@ -165,7 +165,7 @@ export function StaffProfile() {
   const roleBadge = getRoleBadge(profile.role);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
+    <div className="max-w-6xl mx-auto px-4 compact:px-6 py-8 compact:py-16">
       {/* Back */}
       <Link 
         href="/partner-dashboard/staff"
@@ -176,15 +176,15 @@ export function StaffProfile() {
       </Link>
 
       {/* Header */}
-      <header className="mb-8 sm:mb-16">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
+      <header className="mb-8 compact:mb-16">
+        <div className="flex flex-col compact:flex-row compact:items-start compact:justify-between gap-4 compact:gap-0 mb-6 compact:mb-8">
           <div>
-            <h1 className="text-title3 sm:text-title2 font-semibold tracking-tight">Work Profile</h1>
-            <p className="text-caption1 sm:text-subhead text-muted-foreground mt-2">
+            <h1 className="text-title3 compact:text-title2 font-semibold tracking-tight">Work Profile</h1>
+            <p className="text-caption1 compact:text-subhead text-muted-foreground mt-2">
               Your work identity for client interactions
             </p>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
+          <div className="flex items-center gap-2 compact:gap-3 self-end compact:self-auto">
             <button
               onClick={() => refetch()}
               disabled={isRefetching}
@@ -198,14 +198,14 @@ export function StaffProfile() {
                 <button
                   onClick={handleCancel}
                   disabled={updateMutation.isPending}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-caption1 sm:text-subhead hover:bg-secondary/50 transition-colors disabled:opacity-50"
+                  className="px-3 compact:px-4 py-1.5 compact:py-2 rounded-full text-caption1 compact:text-subhead hover:bg-secondary/50 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary text-white text-caption1 sm:text-subhead hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 compact:px-4 py-1.5 compact:py-2 rounded-full bg-primary text-white text-caption1 compact:text-subhead hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save
@@ -214,7 +214,7 @@ export function StaffProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary text-white text-caption1 sm:text-subhead hover:bg-primary/90 transition-colors"
+                className="px-3 compact:px-4 py-1.5 compact:py-2 rounded-full bg-primary text-white text-caption1 compact:text-subhead hover:bg-primary/90 transition-colors"
               >
                 Edit
               </button>
@@ -223,7 +223,7 @@ export function StaffProfile() {
         </div>
 
         {/* Role Badge */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2 compact:gap-3">
           <span className={cn(
             "px-2.5 py-1 rounded-md text-caption1 capitalize",
             roleBadge.bg,
@@ -241,16 +241,16 @@ export function StaffProfile() {
       </header>
 
       {/* Info Note */}
-      <div className="mb-8 sm:mb-12 p-3 sm:p-4 rounded-xl bg-secondary/30">
+      <div className="mb-8 compact:mb-12 p-3 compact:p-4 rounded-xl bg-secondary/30">
         <p className="text-caption1 text-muted-foreground">
           Your display name is shown to clients instead of your personal name. Work email and phone are used for business communications.
         </p>
       </div>
 
       {/* Form */}
-      <div className="space-y-4 sm:space-y-8">
+      <div className="space-y-4 compact:space-y-8">
         {/* Display Name */}
-        <div className="group p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+        <div className="group p-3 compact:p-4 -mx-3 compact:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
               <User className="w-4 h-4 text-muted-foreground" />
@@ -274,7 +274,7 @@ export function StaffProfile() {
         </div>
 
         {/* Work Phone */}
-        <div className="group p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+        <div className="group p-3 compact:p-4 -mx-3 compact:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
               <Phone className="w-4 h-4 text-muted-foreground" />

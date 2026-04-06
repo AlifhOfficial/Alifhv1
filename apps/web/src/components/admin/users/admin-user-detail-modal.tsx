@@ -105,7 +105,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
               <h3 className="text-callout tracking-tight">Contact Information</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 regular:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-subhead text-muted-foreground">
                   <Mail className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                 <h3 className="text-callout tracking-tight">Profile</h3>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-subhead">
+              <div className="grid grid-cols-2 regular:grid-cols-3 gap-6 text-subhead">
                 <div>
                   <p className="text-muted-foreground mb-1">Full Name</p>
                   <p className="font-medium">

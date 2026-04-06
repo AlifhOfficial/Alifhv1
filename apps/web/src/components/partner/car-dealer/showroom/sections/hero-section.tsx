@@ -82,7 +82,7 @@ export function HeroSection({
             placeholder="Where Dreams Meet the Road"
             maxLength={80}
           />
-          <div className="grid gap-4 sm:grid-cols-2 pt-2">
+          <div className="grid gap-4 compact:grid-cols-2 pt-2">
             <div className="space-y-3">
               <EditableField
                 {...getEditableFieldProps('heroCtaText')}

@@ -191,7 +191,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
                 </p>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col compact:flex-row gap-3">
               <button
                 onClick={() => setShowCancelConfirm(false)}
                 disabled={isCancelling}

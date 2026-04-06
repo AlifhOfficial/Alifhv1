@@ -75,9 +75,9 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div className="max-w-7xl mx-auto px-4 compact:px-6 py-6 compact:py-8">
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
+      <div className="mb-6 compact:mb-8">
         <button 
           type="button"
           onClick={onBack}
@@ -89,9 +89,9 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
         
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-title3 sm:text-title2 font-bold tracking-tight">{funnel.name}</h1>
+            <h1 className="text-title3 compact:text-title2 font-bold tracking-tight">{funnel.name}</h1>
             {funnel.description && (
-              <p className="text-subhead sm:text-subhead text-muted-foreground/70 mt-1">{funnel.description}</p>
+              <p className="text-subhead compact:text-subhead text-muted-foreground/70 mt-1">{funnel.description}</p>
             )}
           </div>
           {data && (
@@ -106,13 +106,13 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-4 xlarge:grid-cols-5 gap-3 compact:gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden">
               <Skeleton className="aspect-[4/3]" />
               <div className="p-2.5">
-                <Skeleton className="h-4 w-28 sm:w-32 mb-1.5" />
-                <Skeleton className="h-4 w-20 sm:w-24" />
+                <Skeleton className="h-4 w-28 compact:w-32 mb-1.5" />
+                <Skeleton className="h-4 w-20 compact:w-24" />
               </div>
             </div>
           ))}
@@ -140,7 +140,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
       {/* Simple Listings Grid */}
       {!isLoading && data?.listings && data.listings.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-4 xlarge:grid-cols-5 gap-3 compact:gap-4">
             {data.listings.map((listing) => (
               <Link
                 key={listing.id}
@@ -180,7 +180,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-border/30">
+            <div className="flex flex-col compact:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-border/30">
               <p className="text-subhead text-muted-foreground/70 font-medium">
                 Page {currentPage} of {totalPages} · {data.total} vehicles
               </p>

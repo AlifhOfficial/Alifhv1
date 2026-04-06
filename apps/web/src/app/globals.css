@@ -245,9 +245,9 @@
     
     /* Shadows - macOS style */
     --shadow: 0 12px 80px hsl(0 0% 0% / 16%);
-    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 8%);
-    --shadow-md: 0 4px 16px hsl(0 0% 0% / 12%);
-    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 48%);
+    --shadow-compact: 0 2px 8px hsl(0 0% 0% / 8%);
+    --shadow-regular: 0 4px 16px hsl(0 0% 0% / 12%);
+    --shadow-large: 0 8px 24px hsl(0 0% 0% / 48%);
     --shadow-image-inset: inset 0 0 0 0.5px hsl(var(--opacity-white-16));
     --shadow-dropdown: 0 8px 24px hsl(0 0% 0% / 48%);
     
@@ -357,27 +357,27 @@
   
   /* Typography System - Revvup Design (Cross-platform optimized) */
   h1 {
-    @apply text-display sm:text-display1 md:text-display2 tracking-tight;
+    @apply text-display compact:text-display1 regular:text-display2 tracking-tight;
     font-weight: var(--fw-extrabold);
     line-height: var(--lh-large-title);
     letter-spacing: var(--ls-tight);
   }
   
   h2 {
-    @apply text-headline sm:text-title3 tracking-tight;
+    @apply text-headline compact:text-title3 tracking-tight;
     font-weight: var(--fw-bold);
     line-height: var(--lh-title2);
     letter-spacing: var(--ls-snug);
   }
   
   h3 {
-    @apply text-subhead sm:text-callout;
+    @apply text-subhead compact:text-callout;
     font-weight: var(--fw-semibold);
     line-height: var(--lh-subhead);
   }
   
   p {
-    @apply text-caption1 sm:text-subhead;
+    @apply text-caption1 compact:text-subhead;
     font-weight: var(--fw-semibold);
     line-height: var(--lh-footnote);
   }

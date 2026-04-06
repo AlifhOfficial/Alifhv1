@@ -11,7 +11,7 @@ export function DashboardDisplayArea({ title, description, action, children }: D
   return (
     <div className="min-h-screen">
       {title ? (
-        <header className="sticky top-0 z-10 border-b border-border/40 bg-background px-6 py-4 md:px-8">
+        <header className="sticky top-0 z-10 border-b border-border/40 bg-background px-6 py-4 regular:px-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
               <h1 className="text-callout font-semibold text-foreground tracking-tight">{title}</h1>

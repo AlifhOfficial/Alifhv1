@@ -268,7 +268,7 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} prefetch={false} className={cn(
-        "block mx-1 mt-1"
+        "block"
       )}>
         <div className={cn(
           "relative w-full aspect-[16/9] overflow-hidden rounded-[20px]",
@@ -554,7 +554,7 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       className
     )}>
       {/* Image Section - matches CarCard aspect ratios */}
-      <div className="mx-1 mt-1">
+      <div>
         <div className="relative w-full aspect-[16/9] overflow-hidden rounded-[20px]">
           <Skeleton className="absolute inset-0" />
         </div>

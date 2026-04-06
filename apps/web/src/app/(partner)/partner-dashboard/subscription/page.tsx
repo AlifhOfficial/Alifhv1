@@ -232,12 +232,12 @@ export default function PartnerBillingPage() {
   const daysRemaining = getDaysRemaining();
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Billing</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">Billing</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">
             Manage your subscription, view invoices, and update payment methods
           </p>
         </div>

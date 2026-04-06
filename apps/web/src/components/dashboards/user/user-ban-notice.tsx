@@ -117,7 +117,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
               disabled={submitting}
             />
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col compact:flex-row gap-3">
             <button
               onClick={handleAppeal}
               disabled={submitting || !appealMessage.trim()}

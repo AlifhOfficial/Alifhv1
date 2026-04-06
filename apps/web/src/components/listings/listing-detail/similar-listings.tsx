@@ -77,7 +77,7 @@ export function SimilarListings({
         
         {/* Desktop Nav Arrows - only show when content overflows */}
         {!isLoading && showArrows && (
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden compact:flex items-center gap-2">
             <Button
               variant="outline"
               size="icon"
@@ -104,7 +104,7 @@ export function SimilarListings({
       {isLoading && (
         <div className="flex gap-5 overflow-hidden">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex-shrink-0 w-[260px] sm:w-[280px]">
+            <div key={i} className="flex-shrink-0 w-[260px] compact:w-[280px]">
               <CarCardMinimal.Skeleton />
             </div>
           ))}
@@ -115,12 +115,12 @@ export function SimilarListings({
       {!isLoading && listings.length > 0 && (
         <div
           ref={scrollContainerRef}
-          className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 compact:mx-0 compact:px-0"
         >
           {listings.map((listing) => (
             <div 
               key={listing.id} 
-              className="flex-shrink-0 w-[260px] sm:w-[280px] snap-start"
+              className="flex-shrink-0 w-[260px] compact:w-[280px] snap-start"
             >
               <CarCardMinimal
                 id={listing.id}

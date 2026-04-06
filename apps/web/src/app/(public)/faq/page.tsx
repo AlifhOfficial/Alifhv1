@@ -43,12 +43,12 @@ export default function FAQPage() {
     : faqData;
 
   return (
-    <div className="bg-background pt-14 sm:pt-16 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)]">
+    <div className="bg-background pt-14 compact:pt-16 min-h-[calc(100vh-3.5rem)] compact:min-h-[calc(100vh-4rem)]">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col large:flex-row">
           
           {/* Left Sidebar - Desktop */}
-          <aside className="hidden lg:block w-64 shrink-0 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
+          <aside className="hidden large:block w-64 shrink-0 large:sticky large:top-16 large:h-[calc(100vh-4rem)] large:overflow-y-auto">
             <div className="pt-8 pb-10 px-6">
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -143,7 +143,7 @@ export default function FAQPage() {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {/* Mobile Header */}
-            <div className="lg:hidden px-4 sm:px-6 pt-8 pb-6">
+            <div className="large:hidden px-4 compact:px-6 pt-8 pb-6">
               <div className="flex items-center gap-3 mb-4">
                 <LifeBuoy className="w-5 h-5 text-muted-foreground" />
                 <h1 className="text-headline font-bold tracking-tight text-foreground">Help Center</h1>
@@ -187,7 +187,7 @@ export default function FAQPage() {
             </div>
 
             {/* Search Bar - Mobile Only */}
-            <div className="lg:hidden sticky top-14 sm:top-16 z-10 bg-background px-4 sm:px-6 py-4">
+            <div className="large:hidden sticky top-14 compact:top-16 z-10 bg-background px-4 compact:px-6 py-4">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                 <input
@@ -216,7 +216,7 @@ export default function FAQPage() {
             </div>
 
             {/* FAQ Content */}
-            <div className="px-4 sm:px-6 lg:px-8 py-8 lg:pt-8">
+            <div className="px-4 compact:px-6 large:px-8 py-8 large:pt-8">
               
               {/* Search Results */}
               {isSearching && (
@@ -318,7 +318,7 @@ export default function FAQPage() {
               )}
 
               {/* Mobile Contact CTA */}
-              <div className="lg:hidden mt-10 pt-6">
+              <div className="large:hidden mt-10 pt-6">
                 <p className="text-caption1 text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 

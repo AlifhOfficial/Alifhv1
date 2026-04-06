@@ -124,7 +124,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const displayUnread = personalUnread + staffUnread;
 
   return (
-    <div className="relative hidden sm:block" data-messaging-dropdown>
+    <div className="relative hidden compact:block" data-messaging-dropdown>
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
         className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"

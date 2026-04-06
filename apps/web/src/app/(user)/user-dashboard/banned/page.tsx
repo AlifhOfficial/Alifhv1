@@ -42,7 +42,7 @@ export default function UserBannedPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col compact:flex-row gap-3 justify-center">
           <Link
             href="mailto:support@revvup.ae?subject=Ban%20Appeal"
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-subhead"

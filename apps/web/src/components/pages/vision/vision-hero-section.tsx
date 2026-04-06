@@ -10,7 +10,7 @@ import { visionHeroUae2031 } from '@/components/pages/marketing-image-assets';
 
 export function VisionHeroSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -18,7 +18,7 @@ export function VisionHeroSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Inspired by We the UAE 2031
           </span>
-          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Towards New Peaks.
             <br />
             <span className="text-muted-foreground">In Automotive.</span>
@@ -44,17 +44,17 @@ export function VisionHeroSection() {
         </p>
 
         {/* Stats */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
+        <div className="flex items-center justify-center gap-12 regular:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">4</div>
             <div className="text-subhead text-muted-foreground">Pillars</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
+          <div className="w-px h-10 bg-border/30 hidden compact:block" />
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">2031</div>
             <div className="text-subhead text-muted-foreground">Target Year</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
+          <div className="w-px h-10 bg-border/30 hidden compact:block" />
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">3T</div>
             <div className="text-subhead text-muted-foreground">AED GDP Goal</div>

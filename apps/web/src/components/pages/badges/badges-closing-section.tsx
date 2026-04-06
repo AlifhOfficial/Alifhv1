@@ -5,7 +5,7 @@
 
 export function BadgesClosingSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -13,7 +13,7 @@ export function BadgesClosingSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             How it works
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Assigned by Team Revvup.
             <br />
             <span className="text-muted-foreground">Not algorithms.</span>

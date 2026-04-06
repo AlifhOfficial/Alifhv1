@@ -32,15 +32,15 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
 
   return (
     <footer className="border-t border-border/40">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         
         {/* Main Footer Content */}
-        <div className="py-12 lg:py-16">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10 lg:gap-16">
+        <div className="py-12 large:py-16">
+          <div className="flex flex-col large:flex-row large:items-start large:justify-between gap-10 large:gap-16">
             
             {/* Brand */}
-            <div className="lg:max-w-sm space-y-4">
-              <p className="text-title2 sm:text-title1 font-semibold tracking-tight text-foreground">
+            <div className="large:max-w-sm space-y-4">
+              <p className="text-title2 compact:text-title1 font-semibold tracking-tight text-foreground">
                 {partner.brandName}
               </p>
               {showroom.heroTagline && (
@@ -51,7 +51,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
             </div>
 
             {/* Links Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12">
+            <div className="grid grid-cols-2 compact:grid-cols-3 gap-8 compact:gap-12">
               
               {/* Quick Links */}
               <div className="space-y-4">
@@ -140,7 +140,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-6 border-t border-border/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="py-6 border-t border-border/40 flex flex-col compact:flex-row compact:items-center compact:justify-between gap-4">
           <p className="text-caption1 text-muted-foreground">
             © {new Date().getFullYear()} {partner.brandName}
           </p>

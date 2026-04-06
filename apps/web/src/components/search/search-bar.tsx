@@ -334,9 +334,9 @@ export function SearchBar({
 
   // Size classes - use text-callout (16px) on mobile to prevent iOS auto-zoom
   const sizeClasses = {
-    sm: 'h-10 sm:h-9 text-callout sm:text-subhead px-1',
-    md: 'h-12 sm:h-11 text-callout sm:text-subhead px-1',
-    lg: 'h-14 sm:h-12 text-callout px-2',
+    sm: 'h-10 compact:h-10 regular:h-9 text-callout regular:text-subhead px-1',
+    md: 'h-12 compact:h-12 text-callout px-1',
+    lg: 'h-14 compact:h-14 text-callout px-2',
   };
 
   const iconSizes = {
@@ -374,14 +374,14 @@ export function SearchBar({
           sizeClasses[size]
         )}>
               <Search className={cn(
-                'absolute left-3 sm:left-3.5 transition-colors',
+                'absolute left-3 compact:left-3.5 transition-colors',
                 isFocused ? 'text-primary' : 'text-sidebar-foreground/60',
                 iconSizes[size]
               )} />
               
               {/* Styled display overlay - hides dots completely */}
               {query && (
-                <div className="absolute left-10 sm:left-11 right-12 sm:right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
+                <div className="absolute left-10 compact:left-11 right-12 compact:right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
                   {query.split(/(\s*\.\s*)/).map((part, i) => 
                     part.match(/^\s*\.\s*$/) 
                       ? <span key={i} className="text-transparent select-none">{part}</span>
@@ -413,7 +413,7 @@ export function SearchBar({
                 autoCapitalize="off"
                 spellCheck="false"
                 className={cn(
-                  'w-full h-full bg-transparent pl-10 sm:pl-11 pr-12 sm:pr-10',
+                  'w-full h-full bg-transparent pl-10 compact:pl-11 pr-12 compact:pr-10',
                   'leading-none placeholder:text-sidebar-foreground/50 placeholder:font-medium placeholder:tracking-normal',
                   'focus:outline-none touch-manipulation',
                   'font-semibold tracking-tight',
@@ -432,7 +432,7 @@ export function SearchBar({
                 <button
                   onClick={() => setQuery('')}
                   className={cn(
-                    "absolute right-2 sm:right-3 p-2 sm:p-1 rounded-full transition-all touch-manipulation",
+                    "absolute right-2 compact:right-3 p-2 compact:p-1 rounded-full transition-all touch-manipulation",
                     "text-muted-foreground/50 hover:text-foreground hover:bg-muted active:bg-muted"
                   )}
                   aria-label="Clear search"
@@ -460,10 +460,10 @@ export function SearchBar({
           {isLoading && suggestions.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin mr-3" />
-              <span className="text-callout sm:text-subhead font-semibold">Searching...</span>
+              <span className="text-callout compact:text-subhead font-semibold">Searching...</span>
             </div>
           ) : (
-            <ul className="py-1 sm:py-2">
+            <ul className="py-1 compact:py-2">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={`${suggestion.type}-${suggestion.text}`}
@@ -471,7 +471,7 @@ export function SearchBar({
                   aria-selected={clampedSelectedIndex === index}
                   onClick={() => handleSuggestionClick(suggestion)}
                   className={cn(
-                    'flex items-center justify-between px-4 py-3.5 sm:py-3 cursor-pointer touch-manipulation',
+                    'flex items-center justify-between px-4 py-3.5 compact:py-3 cursor-pointer touch-manipulation',
                     'transition-colors duration-100',
                     clampedSelectedIndex === index
                       ? 'bg-primary/10'
@@ -480,11 +480,11 @@ export function SearchBar({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
-                    <span className="text-callout sm:text-subhead font-semibold text-foreground truncate">
+                    <span className="text-callout compact:text-subhead font-semibold text-foreground truncate">
                       {suggestion.text}
                     </span>
                     {SUGGESTION_LABELS[suggestion.type] && (
-                      <span className="shrink-0 text-caption1 sm:text-caption1 text-muted-foreground/50 font-medium">
+                      <span className="shrink-0 text-caption1 compact:text-caption1 text-muted-foreground/50 font-medium">
                         {SUGGESTION_LABELS[suggestion.type]}
                       </span>
                     )}
@@ -505,8 +505,8 @@ export function SearchBar({
               onClick={() => handleSearch(query.trim())}
               className={cn(
                 'w-full flex items-center justify-center gap-2',
-                'px-4 py-3.5 sm:py-3 border-t border-border/30',
-                'text-callout sm:text-subhead font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5 active:bg-primary/10',
+                'px-4 py-3.5 compact:py-3 border-t border-border/30',
+                'text-callout compact:text-subhead font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5 active:bg-primary/10',
                 'transition-colors touch-manipulation'
               )}
             >

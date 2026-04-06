@@ -9,7 +9,7 @@ import { PartnerRequestAdminList } from "@/components/partner/partner-request/pa
 export default function PartnerRequestsPage() {
   return (
     <DashboardDisplayArea>
-      <div className="p-6 md:p-10">
+      <div className="p-6 regular:p-10">
         <PartnerRequestAdminList />
       </div>
     </DashboardDisplayArea>

@@ -325,7 +325,7 @@ export function ChatThread({
         onScroll={handleScroll}
         className={cn(
           'relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain bg-background flex flex-col',
-          compact ? 'p-3 pb-12 gap-1.5' : 'p-3 sm:p-4 pb-20 sm:pb-24 gap-1.5 sm:gap-2',
+          compact ? 'p-3 pb-12 gap-1.5' : 'p-3 compact:p-4 pb-20 compact:pb-24 gap-1.5 compact:gap-2',
           className,
         )}
       >
@@ -338,7 +338,7 @@ export function ChatThread({
         )}
 
         {isLoading ? (
-          <div className={cn('flex flex-col', compact ? 'gap-2 py-2' : 'gap-2 sm:gap-3 py-4')}>
+          <div className={cn('flex flex-col', compact ? 'gap-2 py-2' : 'gap-2 compact:gap-3 py-4')}>
             <Skeleton className={cn('self-end', compact ? 'h-7 w-28 rounded-xl rounded-br-sm' : 'h-9 w-36 rounded-2xl rounded-br-md')} />
             <Skeleton className={cn('self-start', compact ? 'h-9 w-36 rounded-xl rounded-bl-sm' : 'h-12 w-44 rounded-2xl rounded-bl-md')} />
             <Skeleton className={cn('self-end', compact ? 'h-6 w-24 rounded-xl rounded-br-sm' : 'h-8 w-28 rounded-2xl rounded-br-md')} />
@@ -351,9 +351,9 @@ export function ChatThread({
             </div>
           ) : (
             <div className="flex items-center justify-center flex-1">
-              <div className="text-center space-y-2.5 sm:space-y-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
-                  <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
+              <div className="text-center space-y-2.5 compact:space-y-3">
+                <div className="w-10 h-10 compact:w-12 compact:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
+                  <MessageCircle className="w-4 h-4 compact:w-5 compact:h-5 text-muted-foreground/40" />
                 </div>
                 <p className="text-subhead font-medium text-muted-foreground/70">Start a conversation</p>
               </div>
@@ -374,11 +374,11 @@ export function ChatThread({
               return (
                 <div key={message.id}>
                   {showDateSeparator && (
-                    <div className={cn('flex justify-center', compact ? 'py-2' : 'py-1.5 sm:py-2')}>
+                    <div className={cn('flex justify-center', compact ? 'py-2' : 'py-1.5 compact:py-2')}>
                       <span
                         className={cn(
                           'rounded-full bg-muted/60 text-muted-foreground/70 font-semibold',
-                          compact ? 'text-caption2 px-2.5 py-0.5' : 'text-caption2 px-2.5 sm:px-3 py-0.5 sm:py-1',
+                          compact ? 'text-caption2 px-2.5 py-0.5' : 'text-caption2 px-2.5 compact:px-3 py-0.5 compact:py-1',
                         )}
                       >
                         {format(messageDate, compact ? 'MMM d' : 'EEE, MMM d')}
@@ -404,7 +404,7 @@ export function ChatThread({
                 key="typing"
                 className={cn(
                   'self-start min-w-0',
-                  compact ? 'mt-1 ml-[30px]' : 'mt-1.5 ml-8 sm:ml-10',
+                  compact ? 'mt-1 ml-[30px]' : 'mt-1.5 ml-8 compact:ml-10',
                 )}
               >
                 <span className={cn('font-medium text-muted-foreground/70 whitespace-nowrap', compact ? 'text-footnote leading-snug' : 'text-subhead leading-relaxed')}>

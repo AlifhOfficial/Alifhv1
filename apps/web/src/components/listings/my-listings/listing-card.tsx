@@ -184,7 +184,7 @@ export function ListingCard({
         {canViewPublicDetail ? (
           <Link 
             href={`/listings/${listing.id}`} 
-            className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
+            className="relative w-28 compact:w-36 regular:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
           >
             {displayImage ? (
               <img
@@ -211,7 +211,7 @@ export function ListingCard({
             )}
           </Link>
         ) : (
-          <div className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30">
+          <div className="relative w-28 compact:w-36 regular:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30">
             {displayImage ? (
               <img
                 src={displayImage}
@@ -244,7 +244,7 @@ export function ListingCard({
           <div className="flex items-start justify-between gap-3">
             {canViewPublicDetail ? (
               <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
-                <h3 className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
+                <h3 className="text-subhead compact:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                   {listing.year} {listing.make} {listing.model}
                 </h3>
                 {listing.trim && (
@@ -253,7 +253,7 @@ export function ListingCard({
               </Link>
             ) : (
               <div className="flex-1 min-w-0">
-                <h3 className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
+                <h3 className="text-subhead compact:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                   {listing.year} {listing.make} {listing.model}
                 </h3>
                 {listing.trim && (
@@ -337,7 +337,7 @@ export function ListingCard({
           </div>
 
           {/* Price */}
-          <p className="text-callout sm:text-headline font-bold text-foreground tabular-nums mt-2">
+          <p className="text-callout compact:text-headline font-bold text-foreground tabular-nums mt-2">
             {listing.price.toLocaleString()} <span className="text-caption1 text-muted-foreground">AED</span>
           </p>
 

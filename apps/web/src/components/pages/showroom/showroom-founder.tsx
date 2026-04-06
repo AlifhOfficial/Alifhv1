@@ -20,13 +20,13 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
 
   return (
     <section id="showroom-founder" className={`${theme.sectionSpacing}`}>
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-0 items-stretch">
+        <div className="grid large:grid-cols-2 gap-8 large:gap-0 items-stretch">
           
           {/* Image Side */}
           {founderImageUrl && (
-            <div className="relative aspect-[4/5] lg:aspect-auto lg:min-h-[500px] rounded-xl lg:rounded-r-none overflow-hidden">
+            <div className="relative aspect-[4/5] large:aspect-auto large:min-h-[500px] rounded-xl large:rounded-r-none overflow-hidden">
               <img
                 src={founderImageUrl}
                 alt={showroom.founderName}
@@ -38,7 +38,7 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
           )}
 
           {/* Content Side */}
-          <div className={`p-8 sm:p-12 rounded-xl ${founderImageUrl ? 'lg:rounded-l-none' : ''} bg-sidebar border border-border/40 ${founderImageUrl ? 'lg:border-l-0' : ''} flex flex-col justify-center`}>
+          <div className={`p-8 compact:p-12 rounded-xl ${founderImageUrl ? 'large:rounded-l-none' : ''} bg-sidebar border border-border/40 ${founderImageUrl ? 'large:border-l-0' : ''} flex flex-col justify-center`}>
             
             {/* Label */}
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
@@ -48,7 +48,7 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
             {/* Quote */}
             {showroom.founderQuote && (
               <blockquote className="mb-6">
-                <p className="text-headline sm:text-title3 font-semibold text-foreground leading-relaxed">
+                <p className="text-headline compact:text-title3 font-semibold text-foreground leading-relaxed">
                   "{showroom.founderQuote}"
                 </p>
               </blockquote>
@@ -75,9 +75,9 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
 // Skeleton
 function ShowroomFounderSkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 compact:px-6 large:px-8">
+        <div className="grid large:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center">
             <Skeleton className="w-48 h-48 rounded-full" />
           </div>

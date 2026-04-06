@@ -86,20 +86,20 @@ function TypewriterToast({
   return (
     <div 
       className={cn(
-        "absolute top-12 sm:top-14 left-1/2 z-50 transition-all duration-300 ease-out w-[calc(100%-2rem)] sm:w-auto max-w-[90vw] sm:max-w-none",
+        "absolute top-12 compact:top-14 left-1/2 z-50 transition-all duration-300 ease-out w-[calc(100%-2rem)] compact:w-auto max-w-[90vw] compact:max-w-none",
         isExpanded ? "opacity-100 -translate-x-1/2 translate-y-0" : "opacity-0 -translate-x-1/2 -translate-y-2"
       )}
     >
       <div 
         className={cn(
           "bg-transparent backdrop-blur-2xl border border-white/[0.12] rounded-full shadow-2xl overflow-hidden transition-all duration-300 ease-out",
-          isExpanded ? "px-3 sm:px-5 py-2 sm:py-2.5" : "px-0 py-0"
+          isExpanded ? "px-3 compact:px-5 py-2 compact:py-2.5" : "px-0 py-0"
         )}
         style={{
           boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
         }}
       >
-        <span className="text-caption1 sm:text-subhead text-white/90 font-medium whitespace-nowrap overflow-hidden text-ellipsis block">
+        <span className="text-caption1 compact:text-subhead text-white/90 font-medium whitespace-nowrap overflow-hidden text-ellipsis block">
           {displayText}
           <span 
             className={cn(
@@ -198,7 +198,7 @@ export function MacOSWindow({
         <TypewriterToast message={toast} onComplete={clearToast} />
       )}
       {/* macOS Title Bar - Sequoia Style (unified background) */}
-      <div className="bg-black px-2 sm:px-4 py-2 sm:py-3 flex items-center gap-1.5 sm:gap-3 min-w-0">
+      <div className="bg-black px-2 compact:px-4 py-2 compact:py-3 flex items-center gap-1.5 compact:gap-3 min-w-0">
         {/* Revvup Logo */}
         <div className="flex items-center flex-shrink-0">
           <button
@@ -219,27 +219,27 @@ export function MacOSWindow({
 
         {/* URL Bar - Glass Pill Style, Left Aligned, Height matches logo bubble */}
         {showUrlBar && (
-          <div className="flex items-center min-w-0 flex-1 sm:flex-none">
+          <div className="flex items-center min-w-0 flex-1 compact:flex-none">
             <button
               onClick={handleUrlBarClick}
-              className="bg-transparent backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05),0_1px_2px_0_rgba(0,0,0,0.2)] rounded-full px-2 sm:px-2.5 py-1 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 min-w-0 max-w-full sm:max-w-[220px] hover:bg-white/[0.1] active:scale-[0.98] transition-[background-color,transform] will-change-transform duration-200 cursor-pointer"
+              className="bg-transparent backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05),0_1px_2px_0_rgba(0,0,0,0.2)] rounded-full px-2 compact:px-2.5 py-1 compact:py-1.5 flex items-center gap-1 compact:gap-1.5 min-w-0 max-w-full compact:max-w-[220px] hover:bg-white/[0.1] active:scale-[0.98] transition-[background-color,transform] will-change-transform duration-200 cursor-pointer"
             >
               {/* Lock icon */}
-              <svg className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-2.5 compact:w-3 h-2.5 compact:h-3 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
               
               {/* URL text */}
-              <span className="text-caption2 sm:text-caption1 text-white/50 font-medium truncate min-w-0">{url}</span>
+              <span className="text-caption2 compact:text-caption1 text-white/50 font-medium truncate min-w-0">{url}</span>
             </button>
           </div>
         )}
 
         {/* Spacer to push right side elements - hidden on mobile since URL bar takes flex-1 */}
-        <div className="hidden sm:flex sm:flex-1" />
+        <div className="hidden compact:flex compact:flex-1" />
         
         {/* Right side toolbar - Outer pill containing 3 bubbles */}
-        <div className="hidden sm:flex items-center">
+        <div className="hidden compact:flex items-center">
           <div className="flex items-center gap-1 rounded-full bg-transparent backdrop-blur-xl border border-white/[0.06] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.03)] p-1">
             {/* Share bubble */}
             <button

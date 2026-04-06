@@ -11,7 +11,7 @@ import { AdminKycList } from "@/components/admin/kyc/admin-kyc-list";
 export default function AdminKycPage() {
   return (
     <DashboardDisplayArea>
-      <div className="p-6 md:p-10">
+      <div className="p-6 regular:p-10">
         <AdminKycList />
       </div>
     </DashboardDisplayArea>

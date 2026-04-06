@@ -93,7 +93,7 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
   }
 
   return (
-    <div className="relative hidden sm:block" data-favorites-dropdown>
+    <div className="relative hidden compact:block" data-favorites-dropdown>
       {/* Trigger Button */}
       <button
         onClick={(e) => {
@@ -108,7 +108,7 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-3 sm:w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-xl z-[70] overflow-hidden">
+        <div className="fixed compact:absolute left-4 right-4 compact:left-auto compact:right-0 top-14 compact:top-full compact:mt-3 compact:w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-xl z-[70] overflow-hidden">
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-sidebar-border">
             <h3 className="text-subhead font-semibold tracking-tight text-sidebar-foreground">

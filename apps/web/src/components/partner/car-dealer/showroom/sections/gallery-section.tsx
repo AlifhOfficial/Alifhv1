@@ -279,7 +279,7 @@ export function GallerySection({
             onDragEnd={handleDragEnd}
           >
             <SortableContext items={form.showroomImages || []} strategy={rectSortingStrategy}>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 regular:grid-cols-3 gap-3">
                 {(form.showroomImages || []).map((img, idx) => (
                   <SortableGalleryImage
                     key={img}

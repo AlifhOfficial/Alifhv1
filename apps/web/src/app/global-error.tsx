@@ -24,7 +24,7 @@ export default function GlobalError({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-background text-foreground">
-        <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
+        <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8 min-h-screen flex flex-col justify-center">
           <div className="max-w-[1600px] mx-auto w-full">
             
             {/* Header */}
@@ -35,7 +35,7 @@ export default function GlobalError({
               <span className="text-subhead font-semibold uppercase tracking-wider text-destructive">
                 Critical Error
               </span>
-              <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight text-foreground">
+              <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight text-foreground">
                 Something went wrong.
                 <br />
                 <span className="text-label-tertiary">Let's try that again.</span>
@@ -48,16 +48,16 @@ export default function GlobalError({
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex flex-col compact:flex-row items-center justify-center gap-3">
               <button
                 onClick={reset}
-                className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+                className="w-full compact:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
               >
                 Try Again
               </button>
               <Link
                 href="/"
-                className="w-full sm:w-auto h-11 px-8 bg-secondary text-secondary-foreground text-subhead font-semibold rounded-lg hover:bg-secondary/80 transition-colors flex items-center justify-center"
+                className="w-full compact:w-auto h-11 px-8 bg-secondary text-secondary-foreground text-subhead font-semibold rounded-lg hover:bg-secondary/80 transition-colors flex items-center justify-center"
               >
                 Back to Home
               </Link>

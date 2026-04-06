@@ -214,7 +214,7 @@ export default function AdminFeedbackPage() {
             <h3 className="text-headline tracking-tight">Overview</h3>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 regular:grid-cols-4 gap-4">
             <Card className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setSelectedStatus('all')}>
               <CardContent className="p-4">
                 <div className="text-title2 font-semibold">{allFeedback.length}</div>
@@ -244,7 +244,7 @@ export default function AdminFeedbackPage() {
 
         {/* Filters and Search */}
         <section className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col compact:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input

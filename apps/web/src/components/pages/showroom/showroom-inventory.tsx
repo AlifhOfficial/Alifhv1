@@ -121,14 +121,14 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
       <div className="max-w-[1600px] mx-auto">
         
         {/* Section Header */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <div className="px-4 compact:px-6 large:px-8 mb-10">
+          <div className="flex flex-col compact:flex-row compact:items-end compact:justify-between gap-6">
             {/* Left: Title & Count */}
             <div className="space-y-4">
               <span className="text-subhead font-semibold uppercase tracking-wider text-primary block">
                 Inventory
               </span>
-              <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+              <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
                 Our Collection
               </h2>
               {totalCount > 0 && (
@@ -166,7 +166,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
 
         {/* Content */}
         {isExpanded ? (
-          <div className="px-4 sm:px-6 lg:px-8">
+          <div className="px-4 compact:px-6 large:px-8">
             <TooltipProvider>
               <div className={cn(
                 'rounded-xl bg-background/80 backdrop-blur-sm',
@@ -174,7 +174,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                 'animate-in fade-in-0 slide-in-from-bottom-4 duration-300'
               )}>
                 {/* Mobile Layout */}
-                <div className="lg:hidden max-h-[100vh] overflow-y-auto scrollbar-hide">
+                <div className="large:hidden max-h-[100vh] overflow-y-auto scrollbar-hide">
                   <ListingsHeader
                     params={params}
                     facets={facets}
@@ -220,7 +220,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                 </div>
 
                 {/* Desktop Layout */}
-                <div className="hidden lg:flex max-h-[100vh]">
+                <div className="hidden large:flex max-h-[100vh]">
                   {sidebarOpen && (
                     <div className="w-64 shrink-0 overflow-y-auto scrollbar-hide border-r border-border/10">
                       <ListingsSidebar
@@ -254,7 +254,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                       clearFilters={clearFilters}
                       setSort={setSort}
                     />
-                    <main className="p-4 sm:p-6 flex-1 overflow-y-auto scrollbar-hide">
+                    <main className="p-4 compact:p-6 flex-1 overflow-y-auto scrollbar-hide">
                       <ListingsContent
                         listings={listings}
                         meta={meta}
@@ -294,7 +294,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
         )}
 
         {/* Description - Below Content */}
-        <div className="px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="px-4 compact:px-6 large:px-8 mt-8">
           <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Curated selection of vehicles.
           </p>
@@ -325,12 +325,12 @@ function InventoryCarousel({
 
   if (isLoading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="px-4 compact:px-6 large:px-8">
         <div className="flex gap-4 overflow-hidden">
           {[...Array(4)].map((_, i) => (
             <div 
               key={i} 
-              className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden" 
+              className="flex-shrink-0 w-[300px] compact:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden" 
             >
               <div className="aspect-[16/9] bg-muted/30 animate-pulse" />
               <div className="p-4 space-y-2">
@@ -346,7 +346,7 @@ function InventoryCarousel({
 
   if (error || listings.length === 0) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="px-4 compact:px-6 large:px-8">
         <p className="text-subhead text-muted-foreground">
           {error ? 'Unable to load inventory' : 'No vehicles currently available'}
         </p>
@@ -361,7 +361,7 @@ function InventoryCarousel({
       {/* Carousel - Match achievements pattern */}
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 compact:px-6 large:px-8"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {previewListings.map((listing, idx) => (
@@ -376,7 +376,7 @@ function InventoryCarousel({
       
       {/* Progress Dots (mobile) */}
       {previewListings.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-4 sm:hidden">
+        <div className="flex justify-center gap-1.5 mt-4 compact:hidden">
           {previewListings.slice(0, 5).map((_, idx) => (
             <div 
               key={idx} 
@@ -415,7 +415,7 @@ function ShowroomCarCard({ listing, priority = false, index: _index, theme: _the
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
+      className="flex-shrink-0 w-[300px] compact:w-[340px] rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
     >
       {/* Image Container */}
       <div className="relative aspect-[16/9] overflow-hidden">
@@ -459,9 +459,9 @@ function ShowroomCarCard({ listing, priority = false, index: _index, theme: _the
 // Skeleton
 function ShowroomInventorySkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
+        <div className="flex flex-col compact:flex-row compact:items-end compact:justify-between gap-6 mb-10">
           <div className="space-y-3">
             <Skeleton className="h-3 w-20" />
             <Skeleton className="h-8 w-40" />
@@ -470,7 +470,7 @@ function ShowroomInventorySkeleton() {
         </div>
         <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden">
+            <div key={i} className="flex-shrink-0 w-[300px] compact:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden">
               <Skeleton className="aspect-[16/9]" />
               <div className="p-4 space-y-2">
                 <Skeleton className="h-4 w-3/4" />

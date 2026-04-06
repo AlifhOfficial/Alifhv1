@@ -5,11 +5,11 @@ import { FooterSellLink } from './sell-link';
 export function Footer() {
   return (
     <footer className="bg-sidebar rounded-t-3xl">
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-10">
+      <div className="max-w-[1600px] mx-auto px-6 large:px-10">
         
         {/* Main Content */}
-        <div className="py-10 lg:py-14">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
+        <div className="py-10 large:py-14">
+          <div className="flex flex-col large:flex-row large:items-start large:justify-between gap-10">
             
             {/* Brand */}
             <div className="flex-shrink-0">
@@ -24,7 +24,7 @@ export function Footer() {
             </div>
 
             {/* Link Columns */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-14">
+            <div className="grid grid-cols-2 compact:grid-cols-4 gap-8 large:gap-14">
               {footerSections.map((section) => (
                 <div key={section.title}>
                   <p className="text-caption1 font-semibold text-muted-foreground/50 uppercase tracking-wider mb-3">
@@ -53,7 +53,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-4 border-t border-border/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="py-4 border-t border-border/40 flex flex-col compact:flex-row compact:items-center compact:justify-between gap-3">
           <p className="text-caption1 text-muted-foreground/50">
             © {new Date().getFullYear()} AISH CAPITALS FZCO · Dubai
           </p>

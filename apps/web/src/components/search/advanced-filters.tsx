@@ -235,7 +235,7 @@ export function AdvancedFilters({
   return (
     <>
       {/* Mobile: Use Sheet with pill-style trigger */}
-      <div className="sm:hidden">
+      <div className="compact:hidden">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <button 
@@ -319,7 +319,7 @@ export function AdvancedFilters({
       </div>
 
       {/* Desktop: Use floating panel */}
-      <div ref={containerRef} className="relative hidden sm:block">
+      <div ref={containerRef} className="relative hidden compact:block">
         {/* Trigger Button */}
         {children ? (
           <div onClick={() => setDesktopOpen(!desktopOpen)}>

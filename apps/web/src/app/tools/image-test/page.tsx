@@ -325,7 +325,7 @@ export default function ImageTestPage() {
 
       {/* Stats + totals bar */}
       {results.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8 p-4 rounded-xl bg-muted/40 text-subhead">
+        <div className="grid grid-cols-2 compact:grid-cols-5 gap-3 mb-8 p-4 rounded-xl bg-muted/40 text-subhead">
           <div>
             <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Original</div>
             <div className="font-semibold">{fmt(totalOriginal)}</div>
@@ -397,7 +397,7 @@ export default function ImageTestPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
+                  <div className="grid grid-cols-1 compact:grid-cols-2 divide-y compact:divide-y-0 compact:divide-x divide-border">
                     <div className="p-4 space-y-2">
                       <div className="flex items-center justify-between text-caption1 text-muted-foreground mb-2">
                         <span className="font-semibold text-foreground">Thumb</span>

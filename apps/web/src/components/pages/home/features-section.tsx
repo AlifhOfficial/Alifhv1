@@ -5,7 +5,7 @@ import { revx0 } from '@/components/pages/marketing-image-assets';
 
 export function FeaturesSection() {
   return (
-    <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -13,7 +13,7 @@ export function FeaturesSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Made for UAE
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Fast. Simple.
             <br />
             <span className="text-muted-foreground">Done right.</span>
@@ -31,7 +31,7 @@ export function FeaturesSection() {
         </p>
 
         {/* Feature Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-4xl mx-auto">
           <FeatureCard 
             icon={Clock}
             title="Book anytime"
@@ -92,14 +92,14 @@ function BuiltInDubaiInfographic() {
   return (
     <MacOSWindow
       url="revvup.ae"
-      contentClassName="flex flex-col md:flex-row items-stretch p-6 sm:p-10 lg:p-16 gap-8 lg:gap-12 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]"
+      contentClassName="flex flex-col regular:flex-row items-stretch p-6 compact:p-10 large:p-16 gap-8 large:gap-12 aspect-[3/4] compact:aspect-[4/3] regular:aspect-[16/9] large:aspect-[2.4/1]"
     >
-      <div className="w-full md:w-[20%] flex-shrink-0 flex flex-col justify-center">
-        <span className="block text-[9px] sm:text-caption2 font-medium text-white/40 mb-4 sm:mb-5 uppercase tracking-wider">
+      <div className="w-full regular:w-[20%] flex-shrink-0 flex flex-col justify-center">
+        <span className="block text-[9px] compact:text-caption2 font-medium text-white/40 mb-4 compact:mb-5 uppercase tracking-wider">
           Not here
         </span>
 
-        <div className="space-y-2 sm:space-y-3">
+        <div className="space-y-2 compact:space-y-3">
           <NoiseRow label="Ads" />
           <NoiseRow label="Sponsored" />
           <NoiseRow label="Pop-ups" />
@@ -107,12 +107,12 @@ function BuiltInDubaiInfographic() {
           <NoiseRow label="Pay-to-rank" />
         </div>
 
-        <p className="mt-5 sm:mt-6 text-caption1 sm:text-subhead text-white/70">
+        <p className="mt-5 compact:mt-6 text-caption1 compact:text-subhead text-white/70">
           No noise.
         </p>
       </div>
 
-      <div className="relative w-full md:w-[80%] aspect-[4/3] sm:aspect-[16/10] md:aspect-auto min-h-[220px] sm:min-h-[280px] md:min-h-0">
+      <div className="relative w-full regular:w-[80%] aspect-[4/3] compact:aspect-[16/10] regular:aspect-auto min-h-[220px] compact:min-h-[280px] regular:min-h-0">
         <Image
           src={revx0}
           alt="Revvup marketplace preview"
@@ -127,9 +127,9 @@ function BuiltInDubaiInfographic() {
 
 function NoiseRow({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-2 sm:gap-3 text-white/55">
-      <span className="text-caption1 sm:text-subhead leading-none">✕</span>
-      <span className="text-caption1 sm:text-subhead">{label}</span>
+    <div className="flex items-center gap-2 compact:gap-3 text-white/55">
+      <span className="text-caption1 compact:text-subhead leading-none">✕</span>
+      <span className="text-caption1 compact:text-subhead">{label}</span>
     </div>
   );
 }

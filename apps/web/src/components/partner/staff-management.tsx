@@ -349,7 +349,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-6 mb-6">
             <div>
               <label className="text-caption1 text-muted-foreground mb-2 block">Email</label>
               <input
@@ -575,7 +575,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                    <span className="text-caption1 text-muted-foreground hidden sm:block">Active</span>
+                    <span className="text-caption1 text-muted-foreground hidden compact:block">Active</span>
                   </div>
 
                   <button
@@ -633,7 +633,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                     <div className="flex items-center gap-1.5">
                       <UserMinus className="w-3.5 h-3.5 text-muted-foreground" />
                       {member.leftAt && (
-                        <span className="text-caption1 text-muted-foreground hidden sm:block">
+                        <span className="text-caption1 text-muted-foreground hidden compact:block">
                           {new Date(member.leftAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                         </span>
                       )}

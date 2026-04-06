@@ -37,14 +37,14 @@ export function HowRankingWorksPage() {
     <main className="bg-background">
       
       {/* Hero */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center mb-12 space-y-4">
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Transparency
             </span>
-            <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               How listings rank.
               <br />
               <span className="text-muted-foreground">No boosts. Just quality.</span>
@@ -52,7 +52,7 @@ export function HowRankingWorksPage() {
           </div>
 
           {/* Hero Image */}
-          <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
+          <div className="relative w-full aspect-[4/3] compact:aspect-[16/9] regular:aspect-[2.4/1] overflow-hidden rounded-lg">
             <Image
               src={rsxx2}
               alt="Revvup Ranking"
@@ -71,20 +71,20 @@ export function HowRankingWorksPage() {
       </section>
 
       {/* Do's and Don'ts - Grid comparison like partner page */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center mb-16 space-y-4">
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               The rules are simple
             </span>
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               What works. What doesn't.
             </h2>
           </div>
 
           {/* Comparison Grid - Same pattern as partner-compare-section */}
-          <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-5xl mx-auto">
+          <div className="grid compact:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-5xl mx-auto">
             
             {/* What Helps */}
             <div className="p-8 bg-primary text-primary-foreground">
@@ -134,14 +134,14 @@ export function HowRankingWorksPage() {
       </section>
 
       {/* Why Section - Now with Infographic instead of image */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center mb-12 space-y-4">
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Why we rank this way
             </span>
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Quality wins.
               <br />
               <span className="text-muted-foreground">That's the point.</span>
@@ -159,17 +159,17 @@ export function HowRankingWorksPage() {
           </p>
 
           {/* Stats */}
-          <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40 mt-12">
+          <div className="flex items-center justify-center gap-12 regular:gap-20 pt-8 border-t border-border/40 mt-12">
             <div className="text-center space-y-1">
               <p className="text-title3 font-semibold tracking-tight text-primary">0</p>
               <span className="text-subhead text-muted-foreground">Paid boosts</span>
             </div>
-            <div className="w-px h-10 bg-border/30 hidden sm:block" />
+            <div className="w-px h-10 bg-border/30 hidden compact:block" />
             <div className="text-center space-y-1">
               <p className="text-title3 font-semibold tracking-tight text-primary">0</p>
               <span className="text-subhead text-muted-foreground">Promoted listings</span>
             </div>
-            <div className="w-px h-10 bg-border/30 hidden sm:block" />
+            <div className="w-px h-10 bg-border/30 hidden compact:block" />
             <div className="text-center space-y-1">
               <p className="text-title3 font-semibold tracking-tight text-primary">100%</p>
               <span className="text-subhead text-muted-foreground">Quality-based</span>
@@ -179,29 +179,29 @@ export function HowRankingWorksPage() {
       </section>
 
       {/* CTA */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center space-y-4 max-w-lg mx-auto">
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Ready?
             </span>
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Put effort in.
               <br />
               <span className="text-muted-foreground">Get visibility out.</span>
             </h2>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+            <div className="flex flex-col compact:flex-row items-center justify-center gap-3 pt-4">
               <button
                 onClick={handleCreateListing}
-                className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+                className="w-full compact:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
               >
                 Create a Listing
               </button>
               <Link
                 href="/listings"
-                className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+                className="w-full compact:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
               >
                 Browse Listings
               </Link>
@@ -237,53 +237,53 @@ export function HowRankingWorksPage() {
 function WhyQualityInfographic() {
   return (
     <div className="relative w-full rounded-lg overflow-visible bg-sidebar border border-border/40">
-      <div className="flex flex-col-reverse md:flex-row">
+      <div className="flex flex-col-reverse regular:flex-row">
         {/* Left - Others: macOS window with paid rankings (80%) */}
-        <div className="w-full md:w-[75%] lg:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-2 sm:p-4 lg:p-8">
-          <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
+        <div className="w-full regular:w-[75%] large:w-[80%] flex flex-col items-center justify-center regular:border-r border-t regular:border-t-0 border-border/20 p-2 compact:p-4 large:p-8">
+          <span className="text-[9px] compact:text-caption2 large:text-caption1 text-muted-foreground/60 mb-2 compact:mb-4 large:mb-6">Others</span>
           
           {/* macOS Window Frame */}
-          <div className="relative w-full max-w-sm sm:max-w-xl lg:max-w-3xl">
-            <MacOSWindow url="marketplace.ae" contentClassName="p-3 sm:p-6 lg:p-12 flex items-center justify-center overflow-visible">
+          <div className="relative w-full max-w-sm compact:max-w-xl large:max-w-3xl">
+            <MacOSWindow url="marketplace.ae" contentClassName="p-3 compact:p-6 large:p-12 flex items-center justify-center overflow-visible">
                 <div className="relative">
                   {/* Car image */}
-                  <div className="w-28 sm:w-44 lg:w-64 xl:w-80 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10">
+                  <div className="w-28 compact:w-44 large:w-64 xlarge:w-80 aspect-[4/3] rounded-lg large:rounded-xl overflow-hidden border border-white/10">
                     <Image src={m7} alt="" className="w-full h-full object-cover opacity-60" sizes="(max-width: 640px) 112px, (max-width: 1280px) 256px, 320px" />
                   </div>
                   
                   {/* Paid ranking badges */}
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-3 lg:-top-3 lg:-right-4 px-1.5 sm:px-2.5 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-warning text-[6px] sm:text-[9px] lg:text-caption1 font-bold text-white shadow-xl rotate-3 z-10">
+                  <div className="absolute -top-1 -right-1 compact:-top-2 compact:-right-3 large:-top-3 large:-right-4 px-1.5 compact:px-2.5 large:px-4 py-0.5 compact:py-1 large:py-2 rounded-md bg-warning text-[6px] compact:text-[9px] large:text-caption1 font-bold text-white shadow-xl rotate-3 z-10">
                     PAID #1
                   </div>
-                  <div className="absolute top-5 sm:top-10 lg:top-14 -left-1 sm:-left-2 lg:-left-4 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-warning text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg -rotate-6 z-10">
+                  <div className="absolute top-5 compact:top-10 large:top-14 -left-1 compact:-left-2 large:-left-4 px-1 compact:px-2 large:px-3 py-0.5 compact:py-1 large:py-1.5 rounded-md bg-warning text-[5px] compact:text-[8px] large:text-caption2 font-semibold text-white shadow-lg -rotate-6 z-10">
                     +Boost
                   </div>
-                  <div className="absolute -bottom-0.5 sm:-bottom-2 lg:-bottom-3 right-2 sm:right-6 lg:right-10 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-warning text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg rotate-2 z-10">
+                  <div className="absolute -bottom-0.5 compact:-bottom-2 large:-bottom-3 right-2 compact:right-6 large:right-10 px-1 compact:px-2 large:px-3 py-0.5 compact:py-1 large:py-1.5 rounded-md bg-warning text-[5px] compact:text-[8px] large:text-caption2 font-semibold text-white shadow-lg rotate-2 z-10">
                     Featured
                   </div>
                 </div>
             </MacOSWindow>
           </div>
           
-          <p className="text-[8px] sm:text-[9px] lg:text-caption1 text-muted-foreground/50 mt-2 sm:mt-4 lg:mt-8 text-center">Pay to rank</p>
+          <p className="text-[8px] compact:text-[9px] large:text-caption1 text-muted-foreground/50 mt-2 compact:mt-4 large:mt-8 text-center">Pay to rank</p>
         </div>
         
         {/* Right - Revvup: Quality-based (20%) */}
-        <div className="w-full md:w-[25%] lg:w-[20%] flex flex-col items-center justify-center py-4 md:py-4 px-3 sm:p-4 lg:p-6">
-          <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
+        <div className="w-full regular:w-[25%] large:w-[20%] flex flex-col items-center justify-center py-4 regular:py-4 px-3 compact:p-4 large:p-6">
+          <span className="text-[9px] compact:text-caption2 large:text-caption1 text-primary mb-2 compact:mb-3 large:mb-4">Revvup</span>
           
           <div className="flex flex-col items-center text-center">
             <div 
               className="text-primary leading-none"
               style={{ animation: 'glow-quality 3s ease-in-out infinite' }}
             >
-              <CheckCircle2 className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" />
+              <CheckCircle2 className="w-6 h-6 compact:w-10 compact:h-10 large:w-12 large:h-12 xlarge:w-14 xlarge:h-14" />
             </div>
-            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary/80 font-medium mt-1.5 sm:mt-2 lg:mt-3">Quality</span>
-            <span className="text-[8px] sm:text-[9px] lg:text-caption1 text-primary/60 mt-0.5">ranks</span>
+            <span className="text-[9px] compact:text-caption2 large:text-caption1 text-primary/80 font-medium mt-1.5 compact:mt-2 large:mt-3">Quality</span>
+            <span className="text-[8px] compact:text-[9px] large:text-caption1 text-primary/60 mt-0.5">ranks</span>
           </div>
           
-          <p className="text-[7px] sm:text-[8px] lg:text-caption2 text-primary/50 mt-2 sm:mt-4 lg:mt-6">Earn visibility</p>
+          <p className="text-[7px] compact:text-[8px] large:text-caption2 text-primary/50 mt-2 compact:mt-4 large:mt-6">Earn visibility</p>
         </div>
       </div>
     </div>

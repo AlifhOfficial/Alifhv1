@@ -95,6 +95,8 @@ async function createConversationAPI(params: {
   otherUserId: string;
   listingId?: string;
   partnerId?: string;
+  type?: string;
+  subject?: string;
 }): Promise<{ conversationId: string; created: boolean }> {
   const res = await fetch('/api/conversations', {
     method: 'POST',
@@ -102,7 +104,12 @@ async function createConversationAPI(params: {
     credentials: 'include',
     body: JSON.stringify(params),
   });
-  if (!res.ok) throw new Error('Failed to create conversation');
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({} as { error?: string; details?: string }));
+    throw new Error(errorData.error || 'Failed to create conversation');
+  }
+
   return res.json();
 }
 

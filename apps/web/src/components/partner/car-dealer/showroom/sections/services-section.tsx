@@ -109,7 +109,7 @@ export function ServicesSection({
             Add
           </button>
         </div>
-        <div className="grid md:grid-cols-2 gap-3">
+        <div className="grid regular:grid-cols-2 gap-3">
           {(form.signatureServices || []).map((service) => (
             <ServiceCard
               key={service.id}

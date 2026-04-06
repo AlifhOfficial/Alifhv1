@@ -256,7 +256,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background pb-16">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        <div className="max-w-2xl mx-auto px-4 compact:px-6 py-6 compact:py-8 space-y-6 compact:space-y-8">
           {/* Header Skeleton */}
           <div>
             <Skeleton className="h-6 w-40 mb-1" />
@@ -300,18 +300,18 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+      <div className="max-w-2xl mx-auto px-4 compact:px-6 py-6 compact:py-8 space-y-6 compact:space-y-8">
 
         {/* Header */}
         <div>
-          <h1 className="text-headline sm:text-title3 font-semibold tracking-tight">Contact Settings</h1>
-          <p className="text-caption1 sm:text-subhead text-muted-foreground mt-0.5">
+          <h1 className="text-headline compact:text-title3 font-semibold tracking-tight">Contact Settings</h1>
+          <p className="text-caption1 compact:text-subhead text-muted-foreground mt-0.5">
             {profile.brandName}
           </p>
         </div>
 
         {/* Info Banner */}
-        <div className="rounded-xl border border-border/40 bg-primary/5 p-3 sm:p-4">
+        <div className="rounded-xl border border-border/40 bg-primary/5 p-3 compact:p-4">
           <div className="flex gap-3">
             <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
             <p className="text-subhead text-muted-foreground">
@@ -322,15 +322,15 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
 
         {/* Admin Contact Person */}
         <section>
-          <h3 className="text-subhead sm:text-subhead font-bold tracking-tight text-foreground mb-2 sm:mb-3">Admin Contact</h3>
+          <h3 className="text-subhead compact:text-subhead font-bold tracking-tight text-foreground mb-2 compact:mb-3">Admin Contact</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5 space-y-3 sm:space-y-4">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5 space-y-3 compact:space-y-4">
             
             {/* Admin Name */}
             <div 
               className={cn(
-                "py-2 sm:py-3",
-                editingField !== 'adminName' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
+                "py-2 compact:py-3",
+                editingField !== 'adminName' && "cursor-pointer hover:bg-muted/30 -mx-4 compact:-mx-5 px-4 compact:px-5 transition-colors rounded"
               )}
               onClick={() => editingField !== 'adminName' && setEditingField('adminName')}
             >
@@ -343,13 +343,13 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                     value={form.adminName}
                     onChange={(e) => updateField({ adminName: e.target.value })}
                     placeholder="e.g. Ahmed Al Mansouri"
-                    className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="w-full h-9 compact:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') saveField('adminName');
                       if (e.key === 'Escape') cancelEdit();
                     }}
                   />
-                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                  <div className="flex items-center justify-end gap-2 compact:gap-3">
                     <button
                       onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
                       className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
@@ -375,7 +375,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
             <div className="border-t border-border/20" />
 
             {/* Admin Phone with verification */}
-            <div className="py-2 sm:py-3">
+            <div className="py-2 compact:py-3">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <p className="text-caption1 text-muted-foreground/70">Admin Phone</p>
                 {(profile?.adminPhoneVerified || phoneJustVerified) ? (
@@ -451,7 +451,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       value={form.adminPhone}
                       onChange={(e) => updateField({ adminPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
                       placeholder="50 000 0000"
-                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-9 compact:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={9}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveField('adminPhone');
@@ -459,7 +459,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       }}
                     />
                   </div>
-                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                  <div className="flex items-center justify-end gap-2 compact:gap-3">
                     <button
                       onClick={cancelEdit}
                       className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
@@ -478,7 +478,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
               ) : (
                 // Display phone number
                 <div 
-                  className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
+                  className="cursor-pointer hover:bg-muted/30 -mx-4 compact:-mx-5 px-4 compact:px-5 py-1 transition-colors rounded"
                   onClick={() => setEditingField('adminPhone')}
                 >
                   <p className="text-subhead text-foreground">
@@ -497,13 +497,13 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
 
         {/* Toll-Free Number */}
         <section>
-          <h3 className="text-subhead sm:text-subhead font-bold tracking-tight text-foreground mb-2 sm:mb-3">Toll-Free Number</h3>
+          <h3 className="text-subhead compact:text-subhead font-bold tracking-tight text-foreground mb-2 compact:mb-3">Toll-Free Number</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
             <div 
               className={cn(
-                "py-2 sm:py-3",
-                editingField !== 'tollNumber' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
+                "py-2 compact:py-3",
+                editingField !== 'tollNumber' && "cursor-pointer hover:bg-muted/30 -mx-4 compact:-mx-5 px-4 compact:px-5 transition-colors rounded"
               )}
               onClick={() => editingField !== 'tollNumber' && setEditingField('tollNumber')}
             >
@@ -519,7 +519,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       value={form.tollNumber}
                       onChange={(e) => updateField({ tollNumber: e.target.value.replace(/[^\d]/g, '').slice(0, 10) })}
                       placeholder="DEALER"
-                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-9 compact:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={10}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveField('tollNumber');
@@ -527,7 +527,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       }}
                     />
                   </div>
-                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                  <div className="flex items-center justify-end gap-2 compact:gap-3">
                     <button
                       onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
                       className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
@@ -559,10 +559,10 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
 
         {/* Current Main Phone (read-only reference) */}
         <section>
-          <h3 className="text-subhead sm:text-subhead font-bold tracking-tight text-foreground mb-2 sm:mb-3">Registered Business Phone</h3>
+          <h3 className="text-subhead compact:text-subhead font-bold tracking-tight text-foreground mb-2 compact:mb-3">Registered Business Phone</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
-            <div className="py-2 sm:py-3">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
+            <div className="py-2 compact:py-3">
               <p className="text-caption1 text-muted-foreground/70 mb-1">Main business line (from registration)</p>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-muted-foreground" />

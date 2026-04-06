@@ -10,7 +10,7 @@ import { revx } from '@/components/pages/marketing-image-assets';
 
 export function AboutHeroSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -18,7 +18,7 @@ export function AboutHeroSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             About Revvup
           </span>
-          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             A Better Way to Buy & Sell Cars.
             <br />
             <span className="text-muted-foreground">In the UAE.</span>
@@ -44,17 +44,17 @@ export function AboutHeroSection() {
         </p>
 
         {/* Stats */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
+        <div className="flex items-center justify-center gap-12 regular:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">Dubai</div>
             <div className="text-subhead text-muted-foreground">Built here</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
+          <div className="w-px h-10 bg-border/30 hidden compact:block" />
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">100%</div>
             <div className="text-subhead text-muted-foreground">Independent</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
+          <div className="w-px h-10 bg-border/30 hidden compact:block" />
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">0</div>
             <div className="text-subhead text-muted-foreground">Listing fees</div>

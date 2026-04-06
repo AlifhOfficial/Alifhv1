@@ -36,19 +36,19 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header - Above Image */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="px-4 compact:px-6 large:px-8 mb-8">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.teamSectionTitle || 'Our Team'}
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Meet The Team
           </h2>
         </div>
 
         {/* Full Width Hero Media */}
         {(teamSectionVideoEmbedUrl || teamSectionImage) && (
-          <div className="px-4 sm:px-6 lg:px-8 mb-8">
-            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
+          <div className="px-4 compact:px-6 large:px-8 mb-8">
+            <div className="relative aspect-[16/9] large:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
               {teamSectionVideoEmbedUrl ? (
                 <iframe
                   src={`${teamSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
@@ -71,7 +71,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
         )}
 
         {/* Description - Below Image */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="px-4 compact:px-6 large:px-8 mb-8">
           <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             The people behind every experience.
           </p>
@@ -80,7 +80,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
         {/* Team Carousel */}
         <div className="relative group/scroll">
           <div 
-            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
+            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 compact:px-6 large:px-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {members.map((member) => {
@@ -89,7 +89,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
               <Dialog key={member.id}>
                 <DialogTrigger asChild>
                   <button 
-                    className="flex-shrink-0 w-[260px] sm:w-[280px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group text-left cursor-pointer"
+                    className="flex-shrink-0 w-[260px] compact:w-[280px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group text-left cursor-pointer"
                   >
                     {/* Avatar */}
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
@@ -171,13 +171,13 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
 // Skeleton
 function ShowroomTeamSkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="text-center mb-10">
           <Skeleton className="h-3 w-16 mx-auto mb-4" />
           <Skeleton className="h-8 w-40 mx-auto" />
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="text-center space-y-3">
               <Skeleton className="w-20 h-20 rounded-full mx-auto" />

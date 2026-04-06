@@ -104,7 +104,7 @@ export function StaffOverview() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-border/40">
+          <div className="grid grid-cols-1 regular:grid-cols-3 gap-4 pt-6 border-t border-border/40">
             <div className="flex items-center gap-2 text-subhead">
               <User className="w-4 h-4 text-muted-foreground" />
               <span className="capitalize">{staffProfile.role}</span>
@@ -184,7 +184,7 @@ export function StaffOverview() {
           <h3 className="text-headline tracking-tight">Quick Access</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 regular:grid-cols-2 gap-4">
           <Link 
             href="/staff-dashboard/works-for"
             className="group rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors"

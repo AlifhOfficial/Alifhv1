@@ -43,7 +43,7 @@ function BlackContactButton() {
 
 export function PricingTiersSection() {
   return (
-    <section id="tiers" className="pt-16 pb-20 px-4 sm:px-6 lg:px-8">
+    <section id="tiers" className="pt-16 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
 
         {/* Founding Program callout */}
@@ -58,7 +58,7 @@ export function PricingTiersSection() {
         </div>
 
         {/* Two Cards */}
-        <div className="grid md:grid-cols-2 gap-px max-w-4xl mx-auto border border-border/40 rounded-xl overflow-hidden">
+        <div className="grid regular:grid-cols-2 gap-px max-w-4xl mx-auto border border-border/40 rounded-xl overflow-hidden">
 
           {/* Flow Card */}
           <div className="p-10 bg-sidebar flex flex-col gap-8">

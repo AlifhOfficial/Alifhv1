@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export function PrivacyPolicy() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}
@@ -81,7 +81,7 @@ export function PrivacyPolicy() {
 
               <div className="py-3 border-b border-border/20">
                 <p className="text-subhead font-semibold text-foreground mb-2">Information You Provide</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 compact:grid-cols-2 gap-2">
                   <p className="text-subhead text-muted-foreground flex items-start gap-2">
                     <span className="text-muted-foreground/50 mt-1">•</span>
                     Name, email, phone
@@ -103,7 +103,7 @@ export function PrivacyPolicy() {
 
               <div className="py-3 border-b border-border/20">
                 <p className="text-subhead font-semibold text-foreground mb-2">Collected Automatically</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 compact:grid-cols-2 gap-2">
                   <p className="text-subhead text-muted-foreground flex items-start gap-2">
                     <span className="text-muted-foreground/50 mt-1">•</span>
                     IP address
@@ -142,7 +142,7 @@ export function PrivacyPolicy() {
               <p className="text-subhead text-foreground leading-relaxed mb-4">
                 REVVUP uses personal data to:
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 compact:grid-cols-2 gap-2">
                 <p className="text-subhead text-muted-foreground flex items-start gap-2">
                   <span className="text-muted-foreground/50 mt-1">•</span>
                   Operate the Platform
@@ -203,7 +203,7 @@ export function PrivacyPolicy() {
               <p className="text-subhead text-foreground leading-relaxed mb-4">
                 REVVUP may share personal data with:
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 compact:grid-cols-2 gap-2">
                 <p className="text-subhead text-muted-foreground flex items-start gap-2">
                   <span className="text-muted-foreground/50 mt-1">•</span>
                   Payment processors

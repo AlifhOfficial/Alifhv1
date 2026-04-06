@@ -9,7 +9,7 @@ import { AdminUsersList } from "@/components/admin/users/admin-users-list";
 export default function AdminUsersPage() {
   return (
     <DashboardDisplayArea>
-      <div className="p-6 md:p-10">
+      <div className="p-6 regular:p-10">
         <AdminUsersList />
       </div>
     </DashboardDisplayArea>

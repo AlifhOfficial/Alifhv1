@@ -152,7 +152,7 @@ export function AdminUsersList() {
           <h3 className="text-headline tracking-tight">Overview</h3>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
+        <div className="grid grid-cols-2 regular:grid-cols-4 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
             <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total</span>
             <span className="text-title2 font-semibold text-primary">{users.length}</span>
@@ -184,7 +184,7 @@ export function AdminUsersList() {
           <h3 className="text-headline tracking-tight">Users</h3>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3">
+        <div className="flex flex-col regular:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -301,7 +301,7 @@ export function AdminUsersList() {
                 </div>
 
                 {/* Additional Info */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border text-subhead">
+                <div className="grid grid-cols-2 regular:grid-cols-4 gap-4 pt-4 border-t border-border text-subhead">
                   <div>
                     <p className="text-caption1 text-muted-foreground mb-1">KYC Status</p>
                     <div className="flex items-center gap-1.5">

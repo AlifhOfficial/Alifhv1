@@ -105,7 +105,7 @@ export function BookingCard({
       {/* Main Card */}
       <div className="flex gap-4 p-4">
         {/* Image */}
-        <div className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
+        <div className="relative w-28 compact:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
           {listingThumbnailUrl ? (
             <img
               src={listingThumbnailUrl}
@@ -124,7 +124,7 @@ export function BookingCard({
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
+              <p className="text-subhead compact:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                 {booking.listingTitle}
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
@@ -191,7 +191,7 @@ export function BookingCard({
       {/* Expanded Details */}
       {isExpanded && (
         <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid regular:grid-cols-2 gap-6">
             {/* Contact Info */}
             <div className="space-y-3">
               <p className="text-caption1 text-muted-foreground">Contact</p>

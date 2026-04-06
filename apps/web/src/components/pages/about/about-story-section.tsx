@@ -11,7 +11,7 @@ import { revx3 } from '@/components/pages/marketing-image-assets';
 
 export function AboutStorySection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -19,7 +19,7 @@ export function AboutStorySection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Why We Exist
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             The UAE Car Market.
             <br />
             <span className="text-muted-foreground">Deserves better.</span>
@@ -44,7 +44,7 @@ export function AboutStorySection() {
         </p>
 
         {/* Feature Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto">
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
             <Ban className="w-5 h-5 text-primary/80 mb-3" />
             <h3 className="text-callout font-semibold mb-1.5">No listing fees</h3>

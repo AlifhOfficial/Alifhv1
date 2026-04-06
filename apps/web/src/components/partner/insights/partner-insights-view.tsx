@@ -154,7 +154,7 @@ function _ActivityDots({ activeDays, days = 28 }: { activeDays?: boolean[]; days
 
 function _InsightsSkeleton() {
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
         {/* Header Skeleton */}
         <header>
           <div className="flex items-start justify-between gap-4">
@@ -167,9 +167,9 @@ function _InsightsSkeleton() {
         </header>
 
         {/* Stats Grid Skeleton */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y md:divide-y-0 divide-border/40 bg-sidebar">
+        <div className="grid grid-cols-2 regular:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y regular:divide-y-0 divide-border/40 bg-sidebar">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="p-5 sm:p-6 space-y-2">
+            <div key={i} className="p-5 compact:p-6 space-y-2">
               <Skeleton className="h-4 w-20" />
               <Skeleton className="h-7 w-16" />
             </div>
@@ -178,7 +178,7 @@ function _InsightsSkeleton() {
 
         {/* Main Grid Skeleton - Row 1 */}
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
+          <div className="col-span-12 large:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
             <Skeleton className="h-4 w-24 mb-4" />
             <Skeleton className="h-10 w-32 mb-4" />
             <div className="mt-6 pt-4 border-t border-border/40 grid grid-cols-3 gap-4">
@@ -190,7 +190,7 @@ function _InsightsSkeleton() {
               ))}
             </div>
           </div>
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          <div className="col-span-12 large:col-span-4 flex flex-col gap-4">
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <Skeleton className="h-4 w-20 mb-3" />
               <Skeleton className="h-16 w-full" />
@@ -206,13 +206,13 @@ function _InsightsSkeleton() {
         {/* Main Grid Skeleton - Row 2 */}
         <div className="grid grid-cols-12 gap-4">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+            <div key={i} className="col-span-12 compact:col-span-6 large:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-20 w-full" />
             </div>
           ))}
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          <div className="col-span-12 large:col-span-4 flex flex-col gap-4">
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <Skeleton className="h-4 w-24 mb-3" />
               <Skeleton className="h-8 w-20" />
@@ -227,7 +227,7 @@ function _InsightsSkeleton() {
         {/* Month Comparison Skeleton */}
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <Skeleton className="h-4 w-40 mb-5" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 compact:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
               <div key={i}>
                 <Skeleton className="h-6 w-16 mb-2" />
@@ -241,7 +241,7 @@ function _InsightsSkeleton() {
         {/* System Status Skeleton */}
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <Skeleton className="h-4 w-32 mb-4" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 compact:grid-cols-4 gap-3">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex items-center gap-2.5 p-3 rounded-lg bg-muted/10">
                 <Skeleton className="w-8 h-8 rounded-full" />
@@ -341,7 +341,7 @@ export function PartnerInsightsView({
 
   return (
     <>
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4 compact:space-y-6">
 
           {/* Header */}
           <header>
@@ -370,8 +370,8 @@ export function PartnerInsightsView({
           </header>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y md:divide-y-0 divide-border/20 bg-muted/5">
-            <div className="p-5 sm:p-6 flex flex-col gap-2">
+          <div className="grid grid-cols-2 regular:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y regular:divide-y-0 divide-border/20 bg-muted/5">
+            <div className="p-5 compact:p-6 flex flex-col gap-2">
               <StatLabel 
                 label="Active" 
                 tooltip="Number of listings currently live and visible to buyers" 
@@ -380,7 +380,7 @@ export function PartnerInsightsView({
                 {inventory.activeCount}
               </span>
             </div>
-            <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <div className="p-5 compact:p-6 flex flex-col gap-2">
               <StatLabel 
                 label="Views" 
                 tooltip="Total listing views across all your active inventory" 
@@ -389,7 +389,7 @@ export function PartnerInsightsView({
                 {formatNumber(engagement.totalViewsThisMonth)}
               </span>
             </div>
-            <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <div className="p-5 compact:p-6 flex flex-col gap-2">
               <StatLabel 
                 label="Favorites" 
                 tooltip="How many times users have saved your listings to favorites" 
@@ -398,7 +398,7 @@ export function PartnerInsightsView({
                 {formatNumber(engagement.totalFavorites ?? 0)}
               </span>
             </div>
-            <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <div className="p-5 compact:p-6 flex flex-col gap-2">
               <StatLabel 
                 label="Sold" 
                 tooltip="Vehicles sold this month" 
@@ -412,7 +412,7 @@ export function PartnerInsightsView({
           {/* Main Grid - Row 1: Views Summary + Revenue/Bookings */}
           <div className="grid grid-cols-12 gap-4">
             {/* Views Card */}
-            <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
+            <div className="col-span-12 large:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Total Views</p>
@@ -436,7 +436,7 @@ export function PartnerInsightsView({
             </div>
 
             {/* Right: Revenue + Bookings stacked */}
-            <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+            <div className="col-span-12 large:col-span-4 flex flex-col gap-4">
               {/* Revenue Info */}
               <div className="rounded-lg border border-border/20 bg-muted/5 p-5 flex-1">
                 <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Revenue</p>
@@ -475,7 +475,7 @@ export function PartnerInsightsView({
           {/* Main Grid - Row 2: Quick Stats */}
           <div className="grid grid-cols-12 gap-4">
             {/* Inventory Summary */}
-            <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
+            <div className="col-span-12 compact:col-span-6 large:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
               <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Inventory</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -494,7 +494,7 @@ export function PartnerInsightsView({
             </div>
 
             {/* Sales Performance */}
-            <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
+            <div className="col-span-12 compact:col-span-6 large:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
               <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Sales</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -514,7 +514,7 @@ export function PartnerInsightsView({
 
             {/* Engagement Widget */}
             <div 
-              className="col-span-12 sm:col-span-6 lg:col-span-4 block rounded-lg border border-border/20 bg-muted/5 p-5"
+              className="col-span-12 compact:col-span-6 large:col-span-4 block rounded-lg border border-border/20 bg-muted/5 p-5"
             >
               <div className="flex items-center justify-between mb-3">
                 <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Engagement</p>
@@ -532,7 +532,7 @@ export function PartnerInsightsView({
               <span className="text-subhead font-semibold text-muted-foreground/70">Business Snapshot</span>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 compact:grid-cols-4 gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-title3 font-bold tracking-tight text-foreground">{trends.listingsAddedThisMonth}</span>

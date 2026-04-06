@@ -82,7 +82,7 @@ export function DashboardLayout({ children, enableRightPanel = false }: Dashboar
             <div
               className={`fixed top-0 right-0 h-full bg-background border-l border-border shadow-2xl transition-transform duration-300 z-30 ${
                 rightPanelOpen ? "translate-x-0" : "translate-x-full"
-              } w-full md:w-[400px] lg:w-[500px]`}
+              } w-full regular:w-[400px] large:w-[500px]`}
             >
               {rightPanelOpen && (
                 <div className="flex flex-col h-full">
@@ -103,7 +103,7 @@ export function DashboardLayout({ children, enableRightPanel = false }: Dashboar
             </div>
             {rightPanelOpen && (
               <div
-                className="md:hidden fixed inset-0 bg-background/40 backdrop-blur-2xl z-20"
+                className="regular:hidden fixed inset-0 bg-background/40 backdrop-blur-2xl z-20"
                 onClick={closeRightPanel}
                 aria-hidden="true"
               />
@@ -146,14 +146,14 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl bg-background">
-          <div className="p-4 sm:p-5 min-h-full flex flex-col">
+          <div className="p-4 compact:p-5 min-h-full flex flex-col">
             {children}
           </div>
         </div>
       )}
 
       {/* Bottom Bar Panel */}
-      <footer className={`${hideFooterOnMobile ? 'hidden lg:flex' : 'flex'} h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border`}>
+      <footer className={`${hideFooterOnMobile ? 'hidden large:flex' : 'flex'} h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border`}>
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (

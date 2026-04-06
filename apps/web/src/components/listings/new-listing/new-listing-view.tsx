@@ -22,45 +22,45 @@ interface NewListingViewProps {
 function PendingReviewModal({ onClose }: { onClose: () => void }) {
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-4"
+      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-3 compact:p-4"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-sm bg-card border border-border/40 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
+        className="w-full max-w-[calc(100vw-1.5rem)] compact:max-w-sm bg-card border border-border/40 rounded-xl compact:rounded-2xl shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 pb-3 sm:pb-4 relative">
+        <div className="p-4 compact:p-6 pb-3 compact:pb-4 relative">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="absolute top-3 right-3 compact:top-4 compact:right-4 p-1.5 compact:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
           
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-warning-muted flex items-center justify-center">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-warning" />
+          <div className="flex items-center gap-2.5 compact:gap-3">
+            <div className="w-9 h-9 compact:w-10 compact:h-10 rounded-full bg-warning-muted flex items-center justify-center">
+              <Clock className="w-4 h-4 compact:w-5 compact:h-5 text-warning" />
             </div>
             <div>
-              <h2 className="text-callout sm:text-headline font-semibold text-foreground">Under Review</h2>
-              <p className="text-caption2 sm:text-caption1 text-muted-foreground/60">Listing submitted</p>
+              <h2 className="text-callout compact:text-headline font-semibold text-foreground">Under Review</h2>
+              <p className="text-caption2 compact:text-caption1 text-muted-foreground/60">Listing submitted</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-4 sm:px-6 pb-3 sm:pb-4">
-          <p className="text-caption1 sm:text-subhead text-muted-foreground leading-relaxed">
+        <div className="px-4 compact:px-6 pb-3 compact:pb-4">
+          <p className="text-caption1 compact:text-subhead text-muted-foreground leading-relaxed">
             Your listing requires a quick manual review. We'll check it within <span className="font-semibold text-foreground">24 hours</span> and notify you once it's live.
           </p>
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border/40 p-3 sm:p-4">
+        <div className="border-t border-border/40 p-3 compact:p-4">
           <button
             onClick={onClose}
-            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-semibold hover:bg-primary/90 transition-colors"
+            className="w-full h-9 compact:h-10 rounded-lg compact:rounded-xl bg-primary text-primary-foreground text-caption1 compact:text-subhead font-semibold hover:bg-primary/90 transition-colors"
           >
             View My Listings
           </button>
@@ -74,45 +74,45 @@ function PendingReviewModal({ onClose }: { onClose: () => void }) {
 function SuccessModal({ onClose }: { onClose: () => void }) {
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-4"
+      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-3 compact:p-4"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-sm bg-card border border-border/40 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
+        className="w-full max-w-[calc(100vw-1.5rem)] compact:max-w-sm bg-card border border-border/40 rounded-xl compact:rounded-2xl shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 pb-3 sm:pb-4 relative">
+        <div className="p-4 compact:p-6 pb-3 compact:pb-4 relative">
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="absolute top-3 right-3 compact:top-4 compact:right-4 p-1.5 compact:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
           
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+          <div className="flex items-center gap-2.5 compact:gap-3">
+            <div className="w-9 h-9 compact:w-10 compact:h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 compact:w-5 compact:h-5 text-emerald-500" />
             </div>
             <div>
-              <h2 className="text-callout sm:text-headline font-semibold text-foreground">You're Live!</h2>
-              <p className="text-caption2 sm:text-caption1 text-muted-foreground/60">Listing published</p>
+              <h2 className="text-callout compact:text-headline font-semibold text-foreground">You're Live!</h2>
+              <p className="text-caption2 compact:text-caption1 text-muted-foreground/60">Listing published</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-4 sm:px-6 pb-3 sm:pb-4">
-          <p className="text-caption1 sm:text-subhead text-muted-foreground leading-relaxed">
+        <div className="px-4 compact:px-6 pb-3 compact:pb-4">
+          <p className="text-caption1 compact:text-subhead text-muted-foreground leading-relaxed">
             Your listing is now <span className="font-semibold text-foreground">live</span> and visible to buyers. Good luck with your sale!
           </p>
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border/40 p-3 sm:p-4">
+        <div className="border-t border-border/40 p-3 compact:p-4">
           <button
             onClick={onClose}
-            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-semibold hover:bg-primary/90 transition-colors"
+            className="w-full h-9 compact:h-10 rounded-lg compact:rounded-xl bg-primary text-primary-foreground text-caption1 compact:text-subhead font-semibold hover:bg-primary/90 transition-colors"
           >
             Go to My Listings
           </button>
@@ -244,9 +244,9 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
 
       {/* Error Message */}
       {error && (
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
-          <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
-            <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
+        <div className="max-w-2xl mx-auto px-4 compact:px-6 mt-4 compact:mt-6">
+          <div className="rounded-xl compact:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 compact:p-4">
+            <p className="text-caption1 compact:text-subhead text-destructive">{error}</p>
           </div>
         </div>
       )}

@@ -548,13 +548,13 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
         {/* Header Section */}
         <div className="flex items-center justify-between">
           {/* Left: Title */}
           <div>
-            <h1 className="text-callout sm:text-headline font-semibold text-foreground">Bookings</h1>
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
+            <h1 className="text-callout compact:text-headline font-semibold text-foreground">Bookings</h1>
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">
               Manage test drive bookings
             </p>
           </div>
@@ -563,35 +563,35 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
           <div className="flex items-center gap-1">
             <button
               onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
-              className={`p-1.5 sm:p-2 rounded-full transition-colors ${
+              className={`p-1.5 compact:p-2 rounded-full transition-colors ${
                 activeTab === 'settings' 
                   ? 'bg-secondary text-foreground' 
                   : 'hover:bg-secondary/50 text-muted-foreground'
               }`}
               title="Settings"
             >
-              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Settings className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
             </button>
             <button
               onClick={activeTab === 'bookings'
                 ? () => startTransition(() => router.refresh())
                 : fetchAvailability}
               disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
-              className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+              className="p-1.5 compact:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               title="Refresh"
             >
-              <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground ${(activeTab === 'bookings' ? isLoading : availabilityLoading) ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 compact:w-4 compact:h-4 text-muted-foreground ${(activeTab === 'bookings' ? isLoading : availabilityLoading) ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 compact:space-y-6">
             {/* Toolbar */}
             <div className="flex flex-col gap-3">
               {/* Row 1: Search + Sort + Check-in */}
-              <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 compact:gap-3">
                 {/* Search */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -603,7 +603,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                       setSearchQuery(e.target.value);
                       handleSearchChange(e.target.value);
                     }}
-                    className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+                    className="w-full h-9 compact:h-10 pl-9 compact:pl-10 pr-8 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
                   />
                   {searchQuery && (
                     <button
@@ -613,7 +613,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                       }}
                       className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
                     >
-                      <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
+                      <X className="w-3 h-3 compact:w-3.5 compact:h-3.5 text-muted-foreground" />
                     </button>
                   )}
                 </div>
@@ -623,7 +623,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   setError(null);
                   updateRoute({ sort: v as BookingSort, page: 1 });
                 }}>
-                  <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-caption1 sm:text-subhead shrink-0">
+                  <SelectTrigger className="h-9 compact:h-10 w-24 compact:w-28 border-0 bg-secondary/50 rounded-lg compact:rounded-xl text-caption1 compact:text-subhead shrink-0">
                     <SelectValue placeholder="Sort" />
                   </SelectTrigger>
                   <SelectContent>
@@ -638,15 +638,15 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   if (!open) resetQuickAction();
                 }}>
                   <PopoverTrigger asChild>
-                    <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-caption1 sm:text-subhead flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span className="hidden sm:inline">Quick Action</span>
-                      <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <button className="h-9 compact:h-10 px-3 compact:px-4 rounded-lg compact:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-caption1 compact:text-subhead flex items-center gap-1.5 compact:gap-2 transition-colors flex-shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 compact:w-4 compact:h-4" />
+                      <span className="hidden compact:inline">Quick Action</span>
+                      <ChevronDown className="w-3 h-3 compact:w-3.5 compact:h-3.5" />
                     </button>
                   </PopoverTrigger>
                 <PopoverContent 
                   align="end" 
-                  className="w-[calc(100vw-2rem)] sm:w-[320px] max-w-[320px] p-0" 
+                  className="w-[calc(100vw-2rem)] compact:w-[320px] max-w-[320px] p-0" 
                   sideOffset={8}
                   collisionPadding={16}
                 >
@@ -672,7 +672,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                           <button
                             onClick={handleLookupByCode}
                             disabled={isLookingUp || !verifyCode.trim()}
-                            className="h-10 px-3 sm:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead transition-colors disabled:opacity-50 flex-shrink-0"
+                            className="h-10 px-3 compact:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead transition-colors disabled:opacity-50 flex-shrink-0"
                           >
                             {isLookingUp ? '...' : 'Go'}
                           </button>
@@ -752,7 +752,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
             </div>
 
               {/* Row 2: Status Pills - Horizontal scroll */}
-              <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+              <div className="-mx-4 px-4 compact:mx-0 compact:px-0 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
                   {MAIN_STATUS_TABS.map((tab) => {
                     // Use stats for counts (server-side accurate)
@@ -772,14 +772,14 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                           setError(null);
                           updateRoute({ status: tab.key, page: 1 });
                         }}
-                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
+                        className={`px-2.5 compact:px-3 py-1 compact:py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all capitalize whitespace-nowrap ${
                           isActive
                             ? 'bg-background text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         {tab.label}
-                        <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
+                        <span className="ml-1 compact:ml-1.5 text-muted-foreground">{count}</span>
                       </button>
                     );
                   })}
@@ -805,7 +805,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
-                            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
+                            className={`px-2.5 compact:px-3 py-1 compact:py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                               isSecondarySelected
                                 ? 'bg-background text-foreground shadow-sm'
                                 : 'text-muted-foreground hover:text-foreground'
@@ -848,7 +848,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
 
             {/* Error Alert */}
             {error && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
+              <div className="mb-6 compact:mb-8 p-3 compact:p-4 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead">
                 {error}
               </div>
             )}
@@ -868,22 +868,22 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
               if (totalPages <= 1) return null;
               
               return (
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-border/30">
-                  <p className="text-caption2 sm:text-caption1 text-muted-foreground">
+                <div className="flex flex-col compact:flex-row items-center justify-center gap-2 compact:gap-3 mt-6 compact:mt-8 pt-4 compact:pt-6 border-t border-border/30">
+                  <p className="text-caption2 compact:text-caption1 text-muted-foreground">
                     Page {currentPage} of {totalPages} · {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
                   </p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                       disabled={currentPage === 1 || isLoading}
-                      className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-caption2 compact:text-caption1 rounded-md compact:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                       disabled={currentPage === totalPages || isLoading}
-                      className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-caption2 compact:text-caption1 rounded-md compact:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                     </button>
@@ -896,17 +896,17 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="pb-24 sm:pb-32">
+          <div className="pb-24 compact:pb-32">
             <button
               onClick={() => setActiveTab('bookings')}
-              className="text-caption1 sm:text-subhead text-muted-foreground hover:text-foreground transition-colors mb-4"
+              className="text-caption1 compact:text-subhead text-muted-foreground hover:text-foreground transition-colors mb-4"
             >
               ← Back to bookings
             </button>
 
             {/* Error Alert */}
             {error && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
+              <div className="mb-6 compact:mb-8 p-3 compact:p-4 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead">
                 {error}
               </div>
             )}

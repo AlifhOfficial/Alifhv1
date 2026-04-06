@@ -10,7 +10,7 @@ import { avatarMock, m14, m15, m17 } from '@/components/pages/marketing-image-as
 
 export function PartnerFlatFeeSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -18,7 +18,7 @@ export function PartnerFlatFeeSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The Revvup model
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             One price. Everything included.
           </h2>
         </div>
@@ -32,7 +32,7 @@ export function PartnerFlatFeeSection() {
         </p>
 
         {/* Feature Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto mb-16">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto mb-16">
           <FeatureCard 
             title="Unlimited listings"
             description="10 or 1,000. Same price."
@@ -57,17 +57,17 @@ export function PartnerFlatFeeSection() {
         </div>
 
         {/* Bottom Stats */}
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 lg:gap-16 pt-12 border-t border-border/40 max-w-5xl mx-auto">
+        <div className="flex flex-wrap items-center justify-center gap-6 compact:gap-10 large:gap-16 pt-12 border-t border-border/40 max-w-5xl mx-auto">
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">AED 0</div>
             <p className="text-subhead text-muted-foreground">Paid visibility</p>
           </div>
-          <div className="w-px h-8 bg-border/30 hidden sm:block" />
+          <div className="w-px h-8 bg-border/30 hidden compact:block" />
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">AED 0</div>
             <p className="text-subhead text-muted-foreground">Per sale</p>
           </div>
-          <div className="w-px h-8 bg-border/30 hidden sm:block" />
+          <div className="w-px h-8 bg-border/30 hidden compact:block" />
           <div className="text-center space-y-1">
             <div className="text-title2 font-bold tracking-tight text-primary">AED 0</div>
             <p className="text-subhead text-muted-foreground">Hidden fees</p>
@@ -112,86 +112,86 @@ function FeatureCard({ title, description }: FeatureCardProps) {
 function UnlimitedListingsInfographic() {
   return (
     <>
-      <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
+      <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col regular:flex-row aspect-[3/4] compact:aspect-[4/3] regular:aspect-[16/9] large:aspect-[2.4/1]">
           {/* Left - Your inventory with car cards */}
-          <div className="flex-1 p-3 sm:p-6 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
-            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/30 mb-3 sm:mb-4 lg:mb-6">Your inventory</span>
+          <div className="flex-1 p-3 compact:p-6 large:p-12 flex flex-col items-center justify-center border-b regular:border-b-0 regular:border-r border-white/5">
+            <span className="text-[9px] compact:text-caption2 large:text-caption1 text-white/30 mb-3 compact:mb-4 large:mb-6">Your inventory</span>
             
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-3 lg:gap-6 w-full max-w-3xl">
+            <div className="grid grid-cols-3 gap-1.5 compact:gap-3 large:gap-6 w-full max-w-3xl">
               {/* Card 1 */}
-              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-card border border-border/40 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md compact:rounded-lg large:rounded-xl bg-card border border-border/40 shadow-sm">
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
                   <Image src={m14} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
-                <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
+                <div className="flex items-center justify-between gap-0.5 compact:gap-1 large:gap-2 p-1 compact:p-2 large:p-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">Landcruiser</p>
+                    <p className="text-[7px] compact:text-[9px] large:text-caption1 xlarge:text-subhead font-semibold truncate text-white">Landcruiser</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[5px] sm:text-[7px] lg:text-caption2 xl:text-caption1 text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
+                      <p className="text-[5px] compact:text-[7px] large:text-caption2 xlarge:text-caption1 text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-1.5 h-1.5 compact:w-2 compact:h-2 large:w-3 large:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
-                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
+                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 compact:w-5 compact:h-5 large:w-7 large:h-7 xlarge:w-8 xlarge:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
                 </div>
               </div>
               
               {/* Card 2 */}
-              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-card border border-border/40 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md compact:rounded-lg large:rounded-xl bg-card border border-border/40 shadow-sm">
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
                   <Image src={m15} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
-                <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
+                <div className="flex items-center justify-between gap-0.5 compact:gap-1 large:gap-2 p-1 compact:p-2 large:p-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">Lexus</p>
+                    <p className="text-[7px] compact:text-[9px] large:text-caption1 xlarge:text-subhead font-semibold truncate text-white">Lexus</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[5px] sm:text-[7px] lg:text-caption2 xl:text-caption1 text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
+                      <p className="text-[5px] compact:text-[7px] large:text-caption2 xlarge:text-caption1 text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-1.5 h-1.5 compact:w-2 compact:h-2 large:w-3 large:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
-                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
+                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 compact:w-5 compact:h-5 large:w-7 large:h-7 xlarge:w-8 xlarge:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
                 </div>
               </div>
               
               {/* Card 3 */}
-              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-card border border-border/40 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md compact:rounded-lg large:rounded-xl bg-card border border-border/40 shadow-sm">
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
                   <Image src={m17} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
-                <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
+                <div className="flex items-center justify-between gap-0.5 compact:gap-1 large:gap-2 p-1 compact:p-2 large:p-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">McLaren</p>
+                    <p className="text-[7px] compact:text-[9px] large:text-caption1 xlarge:text-subhead font-semibold truncate text-white">McLaren</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[5px] sm:text-[7px] lg:text-caption2 xl:text-caption1 text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
+                      <p className="text-[5px] compact:text-[7px] large:text-caption2 xlarge:text-caption1 text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-1.5 h-1.5 compact:w-2 compact:h-2 large:w-3 large:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
-                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
+                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 compact:w-5 compact:h-5 large:w-7 large:h-7 xlarge:w-8 xlarge:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
                 </div>
               </div>
             </div>
             
             {/* Typing animated text below cards */}
-            <p className="typing-text mt-3 sm:mt-6 lg:mt-8 text-caption2 sm:text-subhead lg:text-callout xl:text-headline text-primary font-medium">
+            <p className="typing-text mt-3 compact:mt-6 large:mt-8 text-caption2 compact:text-subhead large:text-callout xlarge:text-headline text-primary font-medium">
               + ∞ more listings included
             </p>
           </div>
           
           {/* Right - One subscription */}
-          <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Your cost</span>
+          <div className="w-full regular:w-[200px] large:w-[280px] xlarge:w-[360px] p-6 compact:p-10 large:p-16 flex flex-col items-center justify-center min-h-[160px] compact:min-h-0">
+            <span className="text-[9px] compact:text-caption2 large:text-caption1 text-primary mb-4 compact:mb-6 large:mb-10">Your cost</span>
             
             <div className="flex flex-col items-center">
               {/* Giant one */}
               <div 
-                className="text-display1 sm:text-display2 lg:text-display4 xl:text-display5 font-bold text-primary leading-none"
+                className="text-display1 compact:text-display2 large:text-display4 xlarge:text-display5 font-bold text-primary leading-none"
                 style={{ animation: 'glow-one 3s ease-in-out infinite' }}
               >
                 1
               </div>
-              <span className="text-caption1 sm:text-subhead lg:text-callout text-primary/80 font-medium mt-1 sm:mt-2">subscription</span>
+              <span className="text-caption1 compact:text-subhead large:text-callout text-primary/80 font-medium mt-1 compact:mt-2">subscription</span>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-caption2 xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">per month</p>
+            <p className="text-[8px] compact:text-[9px] large:text-caption2 xlarge:text-caption1 text-white/30 mt-4 compact:mt-6 large:mt-10">per month</p>
           </div>
       </MacOSWindow>
     </>

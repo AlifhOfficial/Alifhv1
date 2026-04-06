@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export function RefundPolicy() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}

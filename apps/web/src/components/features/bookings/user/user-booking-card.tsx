@@ -93,7 +93,7 @@ export function UserBookingCard({
         {/* Image */}
         <Link 
           href={`/listings/${booking.listingId}`}
-          className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
+          className="relative w-28 compact:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
           onClick={e => e.stopPropagation()}
         >
           {listingThumbnailUrl ? (
@@ -116,7 +116,7 @@ export function UserBookingCard({
           {/* Title */}
           <Link 
             href={`/listings/${booking.listingId}`}
-            className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1 hover:text-primary transition-colors"
+            className="text-subhead compact:text-callout font-semibold text-foreground tracking-tight line-clamp-1 hover:text-primary transition-colors"
             onClick={e => e.stopPropagation()}
           >
             {booking.listingTitle}
@@ -175,7 +175,7 @@ export function UserBookingCard({
       {isExpanded && (
         <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200">
           {/* Details Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 compact:grid-cols-3 gap-6">
             <div>
               <p className="text-caption1 text-muted-foreground mb-1">Attendees</p>
               <p className="text-subhead text-foreground">{booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}</p>

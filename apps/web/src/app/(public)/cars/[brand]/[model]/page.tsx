@@ -127,7 +127,7 @@ export default async function ModelPage({ params }: PageProps) {
 function _PageSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-8">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="space-y-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-32 bg-muted/20 rounded-lg animate-pulse" />

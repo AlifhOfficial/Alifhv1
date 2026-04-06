@@ -113,7 +113,7 @@ function PartnerHeader({ partner, isBlackTier, location }: PartnerHeaderProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <h3 className={cn(
-            "text-headline sm:text-title3 tracking-tight text-foreground truncate font-bold"
+            "text-headline compact:text-title3 tracking-tight text-foreground truncate font-bold"
           )}>
             {partner.brandName}
           </h3>

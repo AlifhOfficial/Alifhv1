@@ -40,7 +40,7 @@ export function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreview
       </div>
 
       {decodedFields.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+        <div className="grid grid-cols-2 regular:grid-cols-4 gap-4 pt-2">
           {decodedFields.map(({ label, value }) => (
             <div key={label} className="space-y-1">
               <p className="text-caption2 text-muted-foreground/50 uppercase tracking-wider">{label}</p>

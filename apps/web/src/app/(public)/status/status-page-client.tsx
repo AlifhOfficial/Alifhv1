@@ -81,7 +81,7 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
 
   return (
     <>
-      <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-12 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10 space-y-4">
             <p className="wordmark-geom text-headline text-foreground">
@@ -107,7 +107,7 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
         </div>
       </section>
 
-      <section className="pb-12 px-4 sm:px-6 lg:px-8">
+      <section className="pb-12 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
             <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
@@ -179,7 +179,7 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
         </div>
       </section>
 
-      <section className="pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
             <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">

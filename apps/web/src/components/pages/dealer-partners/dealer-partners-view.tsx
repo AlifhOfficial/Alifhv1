@@ -12,7 +12,7 @@ export function DealerPartnersView() {
     <div className="min-h-screen bg-background">
       
       {/* Hero Section */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           
           {/* Header */}
@@ -55,7 +55,7 @@ export function DealerPartnersView() {
       </section>
 
       {/* Main Content */}
-      <article className="pb-20 px-4 sm:px-6 lg:px-8">
+      <article className="pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           
           {/* Section 1: Why Us */}
@@ -159,7 +159,7 @@ export function DealerPartnersView() {
               </div>
               
               {/* Pricing Cards */}
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid compact:grid-cols-2 gap-4">
                 <div className="p-5 rounded-lg bg-background/50 border border-primary/30">
                   <p className="text-caption1 uppercase tracking-widest text-primary mb-3">Flow</p>
                   <p className="text-title2 font-bold text-foreground mb-1">
@@ -274,7 +274,7 @@ export function DealerPartnersView() {
                 You run your business. We run your operations.
               </p>
               
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid compact:grid-cols-2 gap-4">
                 <div className="p-4 rounded-lg bg-background/50 border border-border/20">
                   <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">You Focus On</p>
                   <div className="space-y-2">
@@ -444,7 +444,7 @@ export function DealerPartnersView() {
                 </p>
               </div>
               
-              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+              <div className="grid compact:grid-cols-2 gap-4 mb-6">
                 <div className="p-4 rounded-lg bg-background/50 border border-border/20">
                   <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-2">What You Get</p>
                   <div className="space-y-1.5">
@@ -492,7 +492,7 @@ export function DealerPartnersView() {
               <div className="text-center">
                 <Link
                   href="/user-dashboard/requests"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-10 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+                  className="w-full compact:w-auto inline-flex items-center justify-center gap-2 h-12 px-10 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
                 >
                   Apply for Founding Program
                   <ArrowRight className="w-4 h-4" />

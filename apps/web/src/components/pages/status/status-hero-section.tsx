@@ -40,7 +40,7 @@ export function StatusHeroSection({ overallStatus }: StatusHeroSectionProps) {
   const Icon = config.icon;
 
   return (
-    <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-12 px-4 compact:px-6 large:px-8">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}
@@ -48,7 +48,7 @@ export function StatusHeroSection({ overallStatus }: StatusHeroSectionProps) {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             System Status
           </span>
-          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Revvup Status
           </h1>
           <p className="text-callout text-muted-foreground max-w-lg mx-auto leading-relaxed">

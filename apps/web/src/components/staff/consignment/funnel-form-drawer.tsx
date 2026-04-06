@@ -184,7 +184,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetOverlay className="backdrop-blur-md bg-background/30" />
-      <SheetContent side="right" className="w-80 sm:w-[420px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border">
+      <SheetContent side="right" className="w-80 compact:w-[420px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border">
         {/* Fixed Header */}
         <SheetHeader className="flex-shrink-0 p-6 pb-4 border-b border-sidebar-border/50">
           <SheetTitle className="text-title3 font-bold tracking-tight">

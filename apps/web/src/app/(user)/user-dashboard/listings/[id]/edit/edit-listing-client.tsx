@@ -86,7 +86,7 @@ export function EditListingClient({ id, userId, userRole }: EditListingClientPro
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 compact:px-6 py-8 compact:py-12 space-y-6">
         <div>
           <Skeleton className="h-4 w-20 mb-4" />
           <Skeleton className="h-8 w-64 mb-2" />

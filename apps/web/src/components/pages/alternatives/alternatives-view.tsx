@@ -30,7 +30,7 @@ function SellButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+        className="w-full compact:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
       >
         List Your Car Free
       </button>
@@ -49,7 +49,7 @@ export function AlternativesView() {
     <div className="min-h-screen bg-background">
       
       {/* Hero Section */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           
           {/* Header */}
@@ -69,7 +69,7 @@ export function AlternativesView() {
       </section>
 
       {/* Main Content */}
-      <article className="pb-20 px-4 sm:px-6 lg:px-8">
+      <article className="pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-2xl mx-auto">
           
           {/* Section 1: The Problem */}
@@ -289,10 +289,10 @@ export function AlternativesView() {
             <p className="text-subhead text-muted-foreground mb-6 leading-relaxed">
               No credit card. No approval wait. List your car in 2 minutes.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex flex-col compact:flex-row items-center justify-center gap-3">
               <Link
                 href="/listings"
-                className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+                className="w-full compact:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
               >
                 Browse Cars
               </Link>

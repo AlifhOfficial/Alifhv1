@@ -153,7 +153,7 @@ export function AdminPartnerOperations({
       </div>
 
       {/* Secondary Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 regular:grid-cols-3 gap-3">
         {/* Update Tier */}
         <button
           onClick={() => {

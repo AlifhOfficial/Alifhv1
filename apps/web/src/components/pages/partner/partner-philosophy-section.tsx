@@ -9,7 +9,7 @@ import { m5, m6, m7 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerPhilosophySection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header - Centered */}
@@ -18,7 +18,7 @@ export function PartnerPhilosophySection() {
             Our philosophy
           </span>
           
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             We're infrastructure.
             <br />
             <span className="text-muted-foreground">Not competition.</span>
@@ -36,7 +36,7 @@ export function PartnerPhilosophySection() {
         </p>
 
         {/* Principles - Card grid */}
-        <div className="grid sm:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        <div className="grid compact:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {[
             { title: 'Infrastructure only', desc: 'We build roads, you drive' },
             { title: 'Never competing', desc: 'Zero cars owned by Revvup' },
@@ -61,47 +61,47 @@ export function PartnerPhilosophySection() {
 
 function PhilosophyInfographic() {
   return (
-    <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
+    <div className="relative w-full aspect-[16/9] compact:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
 
       <div className="h-full flex">
         {/* Left - Others have inventory */}
         <div className="flex-1 flex flex-col border-r border-border/20">
-          <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
+          <div className="px-6 compact:px-8 large:px-10 pt-6 compact:pt-8 large:pt-10">
             <span className="text-caption1 text-muted-foreground/60">Their inventory</span>
           </div>
           
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
-            <div className="relative w-32 sm:w-40 lg:w-48">
-              <div className="absolute top-0 left-0 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-40 -rotate-6 shadow-lg">
+          <div className="flex-1 flex items-center justify-center px-4 compact:px-8 large:px-12 py-6">
+            <div className="relative w-32 compact:w-40 large:w-48">
+              <div className="absolute top-0 left-0 w-20 compact:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-40 -rotate-6 shadow-lg">
                 <Image src={m5} alt="" className="w-full h-full object-cover grayscale" sizes="(max-width: 640px) 80px, 96px" />
               </div>
-              <div className="absolute top-2 left-4 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-50 rotate-3 shadow-lg">
+              <div className="absolute top-2 left-4 w-20 compact:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-50 rotate-3 shadow-lg">
                 <Image src={m6} alt="" className="w-full h-full object-cover grayscale" sizes="(max-width: 640px) 80px, 96px" />
               </div>
-              <div className="absolute top-4 left-8 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-60 -rotate-2 shadow-lg">
+              <div className="absolute top-4 left-8 w-20 compact:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-60 -rotate-2 shadow-lg">
                 <Image src={m7} alt="" className="w-full h-full object-cover grayscale" sizes="(max-width: 640px) 80px, 96px" />
               </div>
             </div>
           </div>
           
-          <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
+          <div className="px-6 compact:px-8 large:px-10 pb-6 compact:pb-8 large:pb-10">
             <p className="text-caption1 text-muted-foreground/50 text-center">They compete with you</p>
           </div>
         </div>
         
         {/* Right - Revvup has zero */}
         <div className="flex-1 flex flex-col">
-          <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
+          <div className="px-6 compact:px-8 large:px-10 pt-6 compact:pt-8 large:pt-10">
             <span className="text-caption1 text-primary">Our inventory</span>
           </div>
           
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
+          <div className="flex-1 flex items-center justify-center px-4 compact:px-8 large:px-12 py-6">
             <div className="text-center">
-              <div className="text-display2 sm:text-display3 lg:text-display4 xl:text-display5 font-bold text-primary/20 tracking-tight">0</div>
+              <div className="text-display2 compact:text-display3 large:text-display4 xlarge:text-display5 font-bold text-primary/20 tracking-tight">0</div>
             </div>
           </div>
           
-          <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
+          <div className="px-6 compact:px-8 large:px-10 pb-6 compact:pb-8 large:pb-10">
             <p className="text-caption1 text-primary/70 text-center">We never compete</p>
           </div>
         </div>

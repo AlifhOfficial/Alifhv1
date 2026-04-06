@@ -9,7 +9,7 @@ import { AdminDashboardStats } from "@/components/admin/admin-dashboard-stats";
 export default function AdminDashboardPage() {
   return (
     <DashboardDisplayArea>
-      <div className="p-6 md:p-10">
+      <div className="p-6 regular:p-10">
         <AdminDashboardStats />
       </div>
     </DashboardDisplayArea>

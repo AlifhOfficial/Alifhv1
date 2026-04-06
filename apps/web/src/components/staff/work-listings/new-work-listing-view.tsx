@@ -109,9 +109,9 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
     <div className="min-h-screen bg-background -mx-4">
       {/* Error Message */}
       {error && (
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
-          <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
-            <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
+        <div className="max-w-2xl mx-auto px-4 compact:px-6 mt-4 compact:mt-6">
+          <div className="rounded-xl compact:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 compact:p-4">
+            <p className="text-caption1 compact:text-subhead text-destructive">{error}</p>
           </div>
         </div>
       )}

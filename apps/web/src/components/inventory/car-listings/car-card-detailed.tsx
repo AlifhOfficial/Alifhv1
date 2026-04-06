@@ -403,7 +403,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0 space-y-1.5">
             <h1 className={cn(
-              "text-headline sm:text-title3 font-bold tracking-tight",
+              "text-headline compact:text-title3 font-bold tracking-tight",
               listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
             )}>
               {carTitle}
@@ -412,7 +412,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
             {/* Price */}
             <div className="flex items-baseline gap-2.5 flex-wrap">
               <p className={cn(
-                "text-title3 sm:text-title2 font-black tabular-nums tracking-tight leading-none",
+                "text-title3 compact:text-title2 font-black tabular-nums tracking-tight leading-none",
                 listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-primary dark:text-primary"
               )}>
                 {formatPrice(listing.price)}
@@ -424,7 +424,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1 compact:gap-2 flex-shrink-0">
             {showBlkBadge && (
               <span className="inline-flex items-center px-1.5 h-5 text-caption2 font-black tracking-wider bg-black text-white">
                 BLK
@@ -515,7 +515,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           Specifications
         </p>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+        <div className="grid grid-cols-1 compact:grid-cols-2 gap-x-8">
           {/* Left Column */}
           <div className="space-y-0">
             {listing.bodyType && (
@@ -762,10 +762,10 @@ function CarCardDetailedSkeletonComponent() {
         {/* Title & Actions */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0 space-y-1.5">
-            <Skeleton className="h-5 sm:h-6 w-3/4" />
-            <Skeleton className="h-6 sm:h-7 w-36" />
+            <Skeleton className="h-5 compact:h-6 w-3/4" />
+            <Skeleton className="h-6 compact:h-7 w-36" />
           </div>
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1 compact:gap-2 flex-shrink-0">
             <Skeleton className="h-7 w-7 rounded-full" />
             <Skeleton className="h-7 w-7 rounded-full" />
             <Skeleton className="h-7 w-7 rounded-full" />
@@ -800,7 +800,7 @@ function CarCardDetailedSkeletonComponent() {
       <div className="space-y-4">
         <Skeleton className="h-[13px] w-28" />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+        <div className="grid grid-cols-1 compact:grid-cols-2 gap-x-8">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="flex justify-between py-3">
               <Skeleton className="h-3.5 w-24" />

@@ -222,7 +222,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+      <div className="max-w-2xl mx-auto px-4 compact:px-6 py-6 compact:py-8 space-y-6 compact:space-y-8">
 
         {/* Header */}
         <div>
@@ -241,7 +241,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
                   key={t.value}
                   onClick={() => setTheme(t.value)}
                   className={cn(
-                    "py-2 sm:py-2.5 rounded-lg text-caption1 sm:text-subhead transition-all",
+                    "py-2 compact:py-2.5 rounded-lg text-caption1 compact:text-subhead transition-all",
                     mounted && theme === t.value 
                       ? "bg-muted/50 text-foreground" 
                       : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
@@ -249,7 +249,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
                 >
                   {t.label}
                   {mounted && theme === t.value && (
-                    <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-success inline ml-1" />
+                    <CheckCircle2 className="w-3 compact:w-3.5 h-3 compact:h-3.5 text-success inline ml-1" />
                   )}
                 </button>
               ))}
@@ -360,7 +360,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
           <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Danger Zone</h3>
           
           <div className="rounded-xl border border-destructive/30 bg-sidebar p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+            <div className="flex flex-col compact:flex-row compact:items-center gap-3 compact:justify-between">
               <div>
                 <p className="text-subhead text-foreground">Delete Account</p>
                 <p className="text-caption1 text-muted-foreground/70 mt-0.5">
@@ -369,7 +369,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
               </div>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="px-4 py-2 rounded-lg text-subhead font-semibold text-destructive hover:bg-destructive/10 transition-colors w-full sm:w-auto text-center shrink-0"
+                className="px-4 py-2 rounded-lg text-subhead font-semibold text-destructive hover:bg-destructive/10 transition-colors w-full compact:w-auto text-center shrink-0"
               >
                 Delete
               </button>

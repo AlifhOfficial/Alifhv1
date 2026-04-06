@@ -10,7 +10,7 @@ import { ExternalLink } from 'lucide-react';
 
 export function VisionCommitmentSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -18,7 +18,7 @@ export function VisionCommitmentSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Our Commitment
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Built in the UAE.
             <br />
             <span className="text-muted-foreground">For the UAE.</span>
@@ -34,7 +34,7 @@ export function VisionCommitmentSection() {
         {/* Quote Card */}
         <div className="max-w-3xl mx-auto mb-12">
           <div className="p-8 rounded-xl bg-primary text-primary-foreground text-center">
-            <blockquote className="text-headline sm:text-title3 leading-relaxed mb-4">
+            <blockquote className="text-headline compact:text-title3 leading-relaxed mb-4">
               "Today we look forward to a new era… an era characterized by boundless ambitions 
               guaranteeing a prosperous future positioning our nation as a global leader."
             </blockquote>

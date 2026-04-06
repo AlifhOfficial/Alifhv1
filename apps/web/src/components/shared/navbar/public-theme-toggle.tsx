@@ -43,7 +43,7 @@ export function PublicThemeToggle() {
   }, []);
 
   return (
-    <div className="relative mr-2 hidden sm:block" data-theme-menu-container>
+    <div className="relative mr-2 hidden compact:block" data-theme-menu-container>
       <button
         onClick={(event) => {
           event.stopPropagation();

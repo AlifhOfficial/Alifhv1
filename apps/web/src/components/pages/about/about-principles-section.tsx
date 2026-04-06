@@ -11,7 +11,7 @@ import { revx6 } from '@/components/pages/marketing-image-assets';
 
 export function AboutPrinciplesSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -19,7 +19,7 @@ export function AboutPrinciplesSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Our Principles
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             What We Won't Compromise.
             <br />
             <span className="text-muted-foreground">Ever.</span>
@@ -44,7 +44,7 @@ export function AboutPrinciplesSection() {
         </p>
 
         {/* Feature Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto">
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
             <Heart className="w-5 h-5 text-primary-foreground/70 mb-3" />
             <h3 className="text-callout font-semibold mb-1.5">Users first</h3>

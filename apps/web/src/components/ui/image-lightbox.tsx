@@ -113,14 +113,14 @@ export function ImageLightbox({
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 bg-muted/80 hover:bg-muted rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+        className="absolute top-3 right-3 compact:top-4 compact:right-4 z-20 w-9 h-9 compact:w-10 compact:h-10 bg-muted/80 hover:bg-muted rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
         aria-label="Close"
       >
-        <X className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+        <X className="w-4 h-4 compact:w-5 compact:h-5 text-foreground" />
       </button>
 
       {/* Image Counter */}
-      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-muted/80 backdrop-blur-sm text-foreground text-caption1 sm:text-subhead tabular-nums rounded-full">
+      <div className="absolute top-3 left-3 compact:top-4 compact:left-4 z-20 px-2.5 py-1 compact:px-3 compact:py-1.5 bg-muted/80 backdrop-blur-sm text-foreground text-caption1 compact:text-subhead tabular-nums rounded-full">
         {safeIndex + 1} / {totalImages}
       </div>
 
@@ -149,26 +149,26 @@ export function ImageLightbox({
               e.stopPropagation();
               goPrev();
             }}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-muted/80 hover:bg-muted backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            className="absolute left-2 compact:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 compact:w-12 compact:h-12 bg-muted/80 hover:bg-muted backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
             aria-label="Previous image"
           >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+            <ChevronLeft className="w-5 h-5 compact:w-6 compact:h-6 text-foreground" />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               goNext();
             }}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-muted/80 hover:bg-muted backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+            className="absolute right-2 compact:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 compact:w-12 compact:h-12 bg-muted/80 hover:bg-muted backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
             aria-label="Next image"
           >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+            <ChevronRight className="w-5 h-5 compact:w-6 compact:h-6 text-foreground" />
           </button>
         </>
       )}
 
       {/* Thumbnail Strip */}
-      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 hidden sm:flex gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-muted/80 backdrop-blur-sm rounded-xl max-w-[90vw] overflow-x-auto scrollbar-thin">
+      <div className="absolute bottom-3 compact:bottom-4 left-1/2 -translate-x-1/2 z-20 hidden compact:flex gap-1.5 compact:gap-2 px-3 compact:px-4 py-2 compact:py-2.5 bg-muted/80 backdrop-blur-sm rounded-xl max-w-[90vw] overflow-x-auto scrollbar-thin">
         {validThumbnailImages.map((img, idx) => (
           <button
             key={idx}
@@ -177,7 +177,7 @@ export function ImageLightbox({
               onIndexChange(idx);
             }}
             className={cn(
-              'relative w-12 h-8 sm:w-14 sm:h-10 flex-shrink-0 rounded-md overflow-hidden transition-all',
+              'relative w-12 h-8 compact:w-14 compact:h-10 flex-shrink-0 rounded-md overflow-hidden transition-all',
               idx === safeIndex ? 'opacity-100 scale-105' : 'opacity-50 hover:opacity-100'
             )}
           >

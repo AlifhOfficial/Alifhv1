@@ -36,7 +36,7 @@ export function PublicNavbarMenu({ navItems }: PublicNavbarMenuProps) {
 
   return (
     <>
-      <div className="hidden lg:flex items-baseline gap-1">
+      <div className="hidden large:flex items-baseline gap-1">
         {navItems.map((item) => (
           <div
             key={item.label}

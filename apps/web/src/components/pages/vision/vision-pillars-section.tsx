@@ -54,7 +54,7 @@ function HighlightCard({ icon: Icon, title, description }: FeatureCardProps) {
 
 export function VisionPillarsSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
 
         {/* ═══════════════════════════════════════════════════════════════════
@@ -65,7 +65,7 @@ export function VisionPillarsSection() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 1
             </span>
-            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h3 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Forward Society.
               <br />
               <span className="text-muted-foreground">Prosperity through trust.</span>
@@ -90,7 +90,7 @@ export function VisionPillarsSection() {
           </p>
 
           {/* Feature Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <FeatureCard 
               icon={Shield}
               title="No duplicates"
@@ -122,7 +122,7 @@ export function VisionPillarsSection() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 2
             </span>
-            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h3 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Forward Economy.
               <br />
               <span className="text-muted-foreground">Growth through empowerment.</span>
@@ -147,7 +147,7 @@ export function VisionPillarsSection() {
           </p>
 
           {/* Feature Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <FeatureCard 
               icon={Building2}
               title="SME empowerment"
@@ -179,7 +179,7 @@ export function VisionPillarsSection() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 3
             </span>
-            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h3 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Forward Diplomacy.
               <br />
               <span className="text-muted-foreground">A force for good.</span>
@@ -204,7 +204,7 @@ export function VisionPillarsSection() {
           </p>
 
           {/* Feature Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <FeatureCard 
               icon={Leaf}
               title="EV-ready platform"
@@ -236,7 +236,7 @@ export function VisionPillarsSection() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 4
             </span>
-            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h3 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Forward Ecosystem.
               <br />
               <span className="text-muted-foreground">Digital infrastructure.</span>
@@ -261,7 +261,7 @@ export function VisionPillarsSection() {
           </p>
 
           {/* Feature Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <FeatureCard 
               icon={Cpu}
               title="Modern tech stack"

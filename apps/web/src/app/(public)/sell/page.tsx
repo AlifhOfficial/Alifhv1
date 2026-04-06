@@ -11,7 +11,7 @@ export default function SellPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           {/* Header */}
@@ -19,7 +19,7 @@ export default function SellPage() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               For Private Sellers
             </span>
-            <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               List free.
               <br />
               <span className="text-muted-foreground">Sell fast.</span>
@@ -37,14 +37,14 @@ export default function SellPage() {
           </p>
 
           {/* CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col compact:flex-row items-center justify-center gap-3">
             <Link href="/user-dashboard/listings/new">
-              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
+              <Button size="lg" className="w-full compact:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
                 List Your Car
               </Button>
             </Link>
             <Link href="/listings">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
+              <Button size="lg" variant="outline" className="w-full compact:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
                 Browse Cars
               </Button>
             </Link>
@@ -53,7 +53,7 @@ export default function SellPage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           {/* Header */}
@@ -61,7 +61,7 @@ export default function SellPage() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               How It Works
             </span>
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               List in minutes.
             </h2>
           </div>
@@ -79,7 +79,7 @@ export default function SellPage() {
       </section>
 
       {/* Features Section */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           {/* Header */}
@@ -87,13 +87,13 @@ export default function SellPage() {
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Why Revvup
             </span>
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Built for you.
             </h2>
           </div>
 
           {/* Feature Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+          <div className="grid compact:grid-cols-2 large:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
             <FeatureCard 
               icon={CheckCircle2}
               title="Free forever"
@@ -129,20 +129,20 @@ export default function SellPage() {
       </section>
 
       {/* Closing CTA Section */}
-      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           
           {/* Header */}
           <div className="text-center mb-12 space-y-5">
-            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Ready to sell?
             </h2>
           </div>
 
           {/* CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col compact:flex-row items-center justify-center gap-3">
             <Link href="/user-dashboard/listings/new">
-              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
+              <Button size="lg" className="w-full compact:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
                 List Your Car
               </Button>
             </Link>
@@ -174,9 +174,9 @@ function SellHeroInfographic() {
   return (
     <div className="rounded-2xl overflow-hidden border border-border/40 bg-sidebar">
       {/* Window Content */}
-      <div className="flex flex-col md:flex-row min-h-[450px] sm:min-h-[500px] lg:min-h-[550px]">
+      <div className="flex flex-col regular:flex-row min-h-[450px] compact:min-h-[500px] large:min-h-[550px]">
         {/* Left - Others */}
-        <div className="flex-1 p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border/40">
+        <div className="flex-1 p-10 compact:p-14 large:p-20 flex flex-col items-center justify-center border-b regular:border-b-0 regular:border-r border-border/40">
           <span className="text-caption1 text-muted-foreground/50 mb-10">Others</span>
           
           <div className="space-y-4">
@@ -202,11 +202,11 @@ function SellHeroInfographic() {
         </div>
         
         {/* Right - Revvup */}
-        <div className="w-full md:w-[300px] lg:w-[400px] p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center">
+        <div className="w-full regular:w-[300px] large:w-[400px] p-10 compact:p-14 large:p-20 flex flex-col items-center justify-center">
           <span className="text-caption1 text-primary mb-10">Revvup</span>
           
           <div className="flex flex-col items-center">
-            <div className="text-display3 sm:text-display4 lg:text-display5 font-bold text-primary leading-none">
+            <div className="text-display3 compact:text-display4 large:text-display5 font-bold text-primary leading-none">
               0
             </div>
             <span className="text-callout text-primary/70 font-medium mt-2">fees</span>
@@ -223,7 +223,7 @@ function SellHeroInfographic() {
 
 function StepsInfographic() {
   return (
-    <div className="rounded-2xl overflow-hidden border border-border/40 bg-sidebar min-h-[500px] sm:min-h-[550px] lg:min-h-[600px] flex items-center justify-center">
+    <div className="rounded-2xl overflow-hidden border border-border/40 bg-sidebar min-h-[500px] compact:min-h-[550px] large:min-h-[600px] flex items-center justify-center">
       {/* Placeholder - content coming later */}
       <p className="text-subhead text-muted-foreground/30">Coming soon</p>
     </div>

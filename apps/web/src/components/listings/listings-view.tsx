@@ -162,15 +162,15 @@ export function ListingsView({
     <TooltipProvider>
       <div className={cn(
         "min-h-screen bg-background",
-        embedded ? "" : "pt-14 md:pt-16"
+        embedded ? "" : "pt-14 regular:pt-16"
       )}>
         {/* Main Layout Container - respects max-width */}
         <div className={cn(
-          "mx-auto px-4 md:px-6 lg:px-8",
-          !embedded && "max-w-[1600px] lg:pt-6"
+          "mx-auto px-4 max-compact:px-3 regular:px-6 large:px-8",
+          !embedded && "max-w-[1600px] large:pt-6"
         )}>
           {/* Mobile Layout (no resizable) */}
-          <div className="md:hidden">
+          <div className="regular:hidden">
             {/* TOP: Sticky mobile header */}
             <div
               className={cn(
@@ -230,15 +230,15 @@ export function ListingsView({
           {/* Desktop/Tablet Layout - sticky shell with normal page scroll */}
           <div
             className={cn(
-              "hidden md:grid gap-x-6",
+              "hidden regular:grid gap-x-6",
               sidebarOpen
-                ? "grid-cols-[minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]"
+                ? "grid-cols-[minmax(0,1fr)] large:grid-cols-[16rem_minmax(0,1fr)]"
                 : "grid-cols-[minmax(0,1fr)]"
             )}
           >
             {/* LEFT: Sidebar */}
             {sidebarOpen && (
-              <div className="hidden lg:block min-w-0">
+              <div className="hidden large:block min-w-0">
                 <div
                   className={cn(
                     "sticky overflow-hidden",
@@ -261,7 +261,7 @@ export function ListingsView({
             )}
 
             {/* RIGHT COLUMN: Sticky header + page-flow content */}
-            <div className={cn("min-w-0", sidebarOpen && "lg:col-start-2")}>
+            <div className={cn("min-w-0", sidebarOpen && "large:col-start-2")}>
               <div
                 className={cn(
                   "sticky z-30 bg-background",
@@ -306,7 +306,7 @@ export function ListingsView({
           </div>
 
           {!embedded && !isLoading && !isFetching && listings.length > 0 && (
-            <div className={cn("hidden md:block pt-6", sidebarOpen && "lg:pl-[18.5rem]")}>
+            <div className={cn("hidden regular:block pt-6", sidebarOpen && "large:pl-[18.5rem]")}>
               <ListingsPagination
                 currentPage={currentPage}
                 canGoBack={canGoBack}
@@ -319,7 +319,7 @@ export function ListingsView({
           )}
 
           {embedded && !isLoading && !isFetching && listings.length > 0 && (
-            <div className="hidden md:block pt-6">
+            <div className="hidden regular:block pt-6">
               <ListingsPagination
                 currentPage={currentPage}
                 canGoBack={canGoBack}

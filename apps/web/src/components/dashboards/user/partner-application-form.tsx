@@ -326,7 +326,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                 />
               </FieldWrapper>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 compact:grid-cols-2 gap-6">
                 <FieldWrapper label="Partner Type" required>
                   <Select value={formData.partnerType} onValueChange={(value) => updateField('partnerType', value)}>
                     <SelectTrigger className="h-12 border-0 border-b-2 border-border/40 rounded-none bg-transparent px-0 focus:ring-0 focus:border-primary">
@@ -364,7 +364,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
             />
             
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 compact:grid-cols-2 gap-6">
                 <FieldWrapper label="Trade License Number" required error={errors.tradeLicense}>
                   <input
                     type="text"
@@ -486,11 +486,11 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
           </section>
 
           {/* Submit Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4">
+          <div className="flex flex-col compact:flex-row items-center justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={() => router.push('/user-dashboard/requests')}
-              className="w-full sm:w-auto px-6 py-3 rounded-lg bg-muted text-foreground text-subhead hover:bg-muted/80 transition-colors"
+              className="w-full compact:w-auto px-6 py-3 rounded-lg bg-muted text-foreground text-subhead hover:bg-muted/80 transition-colors"
             >
               Cancel
             </button>
@@ -498,7 +498,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
               type="submit"
               disabled={isSubmitting || isUploading}
               className={cn(
-                "w-full sm:w-auto px-8 py-3 rounded-lg text-subhead transition-colors shadow-sm",
+                "w-full compact:w-auto px-8 py-3 rounded-lg text-subhead transition-colors shadow-sm",
                 "bg-primary text-primary-foreground hover:bg-primary/90",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}

@@ -78,16 +78,16 @@ export function ImageGridModal({
         // Pattern A: Large left + 2 stacked right
         const mainImg = validImages[baseIndex];
         rows.push(
-          <div key={`row-${rowIndex}`} className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+          <div key={`row-${rowIndex}`} className="grid grid-cols-2 compact:grid-cols-3 gap-1.5 compact:gap-2 mb-1.5 compact:mb-2">
             <button
               onClick={() => onImageClick(baseIndex)}
-              className="relative col-span-2 sm:col-span-2 aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+              className="relative col-span-2 compact:col-span-2 aspect-[4/3] overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer"
             >
               <img src={mainImg} alt={`Photo ${baseIndex + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{baseIndex + 1}</div>
+              <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{baseIndex + 1}</div>
             </button>
-            <div className="col-span-2 sm:col-span-1 grid grid-cols-2 sm:flex sm:flex-col gap-1.5 sm:gap-2">
+            <div className="col-span-2 compact:col-span-1 grid grid-cols-2 compact:flex compact:flex-col gap-1.5 compact:gap-2">
               {[1, 2].map((offset) => {
                 const imgIdx = baseIndex + offset;
                 const img = validImages[imgIdx];
@@ -96,11 +96,11 @@ export function ImageGridModal({
                   <button
                     key={imgIdx}
                     onClick={() => onImageClick(imgIdx)}
-                    className="relative aspect-[4/3] sm:aspect-auto sm:flex-1 overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                    className="relative aspect-[4/3] compact:aspect-auto compact:flex-1 overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer"
                   >
                     <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                    <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                   </button>
                 );
               })}
@@ -111,7 +111,7 @@ export function ImageGridModal({
       } else if (remaining >= 3 && rowIndex % 3 === 1) {
         // Pattern B: 3 equal
         rows.push(
-          <div key={`row-${rowIndex}`} className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+          <div key={`row-${rowIndex}`} className="grid grid-cols-2 compact:grid-cols-3 gap-1.5 compact:gap-2 mb-1.5 compact:mb-2">
             {[0, 1, 2].map((offset) => {
               const imgIdx = baseIndex + offset;
               const img = validImages[imgIdx];
@@ -121,13 +121,13 @@ export function ImageGridModal({
                   key={imgIdx}
                   onClick={() => onImageClick(imgIdx)}
                   className={cn(
-                    'relative aspect-square overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer',
-                    offset === 2 && 'col-span-2 sm:col-span-1 aspect-[2/1] sm:aspect-square'
+                    'relative aspect-square overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer',
+                    offset === 2 && 'col-span-2 compact:col-span-1 aspect-[2/1] compact:aspect-square'
                   )}
                 >
                   <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                  <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                  <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                 </button>
               );
             })}
@@ -138,16 +138,16 @@ export function ImageGridModal({
         // Pattern C: Large right + 2 stacked left
         const mainImg = validImages[baseIndex + 2];
         rows.push(
-          <div key={`row-${rowIndex}`} className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+          <div key={`row-${rowIndex}`} className="grid grid-cols-2 compact:grid-cols-3 gap-1.5 compact:gap-2 mb-1.5 compact:mb-2">
             <button
               onClick={() => onImageClick(baseIndex + 2)}
-              className="relative col-span-2 sm:col-span-2 sm:order-2 aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+              className="relative col-span-2 compact:col-span-2 compact:order-2 aspect-[4/3] overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer"
             >
               <img src={mainImg} alt={`Photo ${baseIndex + 3}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{baseIndex + 3}</div>
+              <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{baseIndex + 3}</div>
             </button>
-            <div className="col-span-2 sm:col-span-1 sm:order-1 grid grid-cols-2 sm:flex sm:flex-col gap-1.5 sm:gap-2">
+            <div className="col-span-2 compact:col-span-1 compact:order-1 grid grid-cols-2 compact:flex compact:flex-col gap-1.5 compact:gap-2">
               {[0, 1].map((offset) => {
                 const imgIdx = baseIndex + offset;
                 const img = validImages[imgIdx];
@@ -156,11 +156,11 @@ export function ImageGridModal({
                   <button
                     key={imgIdx}
                     onClick={() => onImageClick(imgIdx)}
-                    className="relative aspect-[4/3] sm:aspect-auto sm:flex-1 overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                    className="relative aspect-[4/3] compact:aspect-auto compact:flex-1 overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer"
                   >
                     <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                    <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                   </button>
                 );
               })}
@@ -171,7 +171,7 @@ export function ImageGridModal({
       } else if (remaining === 2) {
         // 2 remaining: side by side
         rows.push(
-          <div key={`row-${rowIndex}`} className="grid grid-cols-2 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+          <div key={`row-${rowIndex}`} className="grid grid-cols-2 gap-1.5 compact:gap-2 mb-1.5 compact:mb-2">
             {[0, 1].map((offset) => {
               const imgIdx = baseIndex + offset;
               const img = validImages[imgIdx];
@@ -180,11 +180,11 @@ export function ImageGridModal({
                 <button
                   key={imgIdx}
                   onClick={() => onImageClick(imgIdx)}
-                  className="relative aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                  className="relative aspect-[4/3] overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer"
                 >
                   <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                  <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                  <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                 </button>
               );
             })}
@@ -195,14 +195,14 @@ export function ImageGridModal({
         // 1 remaining: full width
         const img = validImages[baseIndex];
         rows.push(
-          <div key={`row-${rowIndex}`} className="mb-1.5 sm:mb-2">
+          <div key={`row-${rowIndex}`} className="mb-1.5 compact:mb-2">
             <button
               onClick={() => onImageClick(baseIndex)}
-              className="relative w-full aspect-[16/9] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+              className="relative w-full aspect-[16/9] overflow-hidden rounded-lg compact:rounded-xl bg-muted/30 group cursor-pointer"
             >
               <img src={img} alt={`Photo ${baseIndex + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{baseIndex + 1}</div>
+              <div className="absolute bottom-1.5 right-1.5 compact:bottom-2 compact:right-2 px-1.5 compact:px-2 py-0.5 bg-black/60 text-white text-caption2 compact:text-caption1 font-bold rounded">{baseIndex + 1}</div>
             </button>
           </div>
         );
@@ -234,24 +234,24 @@ export function ImageGridModal({
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 bg-muted/80 hover:bg-muted rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+        className="absolute top-3 right-3 compact:top-4 compact:right-4 z-20 w-9 h-9 compact:w-10 compact:h-10 bg-muted/80 hover:bg-muted rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
         aria-label="Close"
       >
-        <X className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+        <X className="w-4 h-4 compact:w-5 compact:h-5 text-foreground" />
       </button>
 
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50">
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3">
+        <div className="flex items-center justify-between px-3 compact:px-4 py-2.5 compact:py-3">
           <div>
-            <h2 className="text-subhead sm:text-callout font-bold text-foreground">{title}</h2>
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground">{totalImages} images</p>
+            <h2 className="text-subhead compact:text-callout font-bold text-foreground">{title}</h2>
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground">{totalImages} images</p>
           </div>
         </div>
       </div>
 
       {/* Image Grid */}
-      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+      <div className="max-w-5xl mx-auto px-2 compact:px-4 py-3 compact:py-4">
         {buildRows()}
       </div>
     </div>,

@@ -106,14 +106,14 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Header */}
-      <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+      <section className="pt-28 pb-12 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
           <div className="text-center mb-12 space-y-4">
             <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Black Members
             </span>
-            <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+            <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
               Every detail matters.
               <br />
               <span className="text-muted-foreground">Every single one.</span>
@@ -152,7 +152,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
       </section>
       
       {/* Directory Grid */}
-      <main className="px-4 sm:px-6 lg:px-8 pb-20">
+      <main className="px-4 compact:px-6 large:px-8 pb-20">
         <div className="max-w-[1600px] mx-auto space-y-6">
           {/* Loading State */}
           {isLoading && (
@@ -165,7 +165,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
           {/* Error State */}
           {error && (
             <div className="w-full">
-              <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[50vh] flex items-center justify-center">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-12 compact:p-16 min-h-[50vh] flex items-center justify-center">
                 <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
                   <div className="rounded-full bg-muted/50 p-4 mb-6">
                     <X className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
@@ -184,7 +184,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
           {/* No Results */}
           {showNoResults && (
             <div className="w-full">
-              <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[50vh] flex items-center justify-center">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-12 compact:p-16 min-h-[50vh] flex items-center justify-center">
                 <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
                   <div className="rounded-full bg-muted/50 p-4 mb-6">
                     <Search className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
@@ -203,7 +203,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
           {/* Empty State */}
           {!isLoading && !error && !searchQuery && data?.showrooms.length === 0 && (
             <div className="w-full">
-              <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[50vh] flex items-center justify-center">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-12 compact:p-16 min-h-[50vh] flex items-center justify-center">
                 <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
                   <div className="rounded-full bg-muted/50 p-4 mb-6">
                     <Package className="w-8 h-8 text-muted-foreground" strokeWidth={2} />

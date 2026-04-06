@@ -61,7 +61,7 @@ export function OwnershipCostCalculator() {
   return (
     <div className="border rounded-lg p-6">
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 regular:grid-cols-2 gap-4">
           <div>
             <label className="block text-subhead mb-2">
               Car Price (AED)

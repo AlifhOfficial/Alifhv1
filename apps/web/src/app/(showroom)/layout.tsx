@@ -24,6 +24,6 @@ export default function ShowroomLayout({
 
 function NavbarSkeleton() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl h-14 sm:h-16" />
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl h-14 compact:h-16" />
   );
 }

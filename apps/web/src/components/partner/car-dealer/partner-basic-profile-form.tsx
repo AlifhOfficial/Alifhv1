@@ -552,7 +552,7 @@ export function PartnerBasicProfileForm({
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div className="max-w-2xl mx-auto px-4 compact:px-6 py-6 compact:py-8">
       {/* Back */}
       <Link 
         href="/partner-dashboard"
@@ -563,7 +563,7 @@ export function PartnerBasicProfileForm({
       </Link>
 
       {/* Banner */}
-      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 sm:h-32 mb-6 group">
+      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 compact:h-32 mb-6 group">
         <input
           type="file"
           accept="image/*"
@@ -614,9 +614,9 @@ export function PartnerBasicProfileForm({
       </div>
 
       {/* Profile Header */}
-      <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div className="flex items-start gap-3 compact:gap-4 mb-6 compact:mb-8">
         {/* Avatar */}
-        <div className="relative group -mt-10 sm:-mt-12 z-10 shrink-0">
+        <div className="relative group -mt-10 compact:-mt-12 z-10 shrink-0">
           <input 
             type="file" 
             accept="image/*" 
@@ -630,7 +630,7 @@ export function PartnerBasicProfileForm({
               logoUrl={displayLogoUrl} 
               brandName={profile.brandName} 
               size="xl"
-              className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
+              className={cn("w-20 h-20 compact:w-24 compact:h-24 border-4 border-background", logoUploading && "opacity-50")}
             />
             <div className={cn(
               "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
@@ -660,9 +660,9 @@ export function PartnerBasicProfileForm({
           )}
         </div>
 
-        <div className="flex-1 min-w-0 pt-1 sm:pt-2">
+        <div className="flex-1 min-w-0 pt-1 compact:pt-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-headline sm:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
+            <h1 className="text-headline compact:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {profile.tier === 'black' ? (
               <span className="inline-flex items-center px-1.5 h-5 text-caption2 font-black tracking-wider bg-black text-white">
                 BLK
@@ -678,7 +678,7 @@ export function PartnerBasicProfileForm({
               <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", isLoading && "animate-spin")} />
             </button>
           </div>
-          <p className="text-caption1 sm:text-subhead text-muted-foreground mt-0.5 truncate">
+          <p className="text-caption1 compact:text-subhead text-muted-foreground mt-0.5 truncate">
             {profile.companyNameLegal}
           </p>
           {!profile.isVerified && (
@@ -693,21 +693,21 @@ export function PartnerBasicProfileForm({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 bg-sidebar rounded-xl mb-6 sm:mb-8 overflow-hidden">
-        <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-b md:border-b-0 border-border/40">
-          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Inventory</span>
-          <span className="text-headline sm:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.inventoryCount ?? 0}</span>
+      <div className="grid grid-cols-2 regular:grid-cols-4 border border-border/40 bg-sidebar rounded-xl mb-6 compact:mb-8 overflow-hidden">
+        <div className="p-4 compact:p-5 flex flex-col gap-1 border-r border-b regular:border-b-0 border-border/40">
+          <span className="text-caption1 compact:text-subhead font-semibold text-muted-foreground/70">Inventory</span>
+          <span className="text-headline compact:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.inventoryCount ?? 0}</span>
         </div>
-        <div className="p-4 sm:p-5 flex flex-col gap-1 border-b md:border-b-0 md:border-r border-border/40">
-          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Sales</span>
-          <span className="text-headline sm:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.totalSales ?? 0}</span>
+        <div className="p-4 compact:p-5 flex flex-col gap-1 border-b regular:border-b-0 regular:border-r border-border/40">
+          <span className="text-caption1 compact:text-subhead font-semibold text-muted-foreground/70">Sales</span>
+          <span className="text-headline compact:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.totalSales ?? 0}</span>
         </div>
-        <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-border/40">
-          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Response</span>
-          <span className="text-headline sm:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.responseRate ? `${stats.responseRate}%` : '—'}</span>
+        <div className="p-4 compact:p-5 flex flex-col gap-1 border-r border-border/40">
+          <span className="text-caption1 compact:text-subhead font-semibold text-muted-foreground/70">Response</span>
+          <span className="text-headline compact:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.responseRate ? `${stats.responseRate}%` : '—'}</span>
         </div>
-        <div className="p-4 sm:p-5 flex flex-col gap-1">
-          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Rating</span>
+        <div className="p-4 compact:p-5 flex flex-col gap-1">
+          <span className="text-caption1 compact:text-subhead font-semibold text-muted-foreground/70">Rating</span>
           <span className="text-title3 font-bold text-foreground">
             {profile.googleRating ? (
               <span className="flex items-center gap-1.5">
@@ -720,9 +720,9 @@ export function PartnerBasicProfileForm({
       </div>
 
       {/* About */}
-      <section className="mb-6 sm:mb-8">
+      <section className="mb-6 compact:mb-8">
         <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">About</h3>
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
           <EditableField 
             {...getEditableFieldProps('brandName')}
             label="Business name" 
@@ -747,9 +747,9 @@ export function PartnerBasicProfileForm({
       </section>
 
       {/* Details */}
-      <section className="mb-6 sm:mb-8">
+      <section className="mb-6 compact:mb-8">
         <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Details</h3>
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
           <EditableField 
             {...getEditableFieldProps('experienceYears')}
             label="Years of experience" 
@@ -768,18 +768,18 @@ export function PartnerBasicProfileForm({
       </section>
 
       {/* Specialties */}
-      <section className="mb-6 sm:mb-8">
+      <section className="mb-6 compact:mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-subhead font-bold tracking-tight text-foreground">Specialties</h3>
           <span className="text-subhead font-semibold text-muted-foreground/70">{form.specialties.length}/4</span>
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
           <div className="flex flex-wrap gap-2 mb-3">
             {form.specialties.length > 0 ? form.specialties.map((specialty) => (
               <span 
                 key={specialty} 
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-caption1 sm:text-subhead font-semibold border border-border/40"
+                className="inline-flex items-center gap-1.5 px-3 compact:px-4 py-1.5 compact:py-2 rounded-lg bg-muted/30 text-caption1 compact:text-subhead font-semibold border border-border/40"
               >
                 {specialty}
                 <button
@@ -817,7 +817,7 @@ export function PartnerBasicProfileForm({
       </section>
 
       {/* Google Reviews */}
-      <section className="mb-6 sm:mb-8">
+      <section className="mb-6 compact:mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-subhead font-bold tracking-tight text-foreground">Google Reviews</h3>
           {form.googleReviewUrl?.trim() && (
@@ -835,7 +835,7 @@ export function PartnerBasicProfileForm({
           )}
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
           <EditableField 
             {...getEditableFieldProps('googleReviewUrl')}
             label="Google Maps URL" 
@@ -853,7 +853,7 @@ export function PartnerBasicProfileForm({
           
           {/* Rating and Status */}
           {form.googleReviewUrl?.trim() && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-4 mt-2 border-t border-border/20">
+            <div className="flex flex-col compact:flex-row compact:items-center gap-4 compact:gap-8 pt-4 mt-2 border-t border-border/20">
               {profile.googleRating ? (
                 <div>
                   <p className="text-headline font-semibold flex items-center gap-1.5">
@@ -896,7 +896,7 @@ export function PartnerBasicProfileForm({
       </section>
 
       {/* Location */}
-      <section className="mb-6 sm:mb-8">
+      <section className="mb-6 compact:mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-subhead font-bold tracking-tight text-foreground">Location</h3>
           <button
@@ -909,8 +909,8 @@ export function PartnerBasicProfileForm({
           </button>
         </div>
 
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
+          <div className="grid grid-cols-1 compact:grid-cols-2 gap-4 mb-4">
             <EditableField 
               {...getEditableFieldProps('city')}
               label="City" 
@@ -925,7 +925,7 @@ export function PartnerBasicProfileForm({
             />
           </div>
 
-          <div className="rounded-xl overflow-hidden bg-muted/30 h-40 sm:h-48 border border-border/40">
+          <div className="rounded-xl overflow-hidden bg-muted/30 h-40 compact:h-48 border border-border/40">
             <Suspense fallback={
               <div className="h-full flex items-center justify-center">
                 <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
@@ -943,16 +943,16 @@ export function PartnerBasicProfileForm({
       </section>
 
       {/* Badges */}
-      <section className="mb-6 sm:mb-8">
+      <section className="mb-6 compact:mb-8">
         <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Badges</h3>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 compact:p-5">
           {profile.badges && profile.badges.length > 0 ? (
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="flex flex-wrap gap-2 compact:gap-3">
               {profile.badges.map((badge, i) => (
                 <span 
                   key={i} 
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-foreground text-caption1 sm:text-subhead font-semibold border border-border/40"
+                  className="px-3 compact:px-4 py-1.5 compact:py-2 rounded-lg bg-muted/30 text-foreground text-caption1 compact:text-subhead font-semibold border border-border/40"
                 >
                   {badge}
                 </span>

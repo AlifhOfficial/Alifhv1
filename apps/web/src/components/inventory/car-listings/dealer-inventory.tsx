@@ -299,12 +299,12 @@ export function DealerInventory({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Inventory</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Manage your dealership listings</p>
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">Inventory</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">Manage your dealership listings</p>
         </div>
         <div className="flex items-center gap-2">
           {/* BLK Quota Badge */}
@@ -328,18 +328,18 @@ export function DealerInventory({
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div className="flex flex-col gap-3 compact:gap-4 mb-6 compact:mb-8">
         {/* Row 1: Search + Staff Filter */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="flex flex-col compact:flex-row items-stretch compact:items-center gap-3 compact:gap-4">
         {/* Search */}
-        <div className="relative flex-1 sm:max-w-xs">
+        <div className="relative flex-1 compact:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 compact:h-10 pl-10 pr-8 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -353,21 +353,21 @@ export function DealerInventory({
 
         {/* Staff Combobox */}
         {activeStaff.length > 0 && (
-          <div className="w-full sm:w-48">
+          <div className="w-full compact:w-48">
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
               onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
-              className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0"
+              className="h-9 compact:h-10 rounded-lg compact:rounded-xl bg-secondary/50 border-0"
             />
           </div>
         )}
         </div>
 
         {/* Row 2: Status Pills - Horizontal scroll on mobile */}
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+        <div className="-mx-4 px-4 compact:mx-0 compact:px-0 overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
           {(['active', 'sold', 'archived', 'expired', 'all'] as StatusTab[]).map((status) => {
             const isActive = selectedStatusTab === status;
@@ -378,7 +378,7 @@ export function DealerInventory({
               <button
                 key={status}
                 onClick={() => handleStatusTabChange(status)}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
+                className={`px-2.5 compact:px-3 py-1 compact:py-1.5 rounded-lg text-caption2 compact:text-caption1 transition-all capitalize whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -386,7 +386,7 @@ export function DealerInventory({
               >
                 {status === 'all' ? 'All' : status}
                 {count !== undefined && count > 0 && (
-                  <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
+                  <span className="ml-1 compact:ml-1.5 text-muted-foreground">{count}</span>
                 )}
               </button>
             );
@@ -406,9 +406,9 @@ export function DealerInventory({
       {isLoading && (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="p-4 sm:p-5 rounded-[20px]">
-              <div className="flex items-start gap-4 sm:gap-5">
-                <Skeleton className="w-24 h-16 sm:w-32 sm:h-20 rounded-[20px] shrink-0" />
+            <div key={i} className="p-4 compact:p-5 rounded-[20px]">
+              <div className="flex items-start gap-4 compact:gap-5">
+                <Skeleton className="w-24 h-16 compact:w-32 compact:h-20 rounded-[20px] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-3">
                     <Skeleton className="h-5 w-2/3" />
@@ -460,13 +460,13 @@ export function DealerInventory({
                 <div
                   key={listing.id}
                   className={cn(
-                    "group p-4 sm:p-5 rounded-[20px] hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
+                    "group p-4 compact:p-5 rounded-[20px] hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
                     listing.isBlkListing && "bg-zinc-500/5"
                   )}
                 >
-                  <div className="flex items-start gap-4 sm:gap-5">
+                  <div className="flex items-start gap-4 compact:gap-5">
                     {/* Thumbnail */}
-                    <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-[20px] overflow-hidden bg-secondary flex-shrink-0 relative">
+                    <div className="w-24 h-16 compact:w-32 compact:h-20 rounded-[20px] overflow-hidden bg-secondary flex-shrink-0 relative">
                       {getAppThumbUrl(listing.thumbnail) ? (
                         <img
                           src={getAppThumbUrl(listing.thumbnail)!}
@@ -492,7 +492,7 @@ export function DealerInventory({
                       {/* Title + Status Row */}
                       <div className="flex items-start justify-between gap-3">
                         <Link href={`/listings/${listing.id}`} className="hover:underline min-w-0">
-                          <p className="text-subhead sm:text-callout font-semibold tracking-tight truncate">
+                          <p className="text-subhead compact:text-callout font-semibold tracking-tight truncate">
                             {listing.year} {listing.make} {listing.model}
                             {listing.trim && ` ${listing.trim}`}
                           </p>
@@ -538,7 +538,7 @@ export function DealerInventory({
                           </span>
                         );
                       })()}
-                      <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-2 compact:opacity-0 compact:group-hover:opacity-100 transition-opacity">
                         <Link href={`/listings/${listing.id}`}>
                           <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 transition-colors">
                             View

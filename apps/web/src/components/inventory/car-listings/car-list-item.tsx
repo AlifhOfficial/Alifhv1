@@ -210,7 +210,7 @@ export function CarListItem({
 
   return (
     <div className={cn(
-      "group relative overflow-hidden rounded-[20px] transition-all duration-300 flex flex-col lg:flex-row w-full",
+      "group relative overflow-hidden rounded-[20px] transition-all duration-300 flex flex-col large:flex-row w-full",
       isBlkListing 
         ? "bg-background dark:bg-card border border-border hover:border-border/80 hover:shadow-2xl hover:shadow-black/20" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
@@ -222,7 +222,7 @@ export function CarListItem({
       )}
 
       {/* Image Section */}
-      <div className="p-3 w-full lg:w-72 flex-shrink-0">
+      <div className="p-3 w-full large:w-72 flex-shrink-0">
         <Link href={`/listings/${id}`} prefetch={false} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-[20px] block",
           isBlkListing ? "bg-zinc-900" : "bg-muted/20"
@@ -242,13 +242,13 @@ export function CarListItem({
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col px-3 lg:px-4 py-3 lg:py-4 min-w-0 min-h-0">
+      <div className="flex flex-1 flex-col px-3 large:px-4 py-3 large:py-4 min-w-0 min-h-0">
         {/* Top Section - Title and Price */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1.5 lg:gap-4 mb-2">
+        <div className="flex flex-col large:flex-row large:items-start large:justify-between gap-1.5 large:gap-4 mb-2">
           <Link href={`/listings/${id}`} prefetch={false} className="group/title flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
               <h3 className={cn(
-                "text-headline lg:text-subhead font-bold tracking-tight transition-colors line-clamp-1",
+                "text-headline large:text-subhead font-bold tracking-tight transition-colors line-clamp-1",
                 isBlkListing 
                   ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                   : "text-foreground group-hover/title:text-primary"
@@ -256,7 +256,7 @@ export function CarListItem({
                 {make} {model}
               </h3>
               <span className={cn(
-                "text-subhead lg:text-caption1 font-semibold tabular-nums flex-shrink-0",
+                "text-subhead large:text-caption1 font-semibold tabular-nums flex-shrink-0",
                 isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
               )}>
                 {year}
@@ -272,7 +272,7 @@ export function CarListItem({
             )}
           </Link>
           <p className={cn(
-            "text-title3 lg:text-headline font-black tracking-tight leading-none whitespace-nowrap",
+            "text-title3 large:text-headline font-black tracking-tight leading-none whitespace-nowrap",
             isBlkListing ? "text-zinc-900 dark:text-white" : "text-primary dark:text-primary"
           )}>
             {formatPrice(price)}
@@ -280,7 +280,7 @@ export function CarListItem({
         </div>
 
         {/* Specs Row */}
-        <div className="flex items-center gap-2 lg:gap-1.5 text-subhead">
+        <div className="flex items-center gap-2 large:gap-1.5 text-subhead">
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
@@ -288,7 +288,7 @@ export function CarListItem({
             {formatMileage(mileage)} km
           </span>
           <span className={cn(
-            "hidden lg:inline",
+            "hidden large:inline",
             isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"
           )}>·</span>
           <span className={cn(
@@ -298,7 +298,7 @@ export function CarListItem({
             {displaySpecs}
           </span>
           <span className={cn(
-            "hidden lg:inline",
+            "hidden large:inline",
             isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"
           )}>·</span>
           <span className={cn(
@@ -360,7 +360,7 @@ export function CarListItem({
               />
             )}
             <span className={cn(
-              "text-subhead lg:text-footnote",
+              "text-subhead large:text-footnote",
               isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}
@@ -507,37 +507,37 @@ interface CarListItemSkeletonProps {
 function CarListItemSkeletonComponent({ className }: CarListItemSkeletonProps) {
   return (
     <div className={cn(
-      "overflow-hidden rounded-[20px] flex flex-col lg:flex-row w-full",
+      "overflow-hidden rounded-[20px] flex flex-col large:flex-row w-full",
       "bg-sidebar border border-sidebar-border",
       className
     )}>
       {/* Image Section */}
-      <div className="p-3 w-full lg:w-72 flex-shrink-0">
+      <div className="p-3 w-full large:w-72 flex-shrink-0">
         <Skeleton className="aspect-[4/3] w-full rounded-[20px]" />
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col px-3 lg:px-4 py-3 lg:py-4 min-w-0">
+      <div className="flex flex-1 flex-col px-3 large:px-4 py-3 large:py-4 min-w-0">
         {/* Top Section - Title and Price */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1.5 lg:gap-4 mb-2">
+        <div className="flex flex-col large:flex-row large:items-start large:justify-between gap-1.5 large:gap-4 mb-2">
           <div className="flex-1 min-w-0 space-y-1">
             {/* Title with year */}
             <div className="flex items-baseline gap-2">
-              <Skeleton className="h-5 lg:h-[15px] w-32" />
-              <Skeleton className="h-4 lg:h-3 w-8" />
+              <Skeleton className="h-5 large:h-[15px] w-32" />
+              <Skeleton className="h-4 large:h-3 w-8" />
             </div>
             {/* Trim */}
             <Skeleton className="h-3 w-24" />
           </div>
           {/* Price */}
-          <Skeleton className="h-6 lg:h-[18px] w-28 flex-shrink-0" />
+          <Skeleton className="h-6 large:h-[18px] w-28 flex-shrink-0" />
         </div>
 
         {/* Specs Row - mileage · specs · emirate */}
-        <div className="flex items-center gap-2 lg:gap-1.5">
-          <Skeleton className="h-4 lg:h-3.5 w-14" />
-          <Skeleton className="h-4 lg:h-3.5 w-8" />
-          <Skeleton className="h-4 lg:h-3.5 w-12" />
+        <div className="flex items-center gap-2 large:gap-1.5">
+          <Skeleton className="h-4 large:h-3.5 w-14" />
+          <Skeleton className="h-4 large:h-3.5 w-8" />
+          <Skeleton className="h-4 large:h-3.5 w-12" />
         </div>
 
         {/* Bottom Section - Seller and Actions */}

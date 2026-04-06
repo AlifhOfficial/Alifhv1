@@ -79,18 +79,18 @@ export function ChatWindow({
   return (
     <div className={cn('flex flex-col h-full w-full min-h-0 bg-background overflow-hidden overscroll-contain', className)}>
       {/* Header - fixed at top, never scrolls */}
-      <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/40 z-10">
+      <div className="flex-shrink-0 flex items-center gap-2 compact:gap-3 px-3 compact:px-4 py-2.5 compact:py-3 border-b border-border/40 z-10">
         {onBack && (
-          <button onClick={onBack} className="p-1.5 sm:p-2 hover:bg-sidebar rounded-lg transition-colors lg:hidden" aria-label="Back">
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+          <button onClick={onBack} className="p-1.5 compact:p-2 hover:bg-sidebar rounded-lg transition-colors large:hidden" aria-label="Back">
+            <ArrowLeft className="w-4 h-4 compact:w-5 compact:h-5 text-muted-foreground" />
           </button>
         )}
 
         <div className="relative flex-shrink-0">
           {isPartnerBrand ? (
-            <BrandAvatar logoUrl={partner?.logo} brandName={partner?.name || 'Partner'} size="sm" className="w-8 h-8 sm:w-10 sm:h-10" />
+            <BrandAvatar logoUrl={partner?.logo} brandName={partner?.name || 'Partner'} size="sm" className="w-8 h-8 compact:w-10 compact:h-10" />
           ) : (
-            <UserAvatar src={otherParticipant?.avatarUrl} name={displayName} size="md" className="w-8 h-8 sm:w-10 sm:h-10" />
+            <UserAvatar src={otherParticipant?.avatarUrl} name={displayName} size="md" className="w-8 h-8 compact:w-10 compact:h-10" />
           )}
         </div>
 
@@ -98,12 +98,12 @@ export function ChatWindow({
           {partner ? (
             <Link
               href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
-              className="text-subhead sm:text-subhead font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
+              className="text-subhead compact:text-subhead font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
             >
               {displayName}
             </Link>
           ) : (
-            <h3 className="text-subhead sm:text-subhead font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
+            <h3 className="text-subhead compact:text-subhead font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
           )}
           {listing && (
             <Link
@@ -117,14 +117,14 @@ export function ChatWindow({
             {controller.isOtherOnline && (
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <span className="text-caption2 sm:text-caption1 font-semibold text-green-600 dark:text-green-400">Active</span>
+                <span className="text-caption2 compact:text-caption1 font-semibold text-green-600 dark:text-green-400">Active</span>
               </div>
             )}
             {!controller.isOtherOnline && lastActiveAt && (
-              <span className="text-caption2 sm:text-caption1 font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
+              <span className="text-caption2 compact:text-caption1 font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
             )}
             {!controller.isOtherOnline && !lastActiveAt && (
-              <span className="text-caption2 sm:text-caption1 font-medium text-muted-foreground/50">Away</span>
+              <span className="text-caption2 compact:text-caption1 font-medium text-muted-foreground/50">Away</span>
             )}
           </div>
         </div>
@@ -132,7 +132,7 @@ export function ChatWindow({
         {onBack && (
           <button 
             onClick={onBack} 
-            className="p-1.5 sm:p-2 hover:bg-sidebar rounded-lg transition-colors hidden lg:flex" 
+            className="p-1.5 compact:p-2 hover:bg-sidebar rounded-lg transition-colors hidden large:flex" 
             aria-label="Close"
             title="Close"
           >

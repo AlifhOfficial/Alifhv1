@@ -72,11 +72,11 @@ export function SignInModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="w-full max-w-[440px] md:max-w-[800px] bg-card border border-border/50 rounded-2xl shadow-2xl flex overflow-hidden"
+        className="w-full max-w-[440px] regular:max-w-[800px] bg-card border border-border/50 rounded-2xl shadow-2xl flex overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left Typography Side */}
-        <div className="hidden md:flex w-[320px] relative bg-black flex-shrink-0 flex-col justify-between p-10">
+        <div className="hidden regular:flex w-[320px] relative bg-black flex-shrink-0 flex-col justify-between p-10">
           {/* Revvup Text - Top */}
           <div>
             <h3 className="wordmark-geom text-white" style={{ fontSize: 18 }}>
@@ -96,7 +96,7 @@ export function SignInModal({
         </div>
 
         {/* Right Form Side */}
-        <div className="flex-1 flex flex-col min-h-[480px] md:min-h-[520px] max-h-[85vh]">
+        <div className="flex-1 flex flex-col min-h-[480px] regular:min-h-[520px] max-h-[85vh]">
           {/* Header */}
           <div className="flex items-start justify-between p-6 pb-0">
             <div>

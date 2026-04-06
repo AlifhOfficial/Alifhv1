@@ -107,16 +107,16 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
 
   return (
     <>
-      <section id="showroom-gallery" className={`${theme.sectionSpacing} px-4 sm:px-6 lg:px-8`}>
+      <section id="showroom-gallery" className={`${theme.sectionSpacing} px-4 compact:px-6 large:px-8`}>
         <div className="max-w-[1600px] mx-auto">
           
           {/* Header - Above Media */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+          <div className="flex flex-col compact:flex-row compact:items-end compact:justify-between gap-4 mb-8">
             <div>
               <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
                 The Space
               </span>
-              <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+              <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
                 Our Showroom
               </h2>
             </div>
@@ -133,7 +133,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
 
           {(sectionVideoEmbedUrl || sectionImage) && (
             <div className="mb-8">
-              <div className="relative aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden bg-sidebar border border-border/40">
+              <div className="relative aspect-[16/9] large:aspect-[21/9] rounded-xl overflow-hidden bg-sidebar border border-border/40">
                 {sectionVideoEmbedUrl ? (
                   <iframe
                     src={`${sectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
@@ -177,7 +177,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
 
           {/* Uniform Image Grid */}
           {gridImages.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-4 gap-3">
               {gridImages.map((img, idx) => {
                 const isLast = idx === gridImages.length - 1 && remainingCount > 0;
                 return (
@@ -217,13 +217,13 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
 // Skeleton
 function ShowroomGallerySkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 compact:py-20 large:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 compact:px-6 large:px-8">
         <div className="text-center mb-10">
           <Skeleton className="h-3 w-16 mx-auto mb-4" />
           <Skeleton className="h-8 w-40 mx-auto" />
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 regular:grid-cols-3 large:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}

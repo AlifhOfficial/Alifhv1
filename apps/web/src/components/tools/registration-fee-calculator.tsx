@@ -168,7 +168,7 @@ export function RegistrationFeeCalculator() {
           <MapPin className="w-4 h-4" />
           Select Emirate
         </label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 compact:grid-cols-4 gap-2">
           {emirateOptions.slice(0, 4).map((emirate) => (
             <button
               key={emirate.id}

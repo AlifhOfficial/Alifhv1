@@ -224,12 +224,12 @@ export function PartnerLeadFunnelsView({
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 compact:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Lead Funnels</h1>
-          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">View all lead funnels across {partnerName}</p>
+          <h1 className="text-callout compact:text-headline font-semibold text-foreground">Lead Funnels</h1>
+          <p className="text-caption2 compact:text-caption1 text-muted-foreground/60 mt-0.5">View all lead funnels across {partnerName}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -245,33 +245,33 @@ export function PartnerLeadFunnelsView({
 
         {/* Stats */}
         {!isLoading && stats && (
-          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
+          <div className="flex flex-wrap items-center gap-6 compact:gap-10">
             <div>
               <span className="text-caption1 text-muted-foreground">Total Funnels</span>
-              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-primary">{stats.total}</p>
+              <p className="text-headline compact:text-title3 font-semibold tracking-tight mt-1 text-primary">{stats.total}</p>
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Active</span>
-              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-success">{stats.active}</p>
+              <p className="text-headline compact:text-title3 font-semibold tracking-tight mt-1 text-success">{stats.active}</p>
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Staff Members</span>
-              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1">{stats.staffCount}</p>
+              <p className="text-headline compact:text-title3 font-semibold tracking-tight mt-1">{stats.staffCount}</p>
             </div>
           </div>
         )}
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div className="flex flex-col compact:flex-row items-stretch compact:items-center gap-3 compact:gap-4 mb-6 compact:mb-8">
         {/* Search */}
-        <div className="relative flex-1 sm:max-w-xs">
+        <div className="relative flex-1 compact:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search funnels..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 compact:h-10 pl-10 pr-8 rounded-lg compact:rounded-xl bg-secondary/50 text-caption1 compact:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -285,14 +285,14 @@ export function PartnerLeadFunnelsView({
 
         {/* Staff Combobox */}
         {staffList.length > 0 && (
-          <div className="w-full sm:w-48">
+          <div className="w-full compact:w-48">
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
               onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
-              className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0"
+              className="h-9 compact:h-10 rounded-lg compact:rounded-xl bg-secondary/50 border-0"
             />
           </div>
         )}
@@ -309,8 +309,8 @@ export function PartnerLeadFunnelsView({
 
       {/* Error */}
       {error && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
-          <p className="text-caption1 sm:text-subhead text-destructive font-medium">Failed to load funnels</p>
+        <div className="flex flex-col items-center justify-center py-16 compact:py-20">
+          <p className="text-caption1 compact:text-subhead text-destructive font-medium">Failed to load funnels</p>
           <button
             onClick={handleRefresh}
             className="mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
@@ -324,27 +324,27 @@ export function PartnerLeadFunnelsView({
       {isLoading && (
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 md:p-5">
-              <div className="flex items-start justify-between gap-2 sm:gap-4">
+            <div key={i} className="rounded-xl border border-border/40 bg-card p-3 compact:p-4 regular:p-5">
+              <div className="flex items-start justify-between gap-2 compact:gap-4">
                 <div className="flex-1 min-w-0">
                   {/* Chevron + Title */}
-                  <div className="flex items-center gap-2 sm:gap-3 mb-1">
-                    <Skeleton className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded flex-shrink-0" />
-                    <Skeleton className="h-4 sm:h-5 w-32 sm:w-48" />
+                  <div className="flex items-center gap-2 compact:gap-3 mb-1">
+                    <Skeleton className="w-3.5 h-3.5 compact:w-4 compact:h-4 rounded flex-shrink-0" />
+                    <Skeleton className="h-4 compact:h-5 w-32 compact:w-48" />
                   </div>
                   {/* Description */}
-                  <Skeleton className="h-3 sm:h-4 w-56 sm:w-64 mb-1.5 sm:mb-2 ml-5 sm:ml-7" />
+                  <Skeleton className="h-3 compact:h-4 w-56 compact:w-64 mb-1.5 compact:mb-2 ml-5 compact:ml-7" />
                   {/* Staff + Date */}
-                  <Skeleton className="h-3 w-28 sm:w-36 mb-1.5 sm:mb-2 ml-5 sm:ml-7" />
+                  <Skeleton className="h-3 w-28 compact:w-36 mb-1.5 compact:mb-2 ml-5 compact:ml-7" />
                   {/* Filter Tags */}
-                  <div className="flex gap-1 sm:gap-1.5 ml-5 sm:ml-7">
-                    <Skeleton className="h-5 w-14 sm:w-16 rounded-md" />
-                    <Skeleton className="h-5 w-16 sm:w-20 rounded-md" />
-                    <Skeleton className="h-5 w-12 sm:w-14 rounded-md" />
+                  <div className="flex gap-1 compact:gap-1.5 ml-5 compact:ml-7">
+                    <Skeleton className="h-5 w-14 compact:w-16 rounded-md" />
+                    <Skeleton className="h-5 w-16 compact:w-20 rounded-md" />
+                    <Skeleton className="h-5 w-12 compact:w-14 rounded-md" />
                   </div>
                 </div>
                 {/* Active Badge */}
-                <Skeleton className="h-5 sm:h-6 w-14 sm:w-16 rounded-full flex-shrink-0" />
+                <Skeleton className="h-5 compact:h-6 w-14 compact:w-16 rounded-full flex-shrink-0" />
               </div>
             </div>
           ))}
@@ -435,7 +435,7 @@ export function PartnerLeadFunnelsView({
 
       {/* Empty - No Data (no filters, just empty) */}
       {!isLoading && !error && funnels.length === 0 && !hasActiveFilters && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-16 compact:py-20 text-center">
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Filter className="w-4 h-4 text-muted-foreground/40" />
           </div>
@@ -446,7 +446,7 @@ export function PartnerLeadFunnelsView({
 
       {/* Empty - No Results (filters applied but no results) */}
       {!isLoading && !error && funnels.length === 0 && hasActiveFilters && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-16 compact:py-20 text-center">
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Search className="w-4 h-4 text-muted-foreground/40" />
           </div>
@@ -503,45 +503,45 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
   return (
     <div className="rounded-xl border border-border/40 bg-card hover:border-border/60 hover:shadow-sm transition-all overflow-hidden">
       {/* Funnel Header */}
-      <div className="w-full p-3 sm:p-4 md:p-5 border-b border-border/30">
-        <div className="flex items-start justify-between gap-2 sm:gap-4">
+      <div className="w-full p-3 compact:p-4 regular:p-5 border-b border-border/30">
+        <div className="flex items-start justify-between gap-2 compact:gap-4">
           {/* Left: Toggle + Title, Description, Tags - Clickable for collapse */}
           <button
             type="button"
             onClick={onToggle}
             className="min-w-0 flex-1 text-left"
           >
-            <div className="flex items-center gap-2 sm:gap-3 mb-1">
+            <div className="flex items-center gap-2 compact:gap-3 mb-1">
               <ChevronDown className={cn(
-                "w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
+                "w-3.5 h-3.5 compact:w-4 compact:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
                 !isExpanded && "-rotate-90"
               )} />
-              <h3 className="text-subhead sm:text-callout md:text-headline font-bold tracking-tight truncate">{funnel.name}</h3>
+              <h3 className="text-subhead compact:text-callout regular:text-headline font-bold tracking-tight truncate">{funnel.name}</h3>
             </div>
             
             {funnel.description && (
-              <p className="text-caption1 sm:text-subhead text-muted-foreground/60 line-clamp-1 mb-1.5 sm:mb-2 ml-5 sm:ml-7">
+              <p className="text-caption1 compact:text-subhead text-muted-foreground/60 line-clamp-1 mb-1.5 compact:mb-2 ml-5 compact:ml-7">
                 {funnel.description}
               </p>
             )}
 
-            <p className="text-caption2 sm:text-caption1 text-muted-foreground ml-5 sm:ml-7 mb-1.5 sm:mb-2">
+            <p className="text-caption2 compact:text-caption1 text-muted-foreground ml-5 compact:ml-7 mb-1.5 compact:mb-2">
               {funnel.staffName || 'Staff member'} · {new Date(funnel.createdAt).toLocaleDateString()}
             </p>
 
             {/* Filter Tags */}
-            <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
+            <div className="flex flex-wrap gap-1 compact:gap-1.5 ml-5 compact:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 compact:px-2 py-0.5 text-caption2 compact:text-caption1 bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-caption2 sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
+                <span className="text-caption2 compact:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 compact:px-2 py-0.5 text-caption2 compact:text-caption1 bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -551,7 +551,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
           {/* Right: Active Badge */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className={cn(
-              'shrink-0 px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-semibold rounded-full',
+              'shrink-0 px-1.5 compact:px-2 py-0.5 text-caption2 compact:text-caption1 font-semibold rounded-full',
               funnel.isActive 
                 ? 'bg-success-muted text-success' 
                 : 'bg-muted/50 text-muted-foreground'
@@ -564,18 +564,18 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
 
       {/* Expanded Preview */}
       {isExpanded && (
-        <div className="p-3 sm:p-4 md:p-5">
+        <div className="p-3 compact:p-4 regular:p-5">
 
           {/* Preview Loading */}
           {previewLoading && (
-            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
+            <div className="flex gap-2 compact:gap-3 overflow-x-auto pb-2 compact:pb-0 compact:grid compact:grid-cols-2 regular:grid-cols-3 large:grid-cols-4 xlarge:grid-cols-5 xxlarge:grid-cols-6 compact:overflow-visible scrollbar-hide">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="flex-shrink-0 w-[160px] sm:w-auto">
+                <div key={i} className="flex-shrink-0 w-[160px] compact:w-auto">
                   <div className="rounded-lg border border-border/40 bg-card overflow-hidden">
                     <Skeleton className="aspect-[4/3]" />
                     <div className="p-2">
-                      <Skeleton className="h-3 sm:h-4 w-20 sm:w-28 mb-1.5" />
-                      <Skeleton className="h-3 sm:h-4 w-16 sm:w-20" />
+                      <Skeleton className="h-3 compact:h-4 w-20 compact:w-28 mb-1.5" />
+                      <Skeleton className="h-3 compact:h-4 w-16 compact:w-20" />
                     </div>
                   </div>
                 </div>
@@ -596,13 +596,13 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
           {/* Preview Grid */}
           {!previewLoading && previewData.length > 0 && (
             <>
-            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
+            <div className="flex gap-2 compact:gap-3 overflow-x-auto pb-2 compact:pb-0 compact:grid compact:grid-cols-2 regular:grid-cols-3 large:grid-cols-4 xlarge:grid-cols-5 xxlarge:grid-cols-6 compact:overflow-visible scrollbar-hide">
               {previewData.slice(0, 4).map((listing) => (
                 <Link
                   key={listing.id}
                   href={`/listings/${listing.id}`}
                   target="_blank"
-                  className="flex-shrink-0 w-[160px] sm:w-auto group"
+                  className="flex-shrink-0 w-[160px] compact:w-auto group"
                 >
                   <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
                     {/* Image */}
@@ -623,10 +623,10 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                     </div>
                     {/* Info */}
                     <div className="p-2">
-                      <p className="text-caption1 sm:text-subhead font-semibold truncate">
+                      <p className="text-caption1 compact:text-subhead font-semibold truncate">
                         {listing.year} {listing.make}
                       </p>
-                      <p className="text-caption1 sm:text-subhead font-bold text-primary">
+                      <p className="text-caption1 compact:text-subhead font-bold text-primary">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>
@@ -636,11 +636,11 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
             </div>
 
             {/* View All Button */}
-            <div className="mt-3 sm:mt-4 flex justify-end">
+            <div className="mt-3 compact:mt-4 flex justify-end">
               <button
                 type="button"
                 onClick={onViewAll}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-caption1 sm:text-subhead font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-2.5 compact:px-3 py-1 compact:py-1.5 text-caption1 compact:text-subhead font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
               >
                 View All →
               </button>

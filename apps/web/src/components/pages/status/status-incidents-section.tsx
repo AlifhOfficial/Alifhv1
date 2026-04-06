@@ -137,7 +137,7 @@ export function StatusIncidentsSection({ incidents }: StatusIncidentsSectionProp
   const hasIncidents = (incidents?.length ?? 0) > 0;
 
   return (
-    <section className="pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}

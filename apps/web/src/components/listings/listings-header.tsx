@@ -207,7 +207,7 @@ export function ListingsHeader({
   return (
     <>
       {/* ===== MOBILE HEADER ===== */}
-      <div className="md:hidden z-30 bg-background border-b border-border/20">
+      <div className="regular:hidden z-30 bg-background border-b border-border/20">
         <div className="py-2.5 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
@@ -642,14 +642,14 @@ export function ListingsHeader({
       </div>
 
       {/* ===== DESKTOP HEADER ===== */}
-      <header className="hidden md:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-border/20">
+      <header className="hidden regular:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-border/20">
         <div className="pt-4 pb-4 relative">
           <div className="flex flex-wrap items-center gap-2">
             {/* Sidebar Toggle (Desktop) */}
             <button
               onClick={() => onSidebarToggle(true)}
               className={cn(
-                "hidden lg:flex p-2 -ml-2 text-muted-foreground hover:text-foreground transition-all duration-200",
+                "hidden large:flex p-2 -ml-2 text-muted-foreground hover:text-foreground transition-all duration-200",
                 sidebarOpen ? "opacity-0 pointer-events-none w-0 -ml-0 p-0" : "opacity-100"
               )}
               title="Show filters"
@@ -662,7 +662,7 @@ export function ListingsHeader({
             {/* Desktop Filters Sheet (tablet only) */}
             <Sheet open={mobileFiltersOpen} onOpenChange={onMobileFiltersToggle}>
               <SheetTrigger asChild>
-                <button className="lg:hidden relative p-2.5 -ml-1 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation">
+                <button className="large:hidden relative p-2.5 -ml-1 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation">
                   <SlidersHorizontal className="h-4 w-4" />
                   {activeFilterCount > 0 && (
                     <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 text-caption2 font-bold bg-foreground text-background rounded-full flex items-center justify-center">
@@ -807,7 +807,7 @@ export function ListingsHeader({
                 <button
                   onClick={() => onViewModeChange('list')}
                   className={cn(
-                    "hidden lg:flex items-center justify-center w-7 h-7 rounded-full transition-colors",
+                    "hidden large:flex items-center justify-center w-7 h-7 rounded-full transition-colors",
                     viewMode === 'list' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
                   )}
                   title="List view"
@@ -1392,7 +1392,7 @@ function ListingsHeaderSkeletonComponent() {
   return (
     <>
       {/* ===== MOBILE SKELETON ===== */}
-      <div className="md:hidden z-30 bg-background border-b border-border/20">
+      <div className="regular:hidden z-30 bg-background border-b border-border/20">
         <div className="py-2.5 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
@@ -1414,7 +1414,7 @@ function ListingsHeaderSkeletonComponent() {
       </div>
 
       {/* ===== DESKTOP SKELETON ===== */}
-      <header className="hidden md:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-sidebar-border/50">
+      <header className="hidden regular:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-sidebar-border/50">
         <div className="py-4">
           {/* Search Row */}
           <div className="flex flex-wrap items-center gap-2">

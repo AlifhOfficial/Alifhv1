@@ -9,14 +9,14 @@ import { m4, m5 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerCompareSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         <div className="text-center mb-16 space-y-5">
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Side by side
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             The difference.
           </h2>
         </div>
@@ -27,7 +27,7 @@ export function PartnerCompareSection() {
         </div>
 
         {/* Comparison Grid */}
-        <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-5xl mx-auto">
+        <div className="grid compact:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-5xl mx-auto">
           
           {/* Others */}
           <div className="p-8 bg-sidebar">
@@ -84,19 +84,19 @@ export function PartnerCompareSection() {
 
 function CompareInfographic() {
   return (
-    <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
+    <div className="relative w-full aspect-[16/9] compact:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
 
       <div className="h-full flex">
         {/* Left - Others */}
         <div className="flex-1 flex flex-col border-r border-border/20">
-          <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
+          <div className="px-6 compact:px-8 large:px-10 pt-6 compact:pt-8 large:pt-10">
             <span className="text-caption1 text-muted-foreground/60">Others</span>
           </div>
           
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
+          <div className="flex-1 flex items-center justify-center px-4 compact:px-8 large:px-12 py-6">
             <div className="relative">
               {/* Car image - faded */}
-              <div className="w-32 sm:w-40 lg:w-48 aspect-[4/3] rounded-xl overflow-hidden border border-border/30">
+              <div className="w-32 compact:w-40 large:w-48 aspect-[4/3] rounded-xl overflow-hidden border border-border/30">
                 <Image src={m5} alt="" className="w-full h-full object-cover opacity-50 grayscale" sizes="(max-width: 640px) 128px, (max-width: 1024px) 160px, 192px" />
               </div>
               
@@ -113,21 +113,21 @@ function CompareInfographic() {
             </div>
           </div>
           
-          <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
+          <div className="px-6 compact:px-8 large:px-10 pb-6 compact:pb-8 large:pb-10">
             <p className="text-caption1 text-muted-foreground/50 text-center">Fees eat profit</p>
           </div>
         </div>
         
         {/* Right - Revvup */}
         <div className="flex-1 flex flex-col">
-          <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
+          <div className="px-6 compact:px-8 large:px-10 pt-6 compact:pt-8 large:pt-10">
             <span className="text-caption1 text-primary">Revvup</span>
           </div>
           
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
+          <div className="flex-1 flex items-center justify-center px-4 compact:px-8 large:px-12 py-6">
             <div className="relative">
               {/* Car image - vibrant */}
-              <div className="w-32 sm:w-40 lg:w-48 aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40">
+              <div className="w-32 compact:w-40 large:w-48 aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40">
                 <Image src={m4} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 128px, (max-width: 1024px) 160px, 192px" />
               </div>
               
@@ -140,7 +140,7 @@ function CompareInfographic() {
             </div>
           </div>
           
-          <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
+          <div className="px-6 compact:px-8 large:px-10 pb-6 compact:pb-8 large:pb-10">
             <p className="text-caption1 text-primary/70 text-center">Keep every dirham</p>
           </div>
         </div>

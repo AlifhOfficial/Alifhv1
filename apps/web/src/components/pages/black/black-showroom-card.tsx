@@ -83,12 +83,12 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
       )}
     >
       {/* Main Layout - Stacked mobile, split desktop */}
-      <div className="flex flex-col lg:flex-row lg:min-h-[520px]">
+      <div className="flex flex-col large:flex-row large:min-h-[520px]">
         
         {/* ================================================================ */}
         {/* Media Section - 75% on desktop */}
         {/* ================================================================ */}
-        <div className="relative w-full lg:w-[75%] aspect-[16/9] lg:aspect-auto bg-muted/20 overflow-hidden">
+        <div className="relative w-full large:w-[75%] aspect-[16/9] large:aspect-auto bg-muted/20 overflow-hidden">
           
           {/* Banner Image */}
           {displayImage && (
@@ -111,17 +111,17 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
         {/* ================================================================ */}
         {/* Content Section - 25% on desktop */}
         {/* ================================================================ */}
-        <div className="flex-1 lg:w-[25%] p-6 sm:p-8 flex flex-col">
+        <div className="flex-1 large:w-[25%] p-6 compact:p-8 flex flex-col">
           
           {/* Top: Logo + Brand + Tagline + Stats */}
           <div className="flex-1">
             {/* Mobile: Brand + Logo row | Desktop: Logo on top */}
-            <div className="flex items-start justify-between gap-4 lg:block">
+            <div className="flex items-start justify-between gap-4 large:block">
               {/* Brand Name + Tagline + Stats */}
-              <div className="flex-1 min-w-0 lg:order-2">
+              <div className="flex-1 min-w-0 large:order-2">
                 {/* Desktop Logo - above brand name */}
                 {partner.logoUrl && (
-                  <div className="hidden lg:block h-14 w-auto mb-4">
+                  <div className="hidden large:block h-14 w-auto mb-4">
                     <img
                       src={partner.logoUrl}
                       alt={`${partner.brandName} logo`}
@@ -172,7 +172,7 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
               
               {/* Mobile Logo - right side */}
               {partner.logoUrl && (
-                <div className="lg:hidden h-12 w-auto flex-shrink-0">
+                <div className="large:hidden h-12 w-auto flex-shrink-0">
                   <img
                     src={partner.logoUrl}
                     alt={`${partner.brandName} logo`}
@@ -211,12 +211,12 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
 export function BlackShowroomCardSkeleton() {
   return (
     <div className="w-full rounded-xl bg-sidebar border border-border/40 overflow-hidden">
-      <div className="flex flex-col lg:flex-row lg:min-h-[420px]">
+      <div className="flex flex-col large:flex-row large:min-h-[420px]">
         {/* Media Section - 75% */}
-        <Skeleton className="w-full lg:w-[75%] aspect-[16/9] lg:aspect-auto" />
+        <Skeleton className="w-full large:w-[75%] aspect-[16/9] large:aspect-auto" />
         
         {/* Content Section - 25% */}
-        <div className="flex-1 lg:w-[25%] p-5 sm:p-6 flex flex-col">
+        <div className="flex-1 large:w-[25%] p-5 compact:p-6 flex flex-col">
           {/* Top: Logo + Brand */}
           <div className="flex-1">
             <Skeleton className="h-10 w-16 mb-4" />

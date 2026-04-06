@@ -258,12 +258,12 @@ export function PricingFeaturesSection() {
   const totalBlackFeatures = blackExclusiveFeatures.reduce((acc, cat) => acc + cat.features.length, 0);
 
   return (
-    <section id="features" className="pb-8 px-4 sm:px-6 lg:px-8">
+    <section id="features" className="pb-8 px-4 compact:px-6 large:px-8">
       <div className="max-w-5xl mx-auto">
 
         {/* Section Header */}
         <div className="mb-16 border-t border-border/20 pt-16">
-          <h2 className="text-title2 sm:text-title1 font-semibold tracking-tight mb-2">
+          <h2 className="text-title2 compact:text-title1 font-semibold tracking-tight mb-2">
             Full feature breakdown
           </h2>
           <p className="text-muted-foreground text-subhead">
@@ -272,7 +272,7 @@ export function PricingFeaturesSection() {
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+        <div className="grid large:grid-cols-2 gap-10 large:gap-16">
           
           {/* Flow Section */}
           <div>

@@ -6,7 +6,7 @@ import { m12 } from '@/components/pages/marketing-image-assets';
 
 export function DifferentiatorsSection() {
   return (
-    <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -14,7 +14,7 @@ export function DifferentiatorsSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             How It Works
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Quality wins.
             <br />
             <span className="text-muted-foreground">Not money.</span>
@@ -42,7 +42,7 @@ export function DifferentiatorsSection() {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div className="grid compact:grid-cols-2 large:grid-cols-4 gap-4 max-w-4xl mx-auto">
           <FeatureCard 
             icon={CircleDollarSign}
             title="Always free"
@@ -105,48 +105,48 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 function HumanFirstInfographic() {
   return (
     <>
-      <MacOSWindow url="revvup.ae/search" contentClassName="flex items-center justify-center p-4 sm:p-8 lg:p-16 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10 lg:gap-20 w-full max-w-5xl">
+      <MacOSWindow url="revvup.ae/search" contentClassName="flex items-center justify-center p-4 compact:p-8 large:p-16 aspect-[3/4] compact:aspect-[4/3] regular:aspect-[16/9] large:aspect-[2.4/1]">
+        <div className="flex flex-col large:flex-row items-center justify-between gap-6 compact:gap-10 large:gap-20 w-full max-w-5xl">
           {/* Quality Checklist - Left */}
-          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 w-full lg:w-auto">
-            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/40 mb-1 sm:mb-2">What ranks you higher</span>
+          <div className="flex flex-col gap-3 compact:gap-4 large:gap-6 w-full large:w-auto">
+            <span className="text-[9px] compact:text-caption2 large:text-caption1 text-white/40 mb-1 compact:mb-2">What ranks you higher</span>
             
             <div 
-              className="flex items-center gap-2 sm:gap-3 lg:gap-4"
+              className="flex items-center gap-2 compact:gap-3 large:gap-4"
               style={{ animation: 'fade-check-1 6s ease-out infinite' }}
             >
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Clear, real photos</span>
+              <CheckCircle2 className="w-4 h-4 compact:w-5 compact:h-5 large:w-6 large:h-6 text-primary flex-shrink-0" />
+              <span className="text-caption1 compact:text-subhead large:text-callout text-white/70">Clear, real photos</span>
             </div>
 
             <div 
-              className="flex items-center gap-2 sm:gap-3 lg:gap-4"
+              className="flex items-center gap-2 compact:gap-3 large:gap-4"
               style={{ animation: 'fade-check-2 6s ease-out infinite' }}
             >
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Honest descriptions</span>
+              <CheckCircle2 className="w-4 h-4 compact:w-5 compact:h-5 large:w-6 large:h-6 text-primary flex-shrink-0" />
+              <span className="text-caption1 compact:text-subhead large:text-callout text-white/70">Honest descriptions</span>
             </div>
 
             <div 
-              className="flex items-center gap-2 sm:gap-3 lg:gap-4"
+              className="flex items-center gap-2 compact:gap-3 large:gap-4"
               style={{ animation: 'fade-check-3 6s ease-out infinite' }}
             >
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Quick responses</span>
+              <CheckCircle2 className="w-4 h-4 compact:w-5 compact:h-5 large:w-6 large:h-6 text-primary flex-shrink-0" />
+              <span className="text-caption1 compact:text-subhead large:text-callout text-white/70">Quick responses</span>
             </div>
 
             <div 
-              className="flex items-center gap-2 sm:gap-3 lg:gap-4"
+              className="flex items-center gap-2 compact:gap-3 large:gap-4"
               style={{ animation: 'fade-check-4 6s ease-out infinite' }}
             >
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Genuine buyer interest</span>
+              <CheckCircle2 className="w-4 h-4 compact:w-5 compact:h-5 large:w-6 large:h-6 text-primary flex-shrink-0" />
+              <span className="text-caption1 compact:text-subhead large:text-callout text-white/70">Genuine buyer interest</span>
             </div>
           </div>
 
           {/* Elevated Card Result - Right */}
           <div 
-            className="relative w-40 sm:w-56 lg:w-80 xl:w-[480px] aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 flex-shrink-0"
+            className="relative w-40 compact:w-56 large:w-80 xlarge:w-[480px] aspect-[4/3] rounded-lg large:rounded-xl overflow-hidden border border-white/10 flex-shrink-0"
             style={{ animation: 'card-elevate 6s ease-out infinite' }}
           >
             <Image src={m12} alt="" fill className="object-cover" sizes="(max-width: 640px) 160px, (max-width: 1280px) 320px, 480px" />

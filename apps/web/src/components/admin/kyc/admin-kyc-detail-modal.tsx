@@ -342,7 +342,7 @@ export function AdminKycDetailModal({
               <h3 className="text-callout tracking-tight">Verification Results</h3>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 regular:grid-cols-4 gap-3">
               <ScoreCard 
                 label="Face Match" 
                 score={displayRecord.faceMatchScore} 
@@ -383,7 +383,7 @@ export function AdminKycDetailModal({
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 regular:grid-cols-3 gap-4">
                 <ImageViewer 
                   src={displayRecord.signedDocumentFrontUrl || displayRecord.documentFrontUrl} 
                   alt="Document Front" 
@@ -405,7 +405,7 @@ export function AdminKycDetailModal({
 
           {/* Face Match Images */}
           <CollapsibleSection title="Face Match Comparison" defaultOpen={false}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 regular:grid-cols-2 gap-4">
               <ImageViewer 
                 src={displayRecord.signedFaceSourceImage || displayRecord.faceSourceImage} 
                 alt="Face Source" 

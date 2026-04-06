@@ -11,7 +11,7 @@ import { revx4 } from '@/components/pages/marketing-image-assets';
 
 export function AboutVisionSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
@@ -19,7 +19,7 @@ export function AboutVisionSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             What's Next
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Cars Are Just the Start.
             <br />
             <span className="text-muted-foreground">More coming soon.</span>
@@ -44,7 +44,7 @@ export function AboutVisionSection() {
         </p>
 
         {/* Verticals as feature cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 compact:grid-cols-3 large:grid-cols-6 gap-4 max-w-5xl mx-auto">
           <div className="p-5 rounded-xl bg-primary text-primary-foreground text-center">
             <Car className="w-5 h-5 text-primary-foreground/70 mx-auto mb-2" />
             <h3 className="text-subhead font-semibold">Cars</h3>

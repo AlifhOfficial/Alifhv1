@@ -88,7 +88,7 @@ export function PricingFaqSection() {
  ];
 
   return (
-    <section className="pt-16 pb-16 px-4 sm:px-6 lg:px-8">
+    <section className="pt-16 pb-16 px-4 compact:px-6 large:px-8">
       <div className="max-w-3xl mx-auto">
         
         {/* Section Header */}
@@ -96,7 +96,7 @@ export function PricingFaqSection() {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             Questions
           </span>
-          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             Common questions
           </h2>
         </div>

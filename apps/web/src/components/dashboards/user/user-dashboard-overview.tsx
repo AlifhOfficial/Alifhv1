@@ -44,7 +44,7 @@ function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
+          <span className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
             {label}
             <Info className="w-3 h-3 opacity-40 group-hover:opacity-70 transition-opacity" />
           </span>
@@ -91,16 +91,16 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="flex flex-col flex-1 gap-4 sm:gap-5">
+    <div className="flex flex-col flex-1 gap-4 compact:gap-5">
 
       {/* Header */}
       <header>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+        <div className="flex flex-col compact:flex-row compact:items-start compact:justify-between gap-3 compact:gap-4">
           <div>
-            <h1 className="text-title3 sm:text-title2 font-semibold tracking-tight text-foreground/90">
+            <h1 className="text-title3 compact:text-title2 font-semibold tracking-tight text-foreground/90">
               {greeting}, {firstName}
             </h1>
-            <p className="text-caption1 sm:text-subhead text-muted-foreground mt-1">
+            <p className="text-caption1 compact:text-subhead text-muted-foreground mt-1">
               Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
           </div>
@@ -111,51 +111,51 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
       </header>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y md:divide-y-0 divide-border/20 bg-muted/5">
-        <div className="p-4 sm:p-5 flex flex-col gap-1.5">
+      <div className="grid grid-cols-2 regular:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y regular:divide-y-0 divide-border/20 bg-muted/5">
+        <div className="p-4 compact:p-5 flex flex-col gap-1.5">
           <StatLabel label="Active" tooltip="Approximate count of your live listings visible to buyers" />
-          <span className="text-title3 sm:text-title2 font-semibold text-primary">{stats.activeListings ?? 0}</span>
+          <span className="text-title3 compact:text-title2 font-semibold text-primary">{stats.activeListings ?? 0}</span>
         </div>
-        <div className="p-4 sm:p-5 flex flex-col gap-1.5">
+        <div className="p-4 compact:p-5 flex flex-col gap-1.5">
           <StatLabel label="Views" tooltip="Estimated total views across all your listings" />
-          <span className="text-title3 sm:text-title2 font-semibold text-purple-500">{formatNumber(stats.totalViews ?? 0)}</span>
+          <span className="text-title3 compact:text-title2 font-semibold text-purple-500">{formatNumber(stats.totalViews ?? 0)}</span>
         </div>
-        <div className="p-4 sm:p-5 flex flex-col gap-1.5">
+        <div className="p-4 compact:p-5 flex flex-col gap-1.5">
           <StatLabel label="Saved" tooltip="Approximate number of times your listings were saved" />
-          <span className="text-title3 sm:text-title2 font-semibold text-warning">{formatNumber(stats.totalSaves ?? 0)}</span>
+          <span className="text-title3 compact:text-title2 font-semibold text-warning">{formatNumber(stats.totalSaves ?? 0)}</span>
         </div>
-        <div className="p-4 sm:p-5 flex flex-col gap-1.5">
+        <div className="p-4 compact:p-5 flex flex-col gap-1.5">
           <StatLabel label="Sold" tooltip="Listings you've marked as sold" />
-          <span className="text-title3 sm:text-title2 font-semibold text-success">{formatNumber(stats.soldCount ?? 0)}</span>
+          <span className="text-title3 compact:text-title2 font-semibold text-success">{formatNumber(stats.soldCount ?? 0)}</span>
         </div>
       </div>
 
       {/* Engagement + Membership — grows to fill remaining space */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+      <div className="grid grid-cols-1 large:grid-cols-12 gap-4 flex-1">
         {/* Engagement */}
-        <div className="lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-4 sm:p-5 flex flex-col">
-          <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Engagement</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 content-start">
+        <div className="large:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-4 compact:p-5 flex flex-col">
+          <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Engagement</p>
+          <div className="grid grid-cols-2 compact:grid-cols-4 gap-4 content-start">
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Total views</p>
-              <p className="text-headline sm:text-title3 font-semibold text-purple-500">{formatNumber(stats.totalViews ?? 0)}</p>
+              <p className="text-headline compact:text-title3 font-semibold text-purple-500">{formatNumber(stats.totalViews ?? 0)}</p>
             </div>
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Avg per listing</p>
-              <p className="text-headline sm:text-title3 font-semibold text-foreground/90">{stats.avgViewsPerListing ?? 0}</p>
+              <p className="text-headline compact:text-title3 font-semibold text-foreground/90">{stats.avgViewsPerListing ?? 0}</p>
             </div>
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Total saves</p>
-              <p className="text-headline sm:text-title3 font-semibold text-warning">{formatNumber(stats.totalSaves ?? 0)}</p>
+              <p className="text-headline compact:text-title3 font-semibold text-warning">{formatNumber(stats.totalSaves ?? 0)}</p>
             </div>
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Save rate</p>
-              <p className="text-headline sm:text-title3 font-semibold text-foreground/90">{saveRate}%</p>
+              <p className="text-headline compact:text-title3 font-semibold text-foreground/90">{saveRate}%</p>
             </div>
           </div>
 
           {/* Chart section */}
-          <div className="mt-4 pt-4 border-t border-border/10 flex-1 flex flex-col sm:flex-row gap-4 min-h-0">
+          <div className="mt-4 pt-4 border-t border-border/10 flex-1 flex flex-col compact:flex-row gap-4 min-h-0">
             {/* Views vs Saves bar chart */}
             <div className="flex-1 flex flex-col min-h-0">
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-medium mb-2">Views vs Saves</p>
@@ -198,7 +198,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
             </div>
 
             {/* Save rate radial gauge */}
-            <div className="flex flex-col items-center justify-center sm:w-[120px] gap-1">
+            <div className="flex flex-col items-center justify-center compact:w-[120px] gap-1">
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-medium">Save Rate</p>
               <div className="relative w-[96px] h-[96px]">
                 <RadialBarChart
@@ -230,33 +230,33 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
         </div>
 
         {/* Membership */}
-        <div className="lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-4 sm:p-5 flex flex-col">
-          <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Membership</p>
+        <div className="large:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-4 compact:p-5 flex flex-col">
+          <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Membership</p>
           <div className="flex flex-col gap-3 flex-1 justify-center">
             <div className="flex items-center justify-between">
-              <span className="text-caption1 sm:text-subhead text-muted-foreground">Member for</span>
-              <span className="text-caption1 sm:text-subhead font-semibold text-cyan-500">{memberDays} days</span>
+              <span className="text-caption1 compact:text-subhead text-muted-foreground">Member for</span>
+              <span className="text-caption1 compact:text-subhead font-semibold text-cyan-500">{memberDays} days</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-caption1 sm:text-subhead text-muted-foreground">Superlikes left</span>
-              <span className="text-caption1 sm:text-subhead font-semibold text-pink-500">{stats?.superlikesRemaining ?? 5}</span>
+              <span className="text-caption1 compact:text-subhead text-muted-foreground">Superlikes left</span>
+              <span className="text-caption1 compact:text-subhead font-semibold text-pink-500">{stats?.superlikesRemaining ?? 5}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-caption1 sm:text-subhead text-muted-foreground">Total sold</span>
-              <span className="text-caption1 sm:text-subhead font-semibold text-success">{formatNumber(stats?.soldCount ?? 0)}</span>
+              <span className="text-caption1 compact:text-subhead text-muted-foreground">Total sold</span>
+              <span className="text-caption1 compact:text-subhead font-semibold text-success">{formatNumber(stats?.soldCount ?? 0)}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 compact:grid-cols-4 gap-3">
         <Link
           href="/user-dashboard/listings/my-listings"
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
+            <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-title3 font-semibold text-primary">{stats?.activeListings ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">active</span></span>
@@ -266,7 +266,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
+            <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-title3 font-semibold text-favorite">{stats?.mySaves ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">items</span></span>
@@ -276,7 +276,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Messages</p>
+            <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Messages</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-subhead text-muted-foreground">Open inbox</span>
@@ -286,7 +286,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Create</p>
+            <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Create</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-subhead text-muted-foreground">New listing</span>
