@@ -201,7 +201,7 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
   const showroomLogoUrl = showroom.partner?.logo
     ? (showroom.partner.logo.startsWith('http')
         ? showroom.partner.logo
-        : `https://cdn.revvup.ae/${showroom.partner.logo.replace(/^\\//, '')}`)
+        : `https://cdn.revvup.ae/${showroom.partner.logo.replace(/^\/+/, '')}`)
     : null;
 
   return (
