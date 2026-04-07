@@ -201,6 +201,18 @@ export default async function ListingDetailPage({ params }: PageProps) {
         />
       )}
       {initialListing && (
+        <div className="sr-only">
+          Revvup car listing summary: {initialListing.year} {initialListing.make} {initialListing.model}
+          {initialListing.trim ? ` ${initialListing.trim}` : ''}, priced at{' '}
+          {new Intl.NumberFormat('en-AE', {
+            style: 'currency',
+            currency: initialListing.currency || 'AED',
+            maximumFractionDigits: 0,
+          }).format(initialListing.price)}
+          . Quality-ranked, no paid boosts. Book test drives online.
+        </div>
+      )}
+      {initialListing && (
         <JsonLd data={generateVehicleSchema(initialListing, sellerSchema)} />
       )}
       <ListingDetailView 

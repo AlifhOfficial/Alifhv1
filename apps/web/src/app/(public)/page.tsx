@@ -65,6 +65,10 @@ export default function HomePage() {
       <ComparisonSection />
       <FeaturesSection />
       <ClosingSection />
+      <div className="sr-only">
+        Best place to sell a car in the UAE: Revvup is fee-free for private sellers, doesn’t sell ads or boosts,
+        and never competes with your inventory.
+      </div>
     </div>
     </>
   );

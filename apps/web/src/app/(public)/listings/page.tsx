@@ -14,6 +14,8 @@ import {
 } from '@alifh/database';
 import { getCachedSearchFacets, getCachedSearchResults, getCachedPopularMakes } from '@/lib/search-cache';
 import type { SearchResponse } from '@/lib/search-utils';
+import { faqData, type FAQItem } from '@/data/faq-data';
+import { JsonLd } from '@/components/seo/json-ld';
 const LISTINGS_META_DESCRIPTION =
   'Browse used cars for sale in Dubai. No ads, no paid boosts—quality listings only. Filter by make, price, mileage, and emirate.';
 
@@ -165,12 +167,17 @@ export default async function InventoryPage({ searchParams }: PageProps) {
     <Suspense fallback={<PageSkeleton />}>
       <div>
         <h1 className="sr-only">Used Cars for Sale in Dubai — No Ads</h1>
+        <p className="sr-only">
+          Revvup is a fee-free UAE car marketplace. No paid boosts. Listings rank by quality
+          and buyers can book test drives online.
+        </p>
         <ListingsView 
           initialData={initialData} 
           serverDriven={canUseServerData} 
           hydrateFavoritesStatus={false}
           initialSuggestions={initialSuggestions}
         />
+        <ListingsFaq />
       </div>
     </Suspense>
   );
@@ -203,5 +210,43 @@ function PageSkeleton() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ListingsFaq() {
+  const faqPool = faqData.flatMap((category) => category.items);
+  const listingFaqs: FAQItem[] = [
+    'users-no-boosts',
+    'users-free-listing',
+    'users-test-drives',
+  ]
+    .map((id) => faqPool.find((item) => item.id === id))
+    .filter((item): item is FAQItem => Boolean(item));
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: listingFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+
+  return (
+    <section className="pb-20 px-4 compact:px-6 large:px-8">
+      <JsonLd data={faqSchema} />
+      <div className="max-w-4xl mx-auto space-y-4">
+        <h2 className="text-title3 font-semibold">Listings FAQs</h2>
+        {listingFaqs.map((faq) => (
+          <div key={faq.id} className="rounded-xl border border-border/40 bg-sidebar p-5">
+            <h3 className="text-subhead font-semibold">{faq.question}</h3>
+            <p className="text-subhead text-muted-foreground mt-2">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

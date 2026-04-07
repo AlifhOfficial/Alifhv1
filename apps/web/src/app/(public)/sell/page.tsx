@@ -6,10 +6,35 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Shield, Zap, Clock, Camera, MessageSquare } from 'lucide-react';
+import { JsonLd } from '@/components/seo/json-ld';
+import { faqData, type FAQItem } from '@/data/faq-data';
+
+const faqPool = faqData.flatMap((category) => category.items);
+const sellFaqs: FAQItem[] = [
+  'users-free-listing',
+  'users-no-boosts',
+  'users-test-drives',
+]
+  .map((id) => faqPool.find((item) => item.id === id))
+  .filter((item): item is FAQItem => Boolean(item));
+
+const sellFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: sellFaqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
 
 export default function SellPage() {
   return (
     <main className="min-h-screen bg-background">
+      <JsonLd data={sellFaqSchema} />
       {/* Hero Section */}
       <section className="pt-28 pb-20 px-4 compact:px-6 large:px-8">
         <div className="max-w-[1600px] mx-auto">
@@ -125,6 +150,24 @@ export default function SellPage() {
               description="No middlemen."
             />
           </div>
+        </div>
+      </section>
+
+      <div className="sr-only">
+        Best place to sell a car in UAE: Revvup is free forever for private sellers, has no ads,
+        no paid boosts, and online test drive booking.
+      </div>
+
+      {/* FAQ */}
+      <section className="pb-20 px-4 compact:px-6 large:px-8">
+        <div className="max-w-3xl mx-auto space-y-4">
+          <h2 className="text-title3 font-semibold">Common Questions</h2>
+          {sellFaqs.map((faq) => (
+            <div key={faq.question} className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <h3 className="text-subhead font-semibold">{faq.question}</h3>
+              <p className="text-subhead text-muted-foreground mt-2">{faq.answer}</p>
+            </div>
+          ))}
         </div>
       </section>
 

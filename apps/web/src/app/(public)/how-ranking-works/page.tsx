@@ -32,5 +32,12 @@ export const metadata: Metadata = {
 // ISR: Static page, cached until redeploy
 
 export default function Page() {
-  return <HowRankingWorksPage />;
+  return (
+    <>
+      <div className="sr-only">
+        Ranking summary: Revvup doesn’t sell boosts. Listings rise by quality, photos, and transparency — not spend.
+      </div>
+      <HowRankingWorksPage />
+    </>
+  );
 }

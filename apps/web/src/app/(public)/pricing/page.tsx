@@ -10,13 +10,33 @@ import {
   PricingFaqSection,
 } from '@/components/pages/pricing';
 import { Metadata } from 'next';
-import { faqData } from '@/data/faq-data';
+import { faqData, type FAQItem } from '@/data/faq-data';
 import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
 const PRICING_META_DESCRIPTION =
   'Zero commission dealer pricing in the UAE. Unlimited listings, analytics, and lead tools with clear monthly plans and no hidden fees.';
 
 // Get pricing FAQ items for schema
 const pricingFaqItems = faqData.find((cat) => cat.id === 'pricing')?.items || [];
+const faqPool = faqData.flatMap((category) => category.items);
+const pricingVisibleFaqs: FAQItem[] = [
+  'partners-no-commission',
+  'partners-pricing',
+  'partners-hidden-fees',
+]
+  .map((id) => faqPool.find((item) => item.id === id))
+  .filter((item): item is FAQItem => Boolean(item));
+const pricingVisibleFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: pricingVisibleFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
 
 export const metadata: Metadata = {
   title: 'Pricing — Zero Commission, Unlimited Listings | Revvup',
@@ -147,6 +167,14 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingVisibleFaqSchema) }}
+      />
+      <div className="sr-only">
+        Dealer pricing summary: Flat subscription, zero commission, unlimited listings, no paid boosts,
+        and rankings based on quality — not payment.
+      </div>
       {/* 1. Hero - Hook with core value props */}
       <PricingHeroSection />
       
@@ -158,6 +186,18 @@ export default function PricingPage() {
       
       {/* 5. FAQ - Address objections */}
       <PricingFaqSection />
+
+      <section className="pb-20 px-4 compact:px-6 large:px-8">
+        <div className="max-w-4xl mx-auto space-y-4">
+          <h2 className="text-title3 font-semibold">Pricing FAQs</h2>
+          {pricingVisibleFaqs.map((faq) => (
+            <div key={faq.id} className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <h3 className="text-subhead font-semibold">{faq.question}</h3>
+              <p className="text-subhead text-muted-foreground mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { Metadata } from 'next';
 import { AlternativesView } from '@/components/pages/alternatives/alternatives-view';
 import { faqData } from '@/data/faq-data';
 import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
+import Link from 'next/link';
 const ALTERNATIVES_META_DESCRIPTION =
   'Compare Revvup with other UAE car listing sites. See why fee-free, no-boost listings and clean pages win.';
 
@@ -136,6 +137,10 @@ export default function AlternativesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      <div className="sr-only">
+        Guide summary: Most platforms charge per listing and sell boosts. Revvup is free for private sellers,
+        has no paid boosts, and no ads.
+      </div>
       <AlternativesView />
     </>
   );

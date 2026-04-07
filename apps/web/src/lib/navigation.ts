@@ -171,6 +171,9 @@ export const staticPages = [
   { url: "/badges", priority: 0.7, changeFrequency: "monthly" as const },
   { url: "/how-ranking-works", priority: 0.7, changeFrequency: "monthly" as const },
   { url: "/alternatives", priority: 0.8, changeFrequency: "weekly" as const },
+  { url: "/best-place-to-sell-car-uae", priority: 0.85, changeFrequency: "weekly" as const },
+  { url: "/best-place-to-sell-car-dubai", priority: 0.8, changeFrequency: "weekly" as const },
+  { url: "/best-place-to-sell-car-abu-dhabi", priority: 0.8, changeFrequency: "weekly" as const },
   { url: "/faq", priority: 0.6, changeFrequency: "monthly" as const },
   { url: "/contact", priority: 0.5, changeFrequency: "monthly" as const },
   // Legal pages
