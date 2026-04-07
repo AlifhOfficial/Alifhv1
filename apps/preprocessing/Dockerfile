@@ -3,7 +3,7 @@ FROM oven/bun:1.2-slim
 WORKDIR /app
 
 # Copy only the preprocessing app — self-contained, no shared packages needed
-COPY package.preprocessing.json ./package.json
+COPY apps/preprocessing/package.preprocessing.json ./package.json
 COPY bun.lock ./
 COPY apps/preprocessing/package.json ./apps/preprocessing/
 COPY apps/preprocessing/src ./apps/preprocessing/src/

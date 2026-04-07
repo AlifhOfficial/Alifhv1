@@ -25,6 +25,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     name: 'Revvup',
     slug: 'revvup',
     version: '1.0.0',
+    owner: 'revvups-organization',
     runtimeVersion: {
       policy: 'appVersion',
     },
@@ -58,6 +59,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     android: {
       userInterfaceStyle: 'automatic',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
+      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         backgroundColor: '#000000',
         foregroundImage: './assets/images/android-icon-foreground.png',
@@ -81,10 +83,6 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     },
     androidNavigationBar: {
       enforceContrast: false,
-    },
-    web: {
-      output: 'static',
-      favicon: './assets/images/favicon.png',
     },
     plugins: [
       'expo-router',

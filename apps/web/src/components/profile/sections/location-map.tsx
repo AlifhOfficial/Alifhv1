@@ -6,22 +6,22 @@
 
 'use client';
 
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, type ComponentType } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import Leaflet components with no SSR
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
   { ssr: false }
-);
+) as ComponentType<any>;
 const TileLayer = dynamic(
   () => import('react-leaflet').then((mod) => mod.TileLayer),
   { ssr: false }
-);
+) as ComponentType<any>;
 const Marker = dynamic(
   () => import('react-leaflet').then((mod) => mod.Marker),
   { ssr: false }
-);
+) as ComponentType<any>;
 
 // Dynamically import the MapClickHandler component
 const MapClickHandler = dynamic(

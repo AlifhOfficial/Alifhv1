@@ -1,9 +1,18 @@
-# EAS Build Ignore - Monorepo optimization
-# Keep all workspace folders included so Bun frozen lockfile remains valid in cloud builds.
+# EAS Build Ignore - Mobile-only build scope
+# Keep only mobile + shared packages in the upload to reduce build size.
 
 # Exclude documentation and assets
 docs/
 logo/
+
+# Exclude non-mobile apps
+apps/web/
+apps/ws/
+apps/preprocessing/
+
+# Exclude non-mobile packages
+packages/ai/
+packages/database/
 
 # Root config files not needed for mobile (keep package.json for monorepo)
 turbo.json

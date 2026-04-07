@@ -6,26 +6,26 @@
 
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, type ComponentType } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import Leaflet components with no SSR
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
   { ssr: false }
-);
+) as ComponentType<any>;
 const TileLayer = dynamic(
   () => import('react-leaflet').then((mod) => mod.TileLayer),
   { ssr: false }
-);
+) as ComponentType<any>;
 const Marker = dynamic(
   () => import('react-leaflet').then((mod) => mod.Marker),
   { ssr: false }
-);
+) as ComponentType<any>;
 const Popup = dynamic(
   () => import('react-leaflet').then((mod) => mod.Popup),
   { ssr: false }
-);
+) as ComponentType<any>;
 
 interface KycLocationMapProps {
   latitude: number;

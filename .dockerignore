@@ -1,12 +1,12 @@
 *
-!package.ws.json
-!package.preprocessing.json
 !bun.lock
 !packages/database/package.json
 !packages/database/src/
 !apps/ws/package.json
 !apps/ws/src/
 !apps/ws/tsconfig.json
+!apps/ws/package.ws.json
 !apps/preprocessing/package.json
 !apps/preprocessing/src/
 !apps/preprocessing/tsconfig.json
+!apps/preprocessing/package.preprocessing.json

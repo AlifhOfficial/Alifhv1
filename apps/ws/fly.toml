@@ -5,7 +5,7 @@ app = "revvup-ws"
 primary_region = "sin"
 
 [build]
-  dockerfile = "Dockerfile.ws"
+  dockerfile = "apps/ws/Dockerfile"
 
 [env]
   WS_PORT = "3001"

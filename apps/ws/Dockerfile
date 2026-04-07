@@ -3,7 +3,7 @@ FROM oven/bun:1.2-slim
 WORKDIR /app
 
 # Copy ws-specific package.json with limited workspaces
-COPY package.ws.json ./package.json
+COPY apps/ws/package.ws.json ./package.json
 COPY bun.lock ./
 COPY packages/database/package.json ./packages/database/
 COPY packages/database/src ./packages/database/src/
