@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { OwnershipCostCalculator } from '@/components/tools/ownership-cost-calculator'
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const OWNERSHIP_META_DESCRIPTION =
+  'Estimate total cost of car ownership in the UAE including fuel, insurance, registration, and depreciation.';
 
 export const metadata: Metadata = {
   title: 'Total Car Ownership Cost Calculator UAE | True Cost Calculator | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: OWNERSHIP_META_DESCRIPTION,
   keywords: 'car ownership cost uae, total cost calculator dubai, car running costs',
 }
 

@@ -6,14 +6,21 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ContactForm } from '@/components/communications';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const CONTACT_META_DESCRIPTION =
+  'Contact Revvup for partnerships, support, or press. We respond fast and help you list and sell cars in the UAE.';
 
 export const metadata: Metadata = {
   title: 'Contact Us | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: CONTACT_META_DESCRIPTION,
   openGraph: {
     title: 'Contact Us | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: CONTACT_META_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact Us | Revvup',
+    description: CONTACT_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
 };
 

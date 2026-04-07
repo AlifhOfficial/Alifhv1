@@ -6,11 +6,12 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { faqData } from '@/data/faq-data';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const FAQ_META_DESCRIPTION =
+  'Answers to common questions about buying, selling, fees, rankings, and test drives on Revvup.';
 
 export const metadata: Metadata = {
   title: 'FAQ | Revvup - Help Center',
-  description: REVVUP_META_DESCRIPTION,
+  description: FAQ_META_DESCRIPTION,
   keywords: [
     'Revvup FAQ',
     'car marketplace help',
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'FAQ | Revvup Help Center',
-    description: REVVUP_META_DESCRIPTION,
+    description: FAQ_META_DESCRIPTION,
     type: 'website',
     url: '/faq',
     siteName: 'Revvup',
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'FAQ | Revvup Help Center',
-    description: REVVUP_META_DESCRIPTION,
+    description: FAQ_META_DESCRIPTION,
   },
 };
 

@@ -6,7 +6,8 @@
 import { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { CAR_MAKES, CAR_MODELS } from '@/lib/filter-constants';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const buildModelMetaDescription = (brand: string, model: string) =>
+  `Find ${brand} ${model} listings in the UAE. Compare prices, mileage, and specs, then book a test drive on Revvup.`;
 
 type CarMake = typeof CAR_MAKES[number];
 
@@ -73,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${brand} ${model} for Sale in UAE | Used & New | Revvup`;
-  const description = REVVUP_META_DESCRIPTION;
+  const description = buildModelMetaDescription(brand, model);
 
   return {
     title,

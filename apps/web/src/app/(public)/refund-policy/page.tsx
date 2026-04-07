@@ -5,15 +5,22 @@
 
 import { Metadata } from 'next';
 import { RefundPolicy } from '@/components/pages/legal';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const REFUND_META_DESCRIPTION =
+  'Revvup refund policy for dealer subscriptions and services. Learn eligibility, timelines, and cancellations.';
 
 export const metadata: Metadata = {
   title: 'Refund & Cancellation Policy - Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: REFUND_META_DESCRIPTION,
   openGraph: {
     title: 'Refund & Cancellation Policy - Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: REFUND_META_DESCRIPTION,
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Refund & Cancellation Policy - Revvup',
+    description: REFUND_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
 };
 

@@ -13,17 +13,18 @@ import {
 } from '@/components/pages/home';
 import { ClosingSection } from '@/components/pages/home/closing-section';
 import { JsonLd } from '@/components/seo/json-ld';
-import { generateOrganizationSchema } from '@/lib/seo-schema';
+import { generateOrganizationSchema, generateWebsiteSchema } from '@/lib/seo-schema';
 import { Metadata } from 'next';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const HOME_META_DESCRIPTION =
+  'Fee-free UAE car marketplace. Browse quality listings, book test drives online, and sell your car free—no ads or paid boosts.';
 
 export const metadata: Metadata = {
   title: 'Revvup — Buy & Sell Cars in the UAE | Free. Forever.',
-  description: REVVUP_META_DESCRIPTION,
+  description: HOME_META_DESCRIPTION,
   keywords: 'UAE car marketplace, buy cars Dubai, sell cars UAE, used cars Dubai, car listings UAE, no commission car platform',
   openGraph: {
     title: 'Revvup — More than a marketplace.',
-    description: REVVUP_META_DESCRIPTION,
+    description: HOME_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae',
     images: [
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Revvup — More than a marketplace.',
-    description: REVVUP_META_DESCRIPTION,
+    description: HOME_META_DESCRIPTION,
     images: ['/twitter-image'],
   },
   alternates: {
@@ -56,6 +57,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-background">
       {/* SEO: Organization Schema */}
       <JsonLd data={generateOrganizationSchema()} />
+      <JsonLd data={generateWebsiteSchema()} />
       
       <HeroSection />
       <ProblemSection />

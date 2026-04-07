@@ -9,17 +9,24 @@ import {
   VisionCommitmentSection,
 } from '@/components/pages/vision';
 import { Metadata } from 'next';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const VISION_META_DESCRIPTION =
+  'Revvup’s vision for a transparent UAE car market: fair ranking, no fees for sellers, and better experiences for buyers.';
 
 export const metadata: Metadata = {
   title: 'Our Vision — Building UAE\'s Car Marketplace | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: VISION_META_DESCRIPTION,
   keywords: 'revvup vision, uae car marketplace, dubai automotive future, we the uae 2031, car marketplace innovation uae',
   openGraph: {
     title: 'Our Vision — Building UAE\'s Car Marketplace | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: VISION_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/vision',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Our Vision — Building UAE\'s Car Marketplace | Revvup',
+    description: VISION_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
   alternates: {
     canonical: 'https://revvup.ae/vision',

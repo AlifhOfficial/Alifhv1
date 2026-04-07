@@ -10,7 +10,8 @@
 import { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { CAR_MAKES, UAE_EMIRATES } from '@/lib/filter-constants';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const buildBrandMetaDescription = (brand: string) =>
+  `Browse used ${brand} cars for sale in UAE. Compare prices, specs, and book test drives online on Revvup.`;
 
 type CarMake = typeof CAR_MAKES[number];
 type Emirates = typeof UAE_EMIRATES[number]['value'];
@@ -160,13 +161,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Check if it's Black listings first (highest priority)
   const isBlack = getBlackFromSlug(slug);
   if (isBlack) {
+    const description = BLACK_META.description;
     return {
       title: `${BLACK_META.displayName} for Sale in UAE | Quality First | Revvup`,
-      description: REVVUP_META_DESCRIPTION,
+      description,
       keywords: 'black verified cars uae, quality cars dubai, verified listings uae, black cars for sale, trusted sellers uae, quality first cars dubai, verified dealers uae, excellence cars dubai',
       openGraph: {
         title: `${BLACK_META.displayName} for Sale in UAE | Revvup`,
-        description: REVVUP_META_DESCRIPTION,
+        description,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
         images: [
@@ -181,7 +183,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       twitter: {
         card: 'summary_large_image',
         title: `${BLACK_META.displayName} for Sale in UAE | Revvup`,
-        description: REVVUP_META_DESCRIPTION,
+        description,
         images: ['/twitter-image'],
       },
       alternates: {
@@ -194,13 +196,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const specType = getSpecFromSlug(slug);
   if (specType) {
     const spec = SPECS_META[specType];
+    const description = spec.description;
     return {
       title: `${spec.displayName} Cars for Sale in UAE | Quality Listings | Revvup`,
-      description: REVVUP_META_DESCRIPTION,
+      description,
       keywords: `${spec.name.toLowerCase()} cars uae, ${spec.name.toLowerCase()} dubai, ${spec.slug} cars for sale, buy ${spec.slug} uae, ${spec.name.toLowerCase()} vehicles dubai, regional specs cars uae`,
       openGraph: {
         title: `${spec.displayName} Cars for Sale in UAE | Revvup`,
-        description: REVVUP_META_DESCRIPTION,
+        description,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
         images: [
@@ -215,7 +218,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       twitter: {
         card: 'summary_large_image',
         title: `${spec.displayName} Cars for Sale in UAE | Revvup`,
-        description: REVVUP_META_DESCRIPTION,
+        description,
         images: ['/twitter-image'],
       },
       alternates: {
@@ -228,13 +231,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const location = getLocationFromSlug(slug);
   if (location) {
     const emirate = EMIRATE_META[location];
+    const description = emirate.description;
     return {
       title: `Used Cars for Sale in ${emirate.displayName} | No Ads | Revvup`,
-      description: REVVUP_META_DESCRIPTION,
+      description,
       keywords: `used cars ${emirate.name.toLowerCase()}, cars for sale ${emirate.name.toLowerCase()}, buy car ${emirate.name.toLowerCase()}, second hand cars ${emirate.name.toLowerCase()}, ${emirate.name.toLowerCase()} used cars, sell car ${emirate.name.toLowerCase()}`,
       openGraph: {
         title: `Used Cars for Sale in ${emirate.displayName} | Revvup`,
-        description: REVVUP_META_DESCRIPTION,
+        description,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
         images: [
@@ -249,7 +253,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       twitter: {
         card: 'summary_large_image',
         title: `Used Cars for Sale in ${emirate.displayName} | Revvup`,
-        description: REVVUP_META_DESCRIPTION,
+        description,
         images: ['/twitter-image'],
       },
       alternates: {
@@ -264,7 +268,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Not Found | Revvup' };
   }
 
-  const description = REVVUP_META_DESCRIPTION;
+  const description = buildBrandMetaDescription(brand);
 
   return {
     title: `${brand} Cars for Sale in UAE | Used & New | Revvup`,

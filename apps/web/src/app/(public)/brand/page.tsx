@@ -5,14 +5,21 @@
 
 import type { Metadata } from 'next';
 import { BrandManifesto } from '@/components/pages/brand/brand-manifesto';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const BRAND_META_DESCRIPTION =
+  'Download Revvup brand assets, logos, and guidelines for partners, press, and approved marketing use.';
 
 export const metadata: Metadata = {
   title: 'Brand | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: BRAND_META_DESCRIPTION,
   openGraph: {
     title: 'Brand | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: BRAND_META_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Brand | Revvup',
+    description: BRAND_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
 };
 

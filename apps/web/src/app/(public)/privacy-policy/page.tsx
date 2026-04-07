@@ -5,15 +5,22 @@
 
 import { Metadata } from 'next';
 import { PrivacyPolicy } from '@/components/pages/legal';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const PRIVACY_META_DESCRIPTION =
+  'Read Revvup’s Privacy Policy for how we collect, use, and protect data on the UAE car marketplace.';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: PRIVACY_META_DESCRIPTION,
   openGraph: {
     title: 'Privacy Policy - Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: PRIVACY_META_DESCRIPTION,
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy - Revvup',
+    description: PRIVACY_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
 };
 

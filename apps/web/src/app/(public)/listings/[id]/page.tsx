@@ -11,7 +11,9 @@
 import { Metadata } from 'next';
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
+import { JsonLd } from '@/components/seo/json-ld';
 import { buildListingBrandedImageUrl } from '@/lib/listing-share';
+import { generateVehicleSchema } from '@/lib/seo-schema';
 import { getCdnPublicUrl } from '@/utils/storage';
 import {
   getCachedListingDetailed,
@@ -23,7 +25,8 @@ import {
   getCachedHasShowroom,
 } from '@/lib/listing-detail-cache';
 import { getCachedUserStats } from '@/lib/user-stats-cache';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const LISTING_FALLBACK_DESCRIPTION =
+  'Explore verified car listings in the UAE on Revvup. Browse photos, pricing, and details with no paid boosts.';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -41,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (!listing || listing.moderationStatus !== 'approved' || listing.lifecycleStatus !== 'active') {
       return {
         title: 'Listing Not Found | Revvup',
-        description: REVVUP_META_DESCRIPTION,
+        description: LISTING_FALLBACK_DESCRIPTION,
         robots: { index: false, follow: true },
       };
     }
@@ -53,7 +56,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }).format(listing.price);
     const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
     const title = `${carTitle} — ${priceFormatted} | Revvup`;
-    const description = REVVUP_META_DESCRIPTION;
+    const description = listing.description
+      ? listing.description.slice(0, 160)
+      : `Browse ${carTitle} listings in the UAE. View photos, price, and details, then book a test drive on Revvup.`;
 
     const ogImageUrl = buildListingBrandedImageUrl(id);
 
@@ -88,7 +93,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     console.error('[generateMetadata] Failed to fetch listing:', error);
     return {
       title: 'Car Listing | Revvup',
-      description: REVVUP_META_DESCRIPTION,
+      description: LISTING_FALLBACK_DESCRIPTION,
     };
   }
 }
@@ -170,6 +175,21 @@ export default async function ListingDetailPage({ params }: PageProps) {
     ? getCdnPublicUrl(initialListing.thumbnail || initialListing.images?.[0])
     : null;
 
+  const sellerSchema = initialSellerData
+    ? initialSellerData.type === 'partner'
+      ? {
+          type: 'partner' as const,
+          name:
+            initialSellerData.partner?.brandName ||
+            initialSellerData.partner?.companyNameLegal ||
+            'Verified Dealer',
+        }
+      : {
+          type: 'user' as const,
+          name: initialSellerData.userProfile?.displayName || 'Private Seller',
+        }
+    : undefined;
+
   return (
     <>
       {/* Preload primary image - browser fetches immediately, before React hydrates */}
@@ -179,6 +199,9 @@ export default async function ListingDetailPage({ params }: PageProps) {
           as="image"
           fetchPriority="high"
         />
+      )}
+      {initialListing && (
+        <JsonLd data={generateVehicleSchema(initialListing, sellerSchema)} />
       )}
       <ListingDetailView 
         listingId={id} 

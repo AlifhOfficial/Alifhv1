@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { FuelCostCalculator } from '@/components/tools/fuel-cost-calculator'
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const FUEL_META_DESCRIPTION =
+  'Calculate monthly and yearly fuel costs in the UAE based on mileage, fuel type, and current prices.';
 
 export const metadata: Metadata = {
   title: 'Fuel Cost Calculator UAE | Annual Fuel Expense Estimator | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: FUEL_META_DESCRIPTION,
   keywords: 'fuel cost calculator uae, petrol cost dubai, fuel expense calculator',
 }
 

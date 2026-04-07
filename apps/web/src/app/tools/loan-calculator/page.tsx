@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { LoanCalculator } from '@/components/tools/loan-calculator'
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const LOAN_META_DESCRIPTION =
+  'Calculate car loan payments in the UAE, including monthly installments, interest, and total cost.';
 
 export const metadata: Metadata = {
   title: 'Car Loan Calculator UAE | Auto Finance Calculator Dubai | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: LOAN_META_DESCRIPTION,
   keywords: 'car loan calculator uae, auto finance calculator dubai, car payment calculator',
 }
 

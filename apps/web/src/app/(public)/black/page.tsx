@@ -10,17 +10,24 @@
 import { getCachedPublishedShowrooms } from '@/lib/showroom-public';
 import { BlackDirectoryView } from '@/components/pages/black';
 import { getPublicUrl, getAppThumbUrl } from '@/utils';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const BLACK_META_DESCRIPTION =
+  'Revvup Black: premium brand presentation for select dealers. No ranking boosts—just elevated showroom presence and support.';
 
 export const metadata = {
   title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: BLACK_META_DESCRIPTION,
   keywords: 'premium car showrooms uae, luxury car dealers dubai, black tier dealers, verified showrooms uae, premium car dealers abu dhabi, luxury auto dealers uae',
   openGraph: {
     title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: BLACK_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/black',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
+    description: BLACK_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
   alternates: {
     canonical: 'https://revvup.ae/black',

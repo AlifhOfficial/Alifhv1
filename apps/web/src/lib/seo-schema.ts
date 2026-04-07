@@ -194,6 +194,24 @@ export function generateOrganizationSchema() {
 }
 
 /**
+ * Generate WebSite schema with search action for sitewide search
+ * Should be added to the homepage
+ */
+export function generateWebsiteSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Revvup',
+    url: 'https://revvup.ae',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://revvup.ae/listings?q={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+/**
  * Generate BreadcrumbList schema for better navigation in search results
  */
 export function generateBreadcrumbSchema(items: Array<{ name: string; url: string }>) {

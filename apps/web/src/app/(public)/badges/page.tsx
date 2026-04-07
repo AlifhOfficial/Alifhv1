@@ -9,17 +9,24 @@ import {
   BadgesClosingSection,
 } from '@/components/pages/badges';
 import { Metadata } from 'next';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const BADGES_META_DESCRIPTION =
+  'Revvup badges explained. Learn how quality, trust, and transparency badges help buyers choose the right cars.';
 
 export const metadata: Metadata = {
   title: 'Badges — Trust & Recognition | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: BADGES_META_DESCRIPTION,
   keywords: 'revvup badges, verified sellers uae, trusted dealers dubai, car seller verification, dealer recognition uae',
   openGraph: {
     title: 'Badges — Trust & Recognition | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: BADGES_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/badges',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Badges — Trust & Recognition | Revvup',
+    description: BADGES_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
   alternates: {
     canonical: 'https://revvup.ae/badges',

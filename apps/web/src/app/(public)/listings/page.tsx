@@ -14,7 +14,8 @@ import {
 } from '@alifh/database';
 import { getCachedSearchFacets, getCachedSearchResults, getCachedPopularMakes } from '@/lib/search-cache';
 import type { SearchResponse } from '@/lib/search-utils';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const LISTINGS_META_DESCRIPTION =
+  'Browse used cars for sale in Dubai. No ads, no paid boosts—quality listings only. Filter by make, price, mileage, and emirate.';
 
 interface PageProps {
   searchParams: Promise<{
@@ -65,11 +66,11 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
   const baseMetadata: Metadata = {
     title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: LISTINGS_META_DESCRIPTION,
     keywords: 'used cars for sale dubai, buy used car dubai, second hand cars dubai, cars for sale uae, used cars dubai, car marketplace dubai, buy car dubai, dubai used cars, 2nd hand cars dubai, dubizzle cars dubai, dubicars uae, yallmotors, cars24 dubai, shoofi cars, ayeshi uae, automotive classifieds uae, car shopping dubai',
     openGraph: {
       title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
-      description: REVVUP_META_DESCRIPTION,
+      description: LISTINGS_META_DESCRIPTION,
       type: 'website',
       url: 'https://revvup.ae/listings',
       images: [
@@ -84,7 +85,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     twitter: {
       card: 'summary_large_image',
       title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
-      description: REVVUP_META_DESCRIPTION,
+      description: LISTINGS_META_DESCRIPTION,
       images: ['/twitter-image'],
     },
     alternates: {
@@ -162,12 +163,15 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ListingsView 
-        initialData={initialData} 
-        serverDriven={canUseServerData} 
-        hydrateFavoritesStatus={false}
-        initialSuggestions={initialSuggestions}
-      />
+      <div>
+        <h1 className="sr-only">Used Cars for Sale in Dubai — No Ads</h1>
+        <ListingsView 
+          initialData={initialData} 
+          serverDriven={canUseServerData} 
+          hydrateFavoritesStatus={false}
+          initialSuggestions={initialSuggestions}
+        />
+      </div>
     </Suspense>
   );
 }

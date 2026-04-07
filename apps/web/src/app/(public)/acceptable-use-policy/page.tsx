@@ -5,15 +5,22 @@
 
 import { Metadata } from 'next';
 import { AcceptableUsePolicy } from '@/components/pages/legal';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const AUP_META_DESCRIPTION =
+  'Acceptable Use Policy for Revvup. Learn what’s allowed when listing and messaging on the platform.';
 
 export const metadata: Metadata = {
   title: 'Acceptable Use Policy - Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: AUP_META_DESCRIPTION,
   openGraph: {
     title: 'Acceptable Use Policy - Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: AUP_META_DESCRIPTION,
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Acceptable Use Policy - Revvup',
+    description: AUP_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
 };
 

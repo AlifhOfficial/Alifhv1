@@ -15,17 +15,24 @@ import {
 } from '@/components/pages/partner';
 import { Metadata } from 'next';
 import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const PARTNER_META_DESCRIPTION =
+  'Revvup partner platform for dealers: unlimited listings, lead management, analytics, and fair ranking with no boosts.';
 
 export const metadata: Metadata = {
   title: 'Dealer Partner Program — 0% Commission, Unlimited Listings | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: PARTNER_META_DESCRIPTION,
   keywords: 'zero commission car marketplace, no commission car sales dubai, dealer car marketplace subscription uae, car dealer dubai, car dealership platform uae, automotive marketplace dubai, dealer partner program uae, dubizzle for dealers, dubicars dealer, yallmotors dealers, shoofi dealers, ayeshi alternative, alternative dealer platform, flat fee car listing',
   openGraph: {
     title: 'Dealer Partner Program — 0% Commission, Unlimited Listings | Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: PARTNER_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/partner',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dealer Partner Program — 0% Commission, Unlimited Listings | Revvup',
+    description: PARTNER_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
   alternates: {
     canonical: 'https://revvup.ae/partner',

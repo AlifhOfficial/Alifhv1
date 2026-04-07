@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { InsuranceEstimator } from '@/components/tools/insurance-estimator'
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const INSURANCE_META_DESCRIPTION =
+  'Estimate car insurance costs in the UAE based on vehicle, driver, and coverage details.';
 
 export const metadata: Metadata = {
   title: 'Car Insurance Cost Estimator UAE | Insurance Calculator Dubai | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: INSURANCE_META_DESCRIPTION,
   keywords: 'car insurance calculator uae, insurance cost dubai, insurance premium estimator',
 }
 

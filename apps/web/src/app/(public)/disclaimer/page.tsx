@@ -5,15 +5,22 @@
 
 import { Metadata } from 'next';
 import { Disclaimer } from '@/components/pages/legal';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const DISCLAIMER_META_DESCRIPTION =
+  'Revvup disclaimer covering listings, pricing, and platform information for buyers and sellers in the UAE.';
 
 export const metadata: Metadata = {
   title: 'Disclaimer - Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: DISCLAIMER_META_DESCRIPTION,
   openGraph: {
     title: 'Disclaimer - Revvup',
-    description: REVVUP_META_DESCRIPTION,
+    description: DISCLAIMER_META_DESCRIPTION,
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Disclaimer - Revvup',
+    description: DISCLAIMER_META_DESCRIPTION,
+    images: ['/twitter-image'],
   },
 };
 

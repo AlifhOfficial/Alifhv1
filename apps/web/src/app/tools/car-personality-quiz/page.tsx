@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { CarPersonalityQuiz } from '@/components/tools/car-personality-quiz'
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+const CAR_PERSONALITY_META_DESCRIPTION =
+  'Fun quiz to find which car brand matches your personality and preferences.';
 
 export const metadata: Metadata = {
   title: 'Car Personality Quiz | Which Car Brand Matches You? | Revvup',
-  description: REVVUP_META_DESCRIPTION,
+  description: CAR_PERSONALITY_META_DESCRIPTION,
   keywords: 'car personality quiz, car brand quiz, which car suits me',
 }
 
