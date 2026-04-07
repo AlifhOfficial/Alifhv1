@@ -26,6 +26,10 @@ redirect
 .agents
 
 # Ignore repo-level scripts and files not needed for the web build
+scripts/
+packages/ai/scripts/
+packages/database/scripts/
+apps/web/scripts/
 Dockerfile.preprocessing
 Dockerfile.ws
 app.json
@@ -35,5 +39,3 @@ fly.ws.toml
 package.preprocessing.json
 package.ws.json
 skills-lock.json
-check-slugs.ts
-test-sitemap.ts

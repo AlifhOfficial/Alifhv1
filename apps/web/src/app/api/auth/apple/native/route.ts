@@ -43,6 +43,14 @@ interface AppleSignInRequest {
   user: string; // Apple user ID
 }
 
+function isApplePrivateRelayEmail(value: string | null | undefined): boolean {
+  if (!value) return false;
+  const atIndex = value.lastIndexOf('@');
+  if (atIndex < 0 || atIndex === value.length - 1) return false;
+  const domain = value.slice(atIndex + 1).toLowerCase();
+  return domain === 'privaterelay.appleid.com';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body: AppleSignInRequest = await request.json();
@@ -93,8 +101,8 @@ export async function POST(request: NextRequest) {
     
     // Better fallback name than ugly email prefix
     // If it's a private relay email, don't use it as the name
-    const fallbackName = isPrivateEmail || email?.includes("privaterelay.appleid.com") 
-      ? "Apple User" 
+    const fallbackName = isPrivateEmail || isApplePrivateRelayEmail(email)
+      ? "Apple User"
       : (email ? email.split("@")[0] : "Apple User");
     
     if (!email) {

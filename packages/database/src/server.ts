@@ -24,7 +24,6 @@ export {
   getConversationParticipants,
   getConversationParticipantsWithProfiles,
   getTotalUnreadCount,
-  getScopedUnreadCount,
   type ConversationWithDetails,
   type ConversationParticipantInfo,
   type ConversationParticipantWithProfile,

@@ -116,9 +116,13 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
     ? `${brandName} | Premium Car Showroom in UAE | Revvup`
     : (showroom.seoTitle || `${brandName} | Premium Car Showroom in UAE | Revvup`);
   
+  const locationFromSeoTitle = showroom.seoTitle?.match(/ in ([^|]+?)(?:\s*\||$)/i)?.[1]?.trim();
+  const locationFromAddress = showroom.partner?.address || showroom.showroomAddress || null;
   const city = showroom.partner?.city || '';
-  const emirate = showroom.partner?.emirate || 'UAE';
-  const locationLabel = city ? `${city}, ${emirate}` : emirate;
+  const emirate = showroom.partner?.emirate || '';
+  const locationLabel = city && emirate
+    ? `${city}, ${emirate}`
+    : city || emirate || locationFromSeoTitle || locationFromAddress || 'UAE';
   const description = showroom.seoDescription ||
     `${brandName} showroom in ${locationLabel}. Browse verified inventory on Revvup with quality-ranked listings and no paid boosts.`;
   
@@ -190,11 +194,13 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
   const heroVideoUrl = showroom?.heroVideoFileUrl || null;
   const heroImageUrl = showroom?.heroImageUrl || null;
   const showroomBrandName = showroom.partner?.brandName || 'Showroom';
+  const showroomLocationFromSeoTitle = showroom.seoTitle?.match(/ in ([^|]+?)(?:\s*\||$)/i)?.[1]?.trim();
+  const showroomLocationFromAddress = showroom.partner?.address || showroom.showroomAddress || null;
   const showroomCity = showroom.partner?.city || '';
-  const showroomEmirate = showroom.partner?.emirate || 'UAE';
-  const showroomLocationLabel = showroomCity
+  const showroomEmirate = showroom.partner?.emirate || '';
+  const showroomLocationLabel = showroomCity && showroomEmirate
     ? `${showroomCity}, ${showroomEmirate}`
-    : showroomEmirate;
+    : showroomCity || showroomEmirate || showroomLocationFromSeoTitle || showroomLocationFromAddress || 'UAE';
   const showroomDescription =
     showroom.seoDescription ||
     `${showroomBrandName} showroom in ${showroomLocationLabel}. Browse verified inventory on Revvup with quality-ranked listings and no paid boosts.`;

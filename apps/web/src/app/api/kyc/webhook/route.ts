@@ -105,7 +105,7 @@ async function processCallbackSession(sessionId: string, status: string | null) 
     }
 
     // Check for existing R2 images
-    const imagesAlreadySynced = record.documentFrontUrl && !record.documentFrontUrl.includes('s3.amazonaws.com');
+    const imagesAlreadySynced = !!record.documentFrontUrl && !isLegacyS3ImageUrl(record.documentFrontUrl);
     const existingR2Images = imagesAlreadySynced ? {
       documentFrontUrl: record.documentFrontUrl,
       documentBackUrl: record.documentBackUrl,
@@ -342,11 +342,33 @@ async function handleSessionFailed(payload: DiditWebhookPayload) {
 
 type ResultStatus = 'approved' | 'rejected' | 'pending' | 'duplicate';
 
-function escapeJsString(value: string): string {
+function isLegacyS3ImageUrl(value: string | null | undefined): boolean {
+  if (!value) return false;
+  try {
+    const parsed = new URL(value);
+    const hostname = parsed.hostname.toLowerCase();
+    return hostname === 's3.amazonaws.com' || hostname.endsWith('.s3.amazonaws.com');
+  } catch {
+    return false;
+  }
+}
+
+function escapeHtml(value: string): string {
   return value
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/\r?\n/g, ' ');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function serializeForInlineScript(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
 }
 
 function createResultHtml(status: ResultStatus, sessionId: string, reason?: string) {
@@ -360,12 +382,28 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
   const postMessageStatus = status === 'duplicate' ? 'duplicate' : status;
   
   // Build error payload for postMessage
-  let errorPayload = '';
+  let errorPayload: Record<string, string> = {};
   if (status === 'duplicate') {
-    errorPayload = ", error: 'DUPLICATE_DOCUMENT', reason: 'This document has already been used to verify another account'";
+    errorPayload = {
+      error: 'DUPLICATE_DOCUMENT',
+      reason: 'This document has already been used to verify another account',
+    };
   } else if (status === 'rejected' && reason) {
-    errorPayload = `, error: 'VERIFICATION_FAILED', reason: '${escapeJsString(reason)}'`;
+    errorPayload = {
+      error: 'VERIFICATION_FAILED',
+      reason,
+    };
   }
+
+  const postMessagePayload = serializeForInlineScript({
+    type: 'kyc-complete',
+    status: postMessageStatus,
+    sessionId,
+    ...errorPayload,
+  });
+
+  const safeTitle = escapeHtml(config.title);
+  const safeMessage = escapeHtml(config.message);
 
   const html = `
 <!DOCTYPE html>
@@ -373,7 +411,7 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Verification ${config.title}</title>
+  <title>Verification ${safeTitle}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -419,19 +457,17 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
 <body>
   <div class="container">
     <div class="icon ${config.bgClass}">${config.icon}</div>
-    <h1>${config.title}</h1>
-    <p>${config.message}</p>
+    <h1>${safeTitle}</h1>
+    <p>${safeMessage}</p>
     <button class="btn ${config.btnClass}" onclick="closeModal()">Close</button>
   </div>
   <script>
+    const postMessagePayload = ${postMessagePayload};
+
     // Notify parent modal of result
     function notifyParent() {
       if (window.parent !== window) {
-        window.parent.postMessage({
-          type: 'kyc-complete',
-          status: '${postMessageStatus}',
-          sessionId: '${sessionId}'${errorPayload}
-        }, '*');
+        window.parent.postMessage(postMessagePayload, '*');
       }
     }
     

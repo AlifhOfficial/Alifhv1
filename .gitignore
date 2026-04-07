@@ -91,6 +91,12 @@ dist
 tmp/
 temp/
 
+# Internal-only scripts (not for deployment or sharing)
+/scripts/
+packages/ai/scripts/
+packages/database/scripts/
+apps/web/scripts/
+
 # Editor directories and files
 .vscode/
 .idea/

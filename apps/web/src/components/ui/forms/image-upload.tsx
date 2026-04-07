@@ -55,6 +55,24 @@ function getUploadMessage(progress: number) {
   return UPLOAD_STAGES.find(s => progress < s.until)?.label ?? 'Saving to your listing…';
 }
 
+function toSafeImageSrc(input: string | null | undefined): string | null {
+  if (!input) return null;
+
+  if (input.startsWith('blob:')) return input;
+  if (input.startsWith('/')) return input;
+
+  try {
+    const parsed = new URL(input);
+    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+      return parsed.toString();
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 // ============================================================================
 // Sortable Image Item
 // ============================================================================
@@ -68,7 +86,7 @@ interface SortableImageProps {
 }
 
 function SortableImage({ id, url, index, onRemove, blobOverride }: SortableImageProps) {
-  const imageUrl = blobOverride ?? getPublicUrl(url);
+  const imageUrl = toSafeImageSrc(blobOverride ?? getPublicUrl(url));
   const {
     attributes,
     listeners,
@@ -421,11 +439,18 @@ export function ImageUpload({
       {/* Optimistic previews — shown immediately while uploading in background */}
       {pendingPreviews.length > 0 && (
         <div className="grid grid-cols-2 regular:grid-cols-4 gap-4">
-          {pendingPreviews.map((blobUrl) => (
-            <div key={blobUrl} className="relative aspect-video rounded-xl overflow-hidden bg-muted/50">
-              <img src={blobUrl} alt="Uploading…" className="w-full h-full object-cover opacity-75" />
-            </div>
-          ))}
+          {pendingPreviews.map((blobUrl) => {
+            const safeBlobUrl = toSafeImageSrc(blobUrl);
+            return (
+              <div key={blobUrl} className="relative aspect-video rounded-xl overflow-hidden bg-muted/50">
+                {safeBlobUrl ? (
+                  <img src={safeBlobUrl} alt="Uploading…" className="w-full h-full object-cover opacity-75" />
+                ) : (
+                  <div className="w-full h-full bg-muted/40" />
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 

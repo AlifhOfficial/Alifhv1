@@ -45,6 +45,14 @@ const twilioClient = Twilio(
   process.env.TWILIO_AUTH_TOKEN!
 );
 
+function isApplePrivateRelayEmail(value: string | null | undefined): boolean {
+  if (!value) return false;
+  const atIndex = value.lastIndexOf('@');
+  if (atIndex < 0 || atIndex === value.length - 1) return false;
+  const domain = value.slice(atIndex + 1).toLowerCase();
+  return domain === 'privaterelay.appleid.com';
+}
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
@@ -406,7 +414,7 @@ export const auth = betterAuth({
       // Apple only sends name on FIRST sign-in, and may use private relay email
       mapProfileToUser: (profile) => {
         const email = profile.email || "";
-        const isPrivateEmail = email.includes("privaterelay.appleid.com");
+        const isPrivateEmail = isApplePrivateRelayEmail(email);
         
         // Use Apple's provided name, or a friendly fallback
         // Avoid ugly email prefix like "j2h59vxg55"

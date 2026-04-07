@@ -635,8 +635,33 @@ export function generateListingSlug(
   uniqueId: string
 ): string {
   const slugify = (str: string) => {
-    const cleaned = str.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    return cleaned.replace(/(^-+)|(-+$)/g, '');
+    const input = str.toLowerCase();
+    let out = '';
+    let prevDash = false;
+
+    for (let i = 0; i < input.length; i++) {
+      const code = input.charCodeAt(i);
+      const isLowerAlpha = code >= 97 && code <= 122;
+      const isDigit = code >= 48 && code <= 57;
+
+      if (isLowerAlpha || isDigit) {
+        out += input[i];
+        prevDash = false;
+        continue;
+      }
+
+      if (!prevDash) {
+        out += '-';
+        prevDash = true;
+      }
+    }
+
+    let start = 0;
+    let end = out.length;
+    while (start < end && out.charCodeAt(start) === 45) start++;
+    while (end > start && out.charCodeAt(end - 1) === 45) end--;
+
+    return out.slice(start, end);
   };
 
   return `${slugify(make)}-${slugify(model)}-${year}-${uniqueId.slice(0, 8)}`;

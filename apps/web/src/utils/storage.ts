@@ -298,7 +298,17 @@ export function getCdnListingImageUrls(url: string | null | undefined): { thumb:
  */
 export function normalizeKey(key: string): string {
   const normalized = key.replace(/\\+/g, "/");
-  return normalized.replace(/(^\/+)|(\/+$)/g, "");
+  let start = 0;
+  let end = normalized.length;
+
+  while (start < end && normalized.charCodeAt(start) === 47) {
+    start++;
+  }
+  while (end > start && normalized.charCodeAt(end - 1) === 47) {
+    end--;
+  }
+
+  return normalized.slice(start, end);
 }
 
 /**

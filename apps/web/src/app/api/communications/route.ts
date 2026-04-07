@@ -7,11 +7,43 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createCommunication } from '@alifh/database';
 
 
-// Email validation regex
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function isValidEmail(value: string): boolean {
+  if (!value || value.length > 254) return false;
+  if (value.includes(' ')) return false;
 
-// Phone validation (optional, basic check)
-const PHONE_REGEX = /^[+]?[\d\s-]{7,20}$/;
+  const atIndex = value.indexOf('@');
+  if (atIndex <= 0 || atIndex !== value.lastIndexOf('@') || atIndex >= value.length - 1) {
+    return false;
+  }
+
+  const local = value.slice(0, atIndex);
+  const domain = value.slice(atIndex + 1);
+  if (!local || !domain) return false;
+  if (domain.startsWith('.') || domain.endsWith('.') || !domain.includes('.')) return false;
+  if (domain.includes('..')) return false;
+
+  return true;
+}
+
+function isValidPhone(value: string): boolean {
+  if (!value) return false;
+
+  let digits = 0;
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i];
+    const isDigit = ch >= '0' && ch <= '9';
+    if (isDigit) {
+      digits++;
+      continue;
+    }
+
+    if (ch === '+' && i === 0) continue;
+    if (ch === ' ' || ch === '-') continue;
+    return false;
+  }
+
+  return digits >= 7 && digits <= 20;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,14 +66,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+    if (!email || typeof email !== 'string' || !isValidEmail(email.trim())) {
       return NextResponse.json(
         { error: 'Please provide a valid email address' },
         { status: 400 }
       );
     }
 
-    if (phone && typeof phone === 'string' && phone.trim() && !PHONE_REGEX.test(phone.trim())) {
+    if (phone && typeof phone === 'string' && phone.trim() && !isValidPhone(phone.trim())) {
       return NextResponse.json(
         { error: 'Please provide a valid phone number' },
         { status: 400 }

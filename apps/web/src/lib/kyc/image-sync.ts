@@ -73,11 +73,11 @@ function isLocalOrPrivateHost(hostname: string): boolean {
   return false;
 }
 
-function isAllowedImageUrl(rawUrl: string): boolean {
+function getAllowedImageUrl(rawUrl: string): URL | null {
   try {
     const url = new URL(rawUrl);
-    if (url.protocol !== 'https:') return false;
-    if (isLocalOrPrivateHost(url.hostname)) return false;
+    if (url.protocol !== 'https:') return null;
+    if (isLocalOrPrivateHost(url.hostname)) return null;
 
     const configuredHosts = (process.env.DIDIT_IMAGE_HOSTS || process.env.DIDIT_IMAGE_HOST || '')
       .split(',')
@@ -87,12 +87,14 @@ function isAllowedImageUrl(rawUrl: string): boolean {
     const defaultAllowSuffixes = ['didit.me', 'didit.ai', 'amazonaws.com'];
     const allowed = configuredHosts.length > 0 ? configuredHosts : defaultAllowSuffixes;
 
-    return allowed.some((host) => {
+    const isHostAllowed = allowed.some((host) => {
       if (url.hostname === host) return true;
       return url.hostname.endsWith(`.${host}`);
     });
+
+    return isHostAllowed ? url : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -104,8 +106,10 @@ async function downloadAndUploadImage(
   r2Key: string
 ): Promise<string | null> {
   try {
-    if (!isAllowedImageUrl(sourceUrl)) return null;
-    const response = await fetch(sourceUrl, {
+    const allowedUrl = getAllowedImageUrl(sourceUrl);
+    if (!allowedUrl) return null;
+
+    const response = await fetch(allowedUrl.toString(), {
       headers: { 'User-Agent': 'Revvup-KYC-Sync/1.0' },
     });
 
