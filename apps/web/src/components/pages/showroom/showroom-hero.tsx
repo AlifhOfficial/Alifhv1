@@ -24,9 +24,12 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
   const theme = getAmbientTheme(showroom.ambientStyle);
   const locationFromSeoTitle = showroom.seoTitle?.match(/ in ([^|]+?)(?:\s*\||$)/i)?.[1]?.trim();
   const locationFromAddress = showroom.showroomAddress || null;
-  const locationLabel = partner.city && partner.emirate
+  const rawLocationLabel = partner.city && partner.emirate
     ? `${partner.city}, ${partner.emirate}`
     : partner.city || partner.emirate || locationFromSeoTitle || locationFromAddress || 'UAE';
+  const locationLabel = rawLocationLabel.toLowerCase().includes('uae')
+    ? rawLocationLabel
+    : `${rawLocationLabel}, UAE`;
   
   // Video state
   const [isMuted, setIsMuted] = useState(true);

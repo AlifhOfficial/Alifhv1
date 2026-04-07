@@ -15,9 +15,9 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { createId } from '@paralleldrive/cuid2';
 import { randomInt as secureRandomInt } from 'node:crypto';
-import * as schema from './schema';
-import { carListing, listingPriceHistory } from './schema/listing';
-import { user } from './schema';
+import * as schema from '../schema';
+import { carListing, listingPriceHistory } from '../schema/listing';
+import { user } from '../schema';
 
 // Import constants from centralized source of truth
 import {
@@ -58,7 +58,7 @@ import {
   type ListingModerationStatus,
   type ListingLifecycleStatus,
   type ListingPostedByRole,
-} from './schema/listing-constants';
+} from '../schema/listing-constants';
 
 // ===== DATABASE CONNECTION =====
 const DATABASE_URL = process.env.DATABASE_URL;

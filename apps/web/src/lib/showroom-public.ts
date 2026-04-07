@@ -16,6 +16,52 @@ function attachPublicUrls(showroom: any) {
   const toCdn = (key: string | null | undefined) => getCdnPublicUrl(key, cacheBuster);
   const toCdnArray = (keys: string[] | null | undefined) =>
     (keys || []).map((key) => toCdn(key)).filter((key): key is string => Boolean(key));
+  const emirates = new Set([
+    'abu dhabi',
+    'dubai',
+    'sharjah',
+    'ajman',
+    'ras al khaimah',
+    'umm al quwain',
+    'fujairah',
+  ]);
+  const normalizeText = (value: string | null | undefined) =>
+    value ? value.trim().replace(/\s+/g, ' ') : '';
+  const splitIfComma = (value: string) => {
+    if (!value.includes(',')) return [value];
+    return value
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean);
+  };
+
+  const rawCity = normalizeText(showroom.partner?.city);
+  const rawEmirate = normalizeText(showroom.partner?.emirate);
+  let normalizedCity = rawCity;
+  let normalizedEmirate = rawEmirate;
+
+  if (!normalizedCity && normalizedEmirate.includes(',')) {
+    const parts = splitIfComma(normalizedEmirate);
+    normalizedCity = parts[0] || '';
+    normalizedEmirate = parts[1] || parts[0] || '';
+  }
+
+  if (!normalizedEmirate && normalizedCity && emirates.has(normalizedCity.toLowerCase())) {
+    normalizedEmirate = normalizedCity;
+    normalizedCity = '';
+  }
+
+  if (normalizedCity && normalizedEmirate) {
+    const cityLower = normalizedCity.toLowerCase();
+    const emirateLower = normalizedEmirate.toLowerCase();
+
+    if (cityLower === emirateLower) {
+      normalizedCity = '';
+    } else if (emirates.has(cityLower) && emirates.has(emirateLower)) {
+      // Prefer emirate field as the region when both look like emirates.
+      normalizedCity = '';
+    }
+  }
 
   return {
     ...showroom,
@@ -35,6 +81,8 @@ function attachPublicUrls(showroom: any) {
     seoImageUrl: toCdn(showroom.seoImage),
     partner: {
       ...showroom.partner,
+      city: normalizedCity || null,
+      emirate: normalizedEmirate || null,
       logo: toCdn(showroom.partner.logo),
       heroImage: toCdn(showroom.partner.heroImage),
       logoUrl: toCdn(showroom.partner.logo),

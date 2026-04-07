@@ -1,18 +1,9 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  // Block all crawlers on production (revvup.ae).
-  // Localhost / dev environments are freely crawlable for testing.
-  if (process.env.NODE_ENV === 'production') {
-    return {
-      rules: { userAgent: '*', disallow: '/' },
-    }
-  }
-
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://revvup.ae';
   return {
-    rules: [
-      { userAgent: '*', allow: '/' },
-    ],
-    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.xml`,
+    rules: [{ userAgent: '*', allow: '/' }],
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }
