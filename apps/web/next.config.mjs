@@ -117,6 +117,8 @@ const nextConfig = {
   images: {
     // Avoid Next.js image optimizer dependency/costs; serves source URLs directly.
     unoptimized: true,
+    // Defense in depth: keep a hard cap if optimization is enabled in the future.
+    maximumDiskCacheSize: 256 * 1024 * 1024,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
     remotePatterns: [

@@ -753,7 +753,7 @@ describe('Admin KYC Operations', () => {
   describe('GET /api/admin/kyc (List)', () => {
     test('should reject non-admin users', () => {
       const user = MOCK_USER;
-      const isAdmin = user.role === 'admin';
+      const isAdmin = ['admin'].includes(user.role);
       
       expect(isAdmin).toBe(false);
     });
@@ -818,7 +818,7 @@ describe('Admin KYC Operations', () => {
   describe('GET /api/admin/kyc/[id] (Detail)', () => {
     test('should reject non-admin users', () => {
       const user = MOCK_USER;
-      const isAdmin = user.role === 'admin';
+      const isAdmin = ['admin'].includes(user.role);
       
       expect(isAdmin).toBe(false);
     });

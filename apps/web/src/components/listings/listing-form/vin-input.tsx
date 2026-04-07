@@ -7,7 +7,7 @@
  * Following "Less is More" principle.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils';
 import type { VINCheckResponse } from './types';
@@ -28,6 +28,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
   const [isChecking, setIsChecking] = useState(false);
   const [status, setStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error' | 'invalid'>('idle');
   const [message, setMessage] = useState('');
+  const lastChecked = useRef<string>('');
   
   const checkVIN = useCallback(async (vin: string) => {
     if (vin.length < 17) {
@@ -91,11 +92,13 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
     const newValue = e.target.value.toUpperCase().replace(/[IOQ]/g, '').slice(0, 17);
     onChange(newValue);
     
-    if (newValue.length === 17) {
+    if (newValue.length === 17 && newValue !== lastChecked.current) {
+      lastChecked.current = newValue;
       checkVIN(newValue);
     } else {
       setStatus('idle');
       setMessage('');
+      if (newValue.length < 17) lastChecked.current = '';
     }
   };
   

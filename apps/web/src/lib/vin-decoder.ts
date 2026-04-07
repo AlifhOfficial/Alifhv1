@@ -225,6 +225,7 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
   
   // Validate VIN format
   const cleanVIN = vin.trim().toUpperCase();
+  const VIN_REGEX = /^[A-HJ-NPR-Z0-9]{17}$/;
   
   if (cleanVIN.length !== 17) {
     return { success: false, error: 'Please enter full 17-character VIN' };
@@ -235,6 +236,11 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
     return { success: false, error: 'VIN cannot contain letters I, O, or Q' };
   }
   
+  // Enforce full VIN character set (A-H, J-N, P, R-Z, 0-9)
+  if (!VIN_REGEX.test(cleanVIN)) {
+    return { success: false, error: 'VIN must be 17 characters: A-H, J-N, P, R-Z, 0-9' };
+  }
+  
   try {
     const fetchStart = performance.now();
     
@@ -242,14 +248,15 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    const response = await fetch(
-      `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleanVIN}?format=json`,
-      {
-        headers: { 'Accept': 'application/json' },
-        next: { revalidate: 86400 }, // Cache for 24 hours
-        signal: controller.signal,
-      }
-    );
+    const baseUrl = new URL('https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/');
+    const requestUrl = new URL(encodeURIComponent(cleanVIN), baseUrl);
+    requestUrl.searchParams.set('format', 'json');
+    
+    const response = await fetch(requestUrl.toString(), {
+      headers: { 'Accept': 'application/json' },
+      next: { revalidate: 86400 }, // Cache for 24 hours
+      signal: controller.signal,
+    });
     
     clearTimeout(timeoutId);
     const fetchDuration = Math.round(performance.now() - fetchStart);
