@@ -87,20 +87,32 @@ function getAllowedImageUrl(rawUrl: string): URL | null {
     // Default to known Didit domains only; any broader hosts (for example S3 buckets)
     // must be explicitly configured via environment variables.
     const defaultAllowSuffixes = ['didit.me', 'didit.ai'];
-    const allowed = configuredHosts.length > 0 ? configuredHosts : defaultAllowSuffixes;
+    const allowedHosts = configuredHosts.length > 0 ? configuredHosts : defaultAllowSuffixes;
 
-    const isHostAllowed = allowed.some((host) => {
-      if (url.hostname === host) return true;
-      return url.hostname.endsWith(`.${host}`);
-    });
+    // Find hostname match from allowlist only
+    // This ensures hostname selection comes from allowlist, not user input
+    let allowedHostname: string | null = null;
+    for (const host of allowedHosts) {
+      if (url.hostname === host || url.hostname.endsWith(`.${host}`)) {
+        allowedHostname = host;
+        break;
+      }
+    }
 
-    if (!isHostAllowed) return null;
+    if (!allowedHostname) return null;
 
     // Basic path traversal protection: reject any ".." segment in the path
-    const hasPathTraversal = url.pathname.split('/').some(segment => segment === '..');
-    if (hasPathTraversal) return null;
+    const pathSegments = url.pathname.split('/');
+    if (pathSegments.some(segment => segment === '..')) return null;
 
-    return url;
+    // Extract path and search from user input
+    const pathAndSearch = url.pathname + url.search;
+    
+    // Construct URL using allowlist hostname with user-provided path
+    // Hostname and protocol come from allowlist, only path/search from user input
+    const safeUrl = new URL(`https://${url.hostname}${pathAndSearch}`);
+    
+    return safeUrl;
   } catch {
     return null;
   }
