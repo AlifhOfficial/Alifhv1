@@ -342,6 +342,13 @@ async function handleSessionFailed(payload: DiditWebhookPayload) {
 
 type ResultStatus = 'approved' | 'rejected' | 'pending' | 'duplicate';
 
+function escapeJsString(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r?\n/g, ' ');
+}
+
 function createResultHtml(status: ResultStatus, sessionId: string, reason?: string) {
   const config = {
     approved: { icon: '✓', title: 'Verified!', message: 'Your identity has been verified', bgClass: 'success', btnClass: 'btn-success' },
@@ -357,7 +364,7 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
   if (status === 'duplicate') {
     errorPayload = ", error: 'DUPLICATE_DOCUMENT', reason: 'This document has already been used to verify another account'";
   } else if (status === 'rejected' && reason) {
-    errorPayload = `, error: 'VERIFICATION_FAILED', reason: '${reason.replace(/'/g, "\\'")}'`;
+    errorPayload = `, error: 'VERIFICATION_FAILED', reason: '${escapeJsString(reason)}'`;
   }
 
   const html = `

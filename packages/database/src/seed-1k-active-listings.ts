@@ -13,6 +13,7 @@
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { createId } from '@paralleldrive/cuid2';
+import { randomInt as cryptoRandomInt } from 'crypto';
 import * as schema from './schema';
 import { carListing, listingPriceHistory } from './schema/listing';
 import { partner } from './schema/partner';
@@ -148,28 +149,36 @@ const badges = ['verified', 'top_rated', 'price_reduced', 'hot_deal', 'new_arriv
 const makeListingId = () => `listing_${createId()}`;
 
 function getRandomItem<T>(arr: readonly T[] | T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[randomInt(0, arr.length - 1)];
 }
 
 function getRandomSubarray<T>(arr: readonly T[] | T[], min: number, max: number): T[] {
-  const n = Math.floor(Math.random() * (max - min + 1)) + min;
-  const shuffled = [...arr].sort(() => 0.5 - Math.random());
+  const n = randomInt(min, max);
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = randomInt(0, i);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   return shuffled.slice(0, n);
 }
 
 function getRandomBoolean(probability = 0.5): boolean {
-  return Math.random() < probability;
+  return randomFloat01() < probability;
 }
 
 function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return cryptoRandomInt(min, max + 1);
+}
+
+function randomFloat01(): number {
+  return cryptoRandomInt(0, 1_000_000) / 1_000_000;
 }
 
 function generateVIN(): string {
   const chars = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
   let vin = '';
   for (let i = 0; i < 17; i++) {
-    vin += chars[Math.floor(Math.random() * chars.length)];
+    vin += chars[randomInt(0, chars.length - 1)];
   }
   return vin;
 }
@@ -186,7 +195,7 @@ function getRandomImages(count: number): string[] {
   const usedIndexes = new Set<number>();
   
   while (images.length < count && images.length < carImages.length) {
-    const idx = Math.floor(Math.random() * carImages.length);
+    const idx = randomInt(0, carImages.length - 1);
     if (!usedIndexes.has(idx)) {
       usedIndexes.add(idx);
       images.push(carImages[idx]);
@@ -340,14 +349,14 @@ function generateActiveListing(
   // Pricing in AED
   const basePrice = isLuxury ? randomInt(150000, 1500000) : randomInt(25000, 350000);
   const price = basePrice;
-  const fairValue = Math.floor(price * (0.9 + Math.random() * 0.2));
+  const fairValue = Math.floor(price * (0.9 + randomFloat01() * 0.2));
   const estimateMin = Math.floor(fairValue * 0.9);
   const estimateMax = Math.floor(fairValue * 1.1);
   const priceTrend = price < fairValue * 0.95 ? 'up' : price > fairValue * 1.05 ? 'down' : 'stable';
   
   // AI Valuation (neutral)
   const hasAiValuation = getRandomBoolean(0.7);
-  const aiConfidenceScore = hasAiValuation ? 0.7 + Math.random() * 0.25 : undefined;
+  const aiConfidenceScore = hasAiValuation ? 0.7 + randomFloat01() * 0.25 : undefined;
   const qiScore = randomInt(65, 98);
   
   // Location

@@ -163,7 +163,7 @@ export async function manageBooking(
         return { success: false, error: `Invalid action: ${action}` };
     }
   } catch (error) {
-    console.error(`[ManageBooking] ${action} failed:`, error);
+    console.error('[ManageBooking] action failed', { action, error });
     return { success: false, error: `Failed to ${action} booking` };
   }
 }
