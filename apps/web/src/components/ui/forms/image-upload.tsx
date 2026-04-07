@@ -111,15 +111,12 @@ function SortableImage({ id, url, index, onRemove, blobOverride }: SortableImage
         isDragging ? 'ring-2 ring-primary shadow-lg' : ''
       }`}
     >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={`Upload ${index + 1}`}
-          className="w-full h-full object-cover pointer-events-none"
-        />
-      ) : (
-        <div className="w-full h-full bg-muted/40 pointer-events-none" />
-      )}
+      <div
+        className="w-full h-full bg-cover bg-center pointer-events-none"
+        style={imageUrl ? { backgroundImage: `url("${imageUrl}")` } : undefined}
+        role="img"
+        aria-label={`Upload ${index + 1}`}
+      />
       
       {/* Drag handle - top left (always visible on mobile, hover on desktop) */}
       <button
@@ -443,11 +440,12 @@ export function ImageUpload({
             const safeBlobUrl = toSafeImageSrc(blobUrl);
             return (
               <div key={blobUrl} className="relative aspect-video rounded-xl overflow-hidden bg-muted/50">
-                {safeBlobUrl ? (
-                  <img src={safeBlobUrl} alt="Uploading…" className="w-full h-full object-cover opacity-75" />
-                ) : (
-                  <div className="w-full h-full bg-muted/40" />
-                )}
+                <div
+                  className="w-full h-full bg-cover bg-center opacity-75"
+                  style={safeBlobUrl ? { backgroundImage: `url("${safeBlobUrl}")` } : undefined}
+                  role="img"
+                  aria-label="Uploading…"
+                />
               </div>
             );
           })}
