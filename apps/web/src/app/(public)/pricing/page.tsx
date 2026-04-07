@@ -25,18 +25,13 @@ const pricingVisibleFaqs: FAQItem[] = [
 ]
   .map((id) => faqPool.find((item) => item.id === id))
   .filter((item): item is FAQItem => Boolean(item));
-const pricingVisibleFaqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: pricingVisibleFaqs.map((item) => ({
-    '@type': 'Question',
-    name: item.question,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: item.answer,
-    },
-  })),
-};
+const combinedFaqs = [
+  ...pricingFaqItems,
+  ...pricingVisibleFaqs,
+].filter(
+  (item, index, array) =>
+    array.findIndex((other) => other.id === item.id) === index
+);
 
 export const metadata: Metadata = {
   title: 'Pricing — Zero Commission, Unlimited Listings | Revvup',
@@ -78,7 +73,7 @@ export const metadata: Metadata = {
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: pricingFaqItems.map((item) => ({
+  mainEntity: combinedFaqs.map((item) => ({
     '@type': 'Question',
     name: item.question,
     acceptedAnswer: {
@@ -166,10 +161,6 @@ export default function PricingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingVisibleFaqSchema) }}
       />
       <div className="sr-only">
         Dealer pricing summary: Flat subscription, zero commission, unlimited listings, no paid boosts,

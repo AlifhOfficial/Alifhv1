@@ -205,6 +205,11 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           fetchPriority="high"
         />
       )}
+      <div className="sr-only">
+        {`Showroom summary: ${showroom.partner?.brandName || 'Dealer'} in ${
+          showroom.partner?.emirate || 'UAE'
+        }. Listings rank by quality, no paid boosts. Revvup does not sell cars or take commission.`}
+      </div>
       {/* Pass showroom data to client - renders instantly, no client fetch needed */}
       <ShowroomPageClient slug={slug} initialShowroom={showroom} initialListings={initialListings} />
     </>
