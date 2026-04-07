@@ -478,7 +478,7 @@ export const auth = betterAuth({
         process.env.NEXT_PUBLIC_NETWORK_URL || "",
         ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
       ].filter(Boolean)
-    : (request: Request) => {
+    : (request?: Request) => {
         // Start with explicit origins from env
         const origins = [
           "http://localhost:3000",
@@ -489,6 +489,10 @@ export const auth = betterAuth({
           ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
         ].filter(Boolean);
         
+        if (!request) {
+          return origins;
+        }
+
         // Also extract the origin from the request and allow it if it's a local network IP
         const requestOrigin = request.headers.get('origin');
         if (requestOrigin) {
