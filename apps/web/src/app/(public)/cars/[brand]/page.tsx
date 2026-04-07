@@ -8,7 +8,7 @@
  */
 
 import { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { CAR_MAKES, UAE_EMIRATES } from '@/lib/filter-constants';
 import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
@@ -304,19 +304,19 @@ export default async function HubPage({ params }: PageProps) {
   // Check if it's Black listings - redirect to /listings with black=true filter
   const isBlack = getBlackFromSlug(slug);
   if (isBlack) {
-    redirect(`/listings?black=true&sort=relevance`);
+    permanentRedirect(`/listings?black=true&sort=relevance`);
   }
   
   // Check if it's a spec type - redirect to /listings with specs filter
   const specType = getSpecFromSlug(slug);
   if (specType) {
-    redirect(`/listings?specs=${encodeURIComponent(specType)}`);
+    permanentRedirect(`/listings?specs=${encodeURIComponent(specType)}`);
   }
   
   // Check if it's a location - redirect to /listings with emirate filter
   const location = getLocationFromSlug(slug);
   if (location) {
-    redirect(`/listings?emirate=${encodeURIComponent(location)}`);
+    permanentRedirect(`/listings?emirate=${encodeURIComponent(location)}`);
   }
   
   // Otherwise, it's a brand - redirect to /listings with make filter
@@ -325,7 +325,7 @@ export default async function HubPage({ params }: PageProps) {
     notFound();
   }
 
-  redirect(`/listings?make=${encodeURIComponent(brand)}`);
+  permanentRedirect(`/listings?make=${encodeURIComponent(brand)}`);
 }
 
 function _PageSkeleton() {

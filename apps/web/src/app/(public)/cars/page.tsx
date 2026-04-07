@@ -3,7 +3,7 @@
  * This page exists because users search for "cars" not "listings"
  */
 
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import { Metadata } from 'next';
 import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
@@ -18,5 +18,5 @@ export const metadata: Metadata = {
 // ISR: Static redirect, cached until redeploy
 
 export default function CarsPage() {
-  redirect('/listings');
+  permanentRedirect('/listings');
 }

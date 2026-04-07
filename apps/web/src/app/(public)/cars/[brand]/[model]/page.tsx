@@ -4,7 +4,7 @@
  */
 
 import { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { CAR_MAKES, CAR_MODELS } from '@/lib/filter-constants';
 import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
@@ -122,7 +122,7 @@ export default async function ModelPage({ params }: PageProps) {
   }
 
   // Redirect to /listings with make and model filters
-  redirect(`/listings?make=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`);
+  permanentRedirect(`/listings?make=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`);
 }
 
 function _PageSkeleton() {

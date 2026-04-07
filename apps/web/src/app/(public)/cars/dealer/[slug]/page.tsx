@@ -6,7 +6,7 @@
  */
 
 import { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 interface PageProps {
@@ -129,5 +129,5 @@ export default async function PartnerListingsPage({ params }: PageProps) {
 
   // Redirect to filtered listings with partnerId and partnerName
   const partnerName = encodeURIComponent(partnerData.brandName);
-  redirect(`/listings?partnerId=${partnerData.id}&partnerName=${partnerName}&sort=relevance`);
+  permanentRedirect(`/listings?partnerId=${partnerData.id}&partnerName=${partnerName}&sort=relevance`);
 }

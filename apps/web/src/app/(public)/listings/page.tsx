@@ -46,6 +46,7 @@ function shouldNoindex(params: Record<string, string | string[] | undefined>): b
 
   // Pagination = noindex
   if (params.page && params.page !== '1') return true;
+  if (params.cursor || params.pageToken) return true;
 
   // Price/year ranges = noindex
   if (params.minPrice || params.maxPrice || params.minYear || params.maxYear) return true;

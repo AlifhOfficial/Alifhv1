@@ -163,7 +163,6 @@ export const staticPages = [
   { url: "/", priority: 1.0, changeFrequency: "daily" as const },
   { url: "/sell", priority: 0.9, changeFrequency: "weekly" as const },
   { url: "/listings", priority: 0.9, changeFrequency: "hourly" as const },
-  { url: "/showcase", priority: 0.8, changeFrequency: "daily" as const },
   { url: "/black", priority: 0.8, changeFrequency: "weekly" as const },
   { url: "/partner", priority: 0.8, changeFrequency: "monthly" as const },
   { url: "/pricing", priority: 0.7, changeFrequency: "monthly" as const },
