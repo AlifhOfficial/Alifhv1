@@ -8,6 +8,7 @@ import { Metadata } from 'next';
 import { DealerPartnersView } from '@/components/pages/dealer-partners/dealer-partners-view';
 import { faqData } from '@/data/faq-data';
 import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 // Get partner FAQ items for schema
 const partnerFaqItems = faqData.find((cat) => cat.id === 'partners')?.items || [];
@@ -16,7 +17,7 @@ const dealerFaqItems = [...partnerFaqItems, ...pricingFaqItems];
 
 export const metadata: Metadata = {
   title: 'Car Dealer Partnership Program Dubai UAE — Zero Commission | Revvup',
-  description: 'Join the only car marketplace that works FOR you, not against you. Zero commission, flat subscription, unlimited listings. We don\'t sell cars — we help YOU sell more. Founding Dealer Program now open.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: [
     // High-intent dealer search terms
     'car dealer platform dubai',
@@ -81,7 +82,7 @@ export const metadata: Metadata = {
   ].join(', '),
   openGraph: {
     title: 'Car Dealer Partnership Program Dubai UAE — Zero Commission',
-    description: 'The only platform that works FOR you. Zero commission. Unlimited listings. We don\'t compete with you — we help you sell more.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/dealer-partners',
   },
@@ -91,7 +92,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Car Dealer Partnership Program Dubai UAE',
-    description: 'Zero commission. Unlimited listings. We help YOU sell more cars.',
+    description: REVVUP_META_DESCRIPTION,
   },
 };
 

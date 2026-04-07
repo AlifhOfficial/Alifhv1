@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { WhatYourCarSays } from '@/components/tools/what-your-car-says'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'What Your Car Says About You | Car Personality Analysis | Revvup',
-  description: 'Find out what your car choice reveals about your personality and lifestyle. Fun analysis tool.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'what car says about you, car personality, car stereotypes',
 }
 

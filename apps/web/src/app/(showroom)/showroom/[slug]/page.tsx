@@ -13,6 +13,7 @@ import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ShowroomPageClient } from './client';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 import {
   getCachedPublicShowroom,
   getCachedPublicShowroomListings,
@@ -114,9 +115,7 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
     ? `${brandName} | Premium Car Showroom in UAE | Revvup`
     : (showroom.seoTitle || `${brandName} | Premium Car Showroom in UAE | Revvup`);
   
-  const description = showroom.seoDescription || 
-    showroom.brandPhilosophy || 
-    `Explore ${brandName}'s premium car showroom in UAE. Browse verified inventory, read reviews, and connect with trusted dealers.`;
+  const description = REVVUP_META_DESCRIPTION;
   
   const image = showroom.seoImageUrl || showroom.heroImageUrl || '/opengraph-image';
   const location = showroom.partner?.emirate || 'UAE';

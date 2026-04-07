@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { TermsOfService } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - Revvup',
-  description: 'Terms of Service for REVVUP platform operated by AISH CAPITALS FZCO. Read our legal terms and conditions for using the platform.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Terms of Service - Revvup',
-    description: 'Terms of Service for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

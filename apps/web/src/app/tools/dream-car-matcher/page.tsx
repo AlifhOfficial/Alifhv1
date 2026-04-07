@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { DreamCarMatcher } from '@/components/tools/dream-car-matcher'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Dream Car Matcher | Find Your Perfect Car Based on Lifestyle | Revvup',
-  description: 'Answer a few questions about your lifestyle and we\'ll match you with your perfect dream car.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'dream car finder, perfect car matcher, car recommendation quiz',
 }
 

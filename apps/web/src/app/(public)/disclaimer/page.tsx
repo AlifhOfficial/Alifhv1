@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { Disclaimer } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Disclaimer - Revvup',
-  description: 'Disclaimer for REVVUP platform operated by AISH CAPITALS FZCO. Important information about platform role and user responsibilities.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Disclaimer - Revvup',
-    description: 'Disclaimer for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { RegistrationFeeCalculator } from '@/components/tools/registration-fee-calculator'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'RTA Registration Fee Calculator UAE | Dubai Vehicle Registration Cost | Revvup',
-  description: 'Calculate RTA registration and renewal fees for your car in UAE. Includes all emirate-specific charges.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'rta registration fee dubai, car registration cost uae, vehicle registration calculator',
 }
 

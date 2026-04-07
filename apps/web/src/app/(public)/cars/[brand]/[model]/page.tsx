@@ -6,6 +6,7 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { CAR_MAKES, CAR_MODELS } from '@/lib/filter-constants';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 type CarMake = typeof CAR_MAKES[number];
 
@@ -72,7 +73,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${brand} ${model} for Sale in UAE | Used & New | Revvup`;
-  const description = `Find used ${brand} ${model} for sale in Dubai and UAE. Quality listings. Connect with private sellers and dealers. Book test drives online. Zero commission.`;
+  const description = REVVUP_META_DESCRIPTION;
 
   return {
     title,

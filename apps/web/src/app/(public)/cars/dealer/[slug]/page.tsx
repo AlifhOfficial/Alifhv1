@@ -7,6 +7,7 @@
 
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -80,9 +81,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? `${brandName} Cars for Sale in ${location} | Black Verified | Revvup`
     : `${brandName} Cars for Sale in ${location} | Verified Dealer | Revvup`;
 
-  const description = isBlackTier
-    ? `Browse quality-verified cars from ${brandName} in ${location}. Black tier verified dealer. Book test drives online.`
-    : `Browse used cars for sale from ${brandName} in ${location}. Verified dealer listings. Connect directly with the dealership.`;
+  const description = REVVUP_META_DESCRIPTION;
 
   const keywords = isBlackTier
     ? `${brandName.toLowerCase()} cars ${location.toLowerCase()}, ${brandName.toLowerCase()} uae, black verified dealer, quality cars ${brandName.toLowerCase()}, ${brandName.toLowerCase()} showroom ${location.toLowerCase()}`

@@ -6,13 +6,14 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ContactForm } from '@/components/communications';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Contact Us | Revvup',
-  description: 'Get in touch with our team. We\'re here to help with any questions, support requests, or partnership inquiries.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Contact Us | Revvup',
-    description: 'Get in touch with our team for support, inquiries, or partnerships.',
+    description: REVVUP_META_DESCRIPTION,
   },
 };
 

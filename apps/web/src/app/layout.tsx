@@ -12,6 +12,7 @@ import { ThemeProvider } from '@/components/shared/providers/theme-provider'
 import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 import {
   BRAND_APPLE_TOUCH_ICON_URL,
   BRAND_FAVICON_ICO_URL,
@@ -42,10 +43,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://revvup.ae'),
   title: 'Revvup — Buy & Sell Cars in the UAE | Free. Forever.',
-  description: 'The UAE\'s car marketplace built for dealers and buyers. No commissions. No listing fees. Quality-based rankings. Free forever. revvup.ae',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Revvup — More than a marketplace.',
-    description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     siteName: 'Revvup',
     images: [
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Revvup — More than a marketplace.',
-    description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
+    description: REVVUP_META_DESCRIPTION,
     images: ['/twitter-image'],
   },
   icons: {

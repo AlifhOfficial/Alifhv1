@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { DealerAgreement } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Dealer Agreement - Revvup',
-  description: 'Dealer Agreement for REVVUP platform operated by AISH CAPITALS FZCO. Comprehensive terms governing dealer access and platform usage.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Dealer Agreement - Revvup',
-    description: 'Dealer Agreement for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

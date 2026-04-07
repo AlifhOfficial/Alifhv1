@@ -5,6 +5,7 @@
 
 import { Metadata } from 'next';
 import { StatusPageClient } from './status-page-client';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 import {
   getCachedStatusPageData,
   getStatusPageFallbackData,
@@ -12,11 +13,11 @@ import {
 
 export const metadata: Metadata = {
   title: 'System Status | Revvup',
-  description: 'Current status and uptime information for Revvup services. Real-time monitoring of API, database, and infrastructure.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'revvup status, service status, uptime, api status, system health',
   openGraph: {
     title: 'System Status | Revvup',
-    description: 'Current status and uptime information for Revvup services.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://status.revvup.ae',
   },

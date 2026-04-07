@@ -12,13 +12,14 @@ import {
 import { Metadata } from 'next';
 import { faqData } from '@/data/faq-data';
 import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 // Get pricing FAQ items for schema
 const pricingFaqItems = faqData.find((cat) => cat.id === 'pricing')?.items || [];
 
 export const metadata: Metadata = {
   title: 'Pricing — Zero Commission, Unlimited Listings | Revvup',
-  description: 'Simple, transparent pricing. Two options. Same platform. Same features. Different levels of attention. Zero commission. Unlimited listings for dealers and showrooms.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: [
     'zero commission car marketplace',
     'no commission car sales dubai',
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   ].join(', '),
   openGraph: {
     title: 'Pricing — Zero Commission, Unlimited Listings | Revvup',
-    description: 'Simple, transparent pricing. Two options. Same platform. Zero commission. Unlimited listings.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/pricing',
   },

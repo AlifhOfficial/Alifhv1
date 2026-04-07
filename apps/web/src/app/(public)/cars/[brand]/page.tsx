@@ -10,6 +10,7 @@
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { CAR_MAKES, UAE_EMIRATES } from '@/lib/filter-constants';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 type CarMake = typeof CAR_MAKES[number];
 type Emirates = typeof UAE_EMIRATES[number]['value'];
@@ -91,30 +92,6 @@ const EMIRATE_META: Record<Emirates, { name: string; displayName: string; descri
   },
 };
 
-// Brand descriptions
-const BRAND_DESCRIPTIONS: Partial<Record<CarMake, string>> = {
-  'Toyota': 'Browse used Toyota cars for sale in UAE. Find Land Cruiser, Camry, Corolla, Hilux and more. Quality listings from dealers and private sellers.',
-  'Nissan': 'Used Nissan cars for sale in Dubai and UAE. Patrol, X-Trail, Altima, Maxima. Book test drives online.',
-  'Lexus': 'Luxury Lexus cars for sale in UAE. LX, RX, ES, GX models. Connect with verified sellers.',
-  'Mercedes-Benz': 'Mercedes-Benz cars for sale in UAE. S-Class, E-Class, GLE, G-Class. Premium listings.',
-  'BMW': 'Used BMW cars in UAE. 3-Series, 5-Series, X5, X6, M models. Zero commission marketplace.',
-  'Audi': 'Audi cars for sale in Dubai. Q7, Q5, A6, A4, RS models. Quality verified listings.',
-  'Land Rover': 'Land Rover and Range Rover for sale in UAE. Defender, Sport, Evoque. Quality listings.',
-  'Porsche': 'Porsche cars for sale in Dubai. 911, Cayenne, Macan, Taycan. Verified sellers only.',
-  'Ford': 'Ford cars and trucks in UAE. F-150, Mustang, Explorer, Ranger. Quality listings.',
-  'Chevrolet': 'Chevrolet vehicles for sale in UAE. Tahoe, Silverado, Corvette. Connect with sellers directly.',
-  'GMC': 'GMC trucks and SUVs in UAE. Sierra, Yukon, Denali. No commission.',
-  'Jeep': 'Jeep vehicles for sale in Dubai. Wrangler, Grand Cherokee, Gladiator. Free test drive booking.',
-  'Honda': 'Used Honda cars in UAE. Accord, Civic, CR-V, HR-V. Quality listings.',
-  'Hyundai': 'Hyundai cars for sale in Dubai. Tucson, Santa Fe, Elantra, Creta. Quality listings.',
-  'Kia': 'Kia vehicles in UAE. Sportage, Sorento, Telluride, Carnival. No listing fees.',
-  'Mazda': 'Mazda cars for sale in UAE. CX-5, CX-9, Mazda3, Mazda6. Quality listings.',
-  'Mitsubishi': 'Mitsubishi cars in Dubai. Pajero, Outlander, Montero, Eclipse Cross.',
-  'Dodge': 'Dodge muscle cars and trucks. Challenger, Charger, Durango, Ram.',
-  'Genesis': 'Genesis luxury cars in UAE. G80, G90, GV70, GV80. Premium marketplace.',
-  'Volvo': 'Volvo cars for sale in Dubai. XC90, XC60, S90, V90. Safety-focused listings.',
-};
-
 interface PageProps {
   params: Promise<{ brand: string }>;
 }
@@ -185,11 +162,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (isBlack) {
     return {
       title: `${BLACK_META.displayName} for Sale in UAE | Quality First | Revvup`,
-      description: BLACK_META.description,
+      description: REVVUP_META_DESCRIPTION,
       keywords: 'black verified cars uae, quality cars dubai, verified listings uae, black cars for sale, trusted sellers uae, quality first cars dubai, verified dealers uae, excellence cars dubai',
       openGraph: {
         title: `${BLACK_META.displayName} for Sale in UAE | Revvup`,
-        description: BLACK_META.description,
+        description: REVVUP_META_DESCRIPTION,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
         images: [
@@ -204,7 +181,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       twitter: {
         card: 'summary_large_image',
         title: `${BLACK_META.displayName} for Sale in UAE | Revvup`,
-        description: BLACK_META.description,
+        description: REVVUP_META_DESCRIPTION,
         images: ['/twitter-image'],
       },
       alternates: {
@@ -219,11 +196,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const spec = SPECS_META[specType];
     return {
       title: `${spec.displayName} Cars for Sale in UAE | Quality Listings | Revvup`,
-      description: spec.description,
+      description: REVVUP_META_DESCRIPTION,
       keywords: `${spec.name.toLowerCase()} cars uae, ${spec.name.toLowerCase()} dubai, ${spec.slug} cars for sale, buy ${spec.slug} uae, ${spec.name.toLowerCase()} vehicles dubai, regional specs cars uae`,
       openGraph: {
         title: `${spec.displayName} Cars for Sale in UAE | Revvup`,
-        description: spec.description,
+        description: REVVUP_META_DESCRIPTION,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
         images: [
@@ -238,7 +215,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       twitter: {
         card: 'summary_large_image',
         title: `${spec.displayName} Cars for Sale in UAE | Revvup`,
-        description: spec.description,
+        description: REVVUP_META_DESCRIPTION,
         images: ['/twitter-image'],
       },
       alternates: {
@@ -253,11 +230,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const emirate = EMIRATE_META[location];
     return {
       title: `Used Cars for Sale in ${emirate.displayName} | No Ads | Revvup`,
-      description: emirate.description,
+      description: REVVUP_META_DESCRIPTION,
       keywords: `used cars ${emirate.name.toLowerCase()}, cars for sale ${emirate.name.toLowerCase()}, buy car ${emirate.name.toLowerCase()}, second hand cars ${emirate.name.toLowerCase()}, ${emirate.name.toLowerCase()} used cars, sell car ${emirate.name.toLowerCase()}`,
       openGraph: {
         title: `Used Cars for Sale in ${emirate.displayName} | Revvup`,
-        description: emirate.description,
+        description: REVVUP_META_DESCRIPTION,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
         images: [
@@ -272,7 +249,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       twitter: {
         card: 'summary_large_image',
         title: `Used Cars for Sale in ${emirate.displayName} | Revvup`,
-        description: emirate.description,
+        description: REVVUP_META_DESCRIPTION,
         images: ['/twitter-image'],
       },
       alternates: {
@@ -287,8 +264,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Not Found | Revvup' };
   }
 
-  const description = BRAND_DESCRIPTIONS[brand] || 
-    `Used ${brand} cars for sale in UAE. Browse quality listings. Connect with dealers and private sellers. Book test drives online.`;
+  const description = REVVUP_META_DESCRIPTION;
 
   return {
     title: `${brand} Cars for Sale in UAE | Used & New | Revvup`,

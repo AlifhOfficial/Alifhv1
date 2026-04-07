@@ -10,14 +10,15 @@
 import { getCachedPublishedShowrooms } from '@/lib/showroom-public';
 import { BlackDirectoryView } from '@/components/pages/black';
 import { getPublicUrl, getAppThumbUrl } from '@/utils';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata = {
   title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
-  description: 'Curated collection of premium car dealerships and signature showrooms from verified Black tier partners. Luxury car dealers in Dubai, Abu Dhabi, and across UAE.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'premium car showrooms uae, luxury car dealers dubai, black tier dealers, verified showrooms uae, premium car dealers abu dhabi, luxury auto dealers uae',
   openGraph: {
     title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
-    description: 'Curated collection of premium car dealerships and signature showrooms from verified Black tier partners.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/black',
   },

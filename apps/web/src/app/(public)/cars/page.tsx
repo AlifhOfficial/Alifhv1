@@ -5,10 +5,11 @@
 
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
-  description: 'Browse used cars in Dubai. No sponsored ads. Free for private sellers. Book test drives online.',
+  description: REVVUP_META_DESCRIPTION,
   alternates: {
     canonical: 'https://revvup.ae/listings',
   },

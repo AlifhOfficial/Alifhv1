@@ -25,6 +25,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     name: 'Revvup',
     slug: 'revvup',
     version: '1.0.0',
+    description: "Revvup is Dubai's fee-free car marketplace. No listing fees, no paid boosts, no ads. Quality ranks. Book test drives online. Get the Revvup mobile app.",
     owner: 'revvups-organization',
     runtimeVersion: {
       policy: 'appVersion',

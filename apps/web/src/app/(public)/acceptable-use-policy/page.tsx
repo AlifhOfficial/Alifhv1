@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { AcceptableUsePolicy } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Acceptable Use Policy - Revvup',
-  description: 'Acceptable Use Policy for REVVUP platform. Guidelines for permitted and prohibited conduct when using our services.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Acceptable Use Policy - Revvup',
-    description: 'Acceptable Use Policy for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

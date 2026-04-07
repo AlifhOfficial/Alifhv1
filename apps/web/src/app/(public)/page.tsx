@@ -15,14 +15,15 @@ import { ClosingSection } from '@/components/pages/home/closing-section';
 import { JsonLd } from '@/components/seo/json-ld';
 import { generateOrganizationSchema } from '@/lib/seo-schema';
 import { Metadata } from 'next';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Revvup — Buy & Sell Cars in the UAE | Free. Forever.',
-  description: 'The UAE\'s car marketplace built for dealers and buyers. No commissions. No listing fees. Quality-based rankings. Free forever. revvup.ae',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'UAE car marketplace, buy cars Dubai, sell cars UAE, used cars Dubai, car listings UAE, no commission car platform',
   openGraph: {
     title: 'Revvup — More than a marketplace.',
-    description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae',
     images: [
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Revvup — More than a marketplace.',
-    description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
+    description: REVVUP_META_DESCRIPTION,
     images: ['/twitter-image'],
   },
   alternates: {

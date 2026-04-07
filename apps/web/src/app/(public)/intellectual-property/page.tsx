@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { IntellectualProperty } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Intellectual Property & Copyright Notice - Revvup',
-  description: 'Intellectual Property and Copyright Notice for REVVUP platform operated by AISH CAPITALS FZCO. Learn about ownership, licensing, and usage restrictions.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Intellectual Property & Copyright Notice - Revvup',
-    description: 'Intellectual Property and Copyright Notice for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

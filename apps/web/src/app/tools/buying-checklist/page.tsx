@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { BuyingChecklist } from '@/components/tools/buying-checklist'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Used Car Buying Checklist UAE | Complete Inspection Guide | Revvup',
-  description: 'Complete checklist for buying used cars in UAE. Never miss important inspection points, documents, or red flags.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'car buying checklist uae, used car inspection checklist dubai, buying car guide',
 }
 

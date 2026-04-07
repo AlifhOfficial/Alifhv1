@@ -9,14 +9,15 @@ import {
   BadgesClosingSection,
 } from '@/components/pages/badges';
 import { Metadata } from 'next';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Badges — Trust & Recognition | Revvup',
-  description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought. Verified sellers and dealers in UAE.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'revvup badges, verified sellers uae, trusted dealers dubai, car seller verification, dealer recognition uae',
   openGraph: {
     title: 'Badges — Trust & Recognition | Revvup',
-    description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/badges',
   },

@@ -5,14 +5,15 @@
 
 import { Metadata } from 'next';
 import { HowRankingWorksPage } from '@/components/pages/how-ranking-works/how-ranking-works-page';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'How Ranking Works — No Paid Boosts | Revvup',
-  description: 'Revvup does not sell boosts or promoted listings. Listings rank based on quality, transparency, and genuine buyer interest — not payment. Fair marketplace for all.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'car listing ranking, no paid boosts, fair marketplace uae, how listings rank, car marketplace transparency',
   openGraph: {
     title: 'How Ranking Works — No Paid Boosts | Revvup',
-    description: 'Listings rank based on quality, transparency, and genuine buyer interest — not payment.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
     url: 'https://revvup.ae/how-ranking-works',
   },

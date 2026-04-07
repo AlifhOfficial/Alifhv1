@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { OverpricedChecker } from '@/components/tools/overpriced-checker'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Is This Car Overpriced? | Free Price Checker UAE | Revvup',
-  description: 'Instantly check if a used car is overpriced in UAE. Compare asking price with market value. Free tool for car buyers.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'car overpriced uae, check car price dubai, fair car price uae',
 }
 

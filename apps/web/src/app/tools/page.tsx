@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Free Car Tools & Calculators UAE | Revvup',
-  description: 'Free car valuation, loan calculator, depreciation calculator, and more tools for buying and selling cars in UAE.',
+  description: REVVUP_META_DESCRIPTION,
   alternates: {
     canonical: 'https://revvup.ae/tools',
   },

@@ -2,7 +2,7 @@
   "name": "@alifh/ws",
   "version": "0.1.0",
   "private": true,
-  "description": "WebSocket server for real-time updates",
+  "description": "Revvup is Dubai's fee-free car marketplace. No listing fees, no paid boosts, no ads. Quality ranks. Book test drives online. Get the Revvup mobile app.",
   "packageManager": "bun@1.2.5",
   "scripts": {
     "dev": "bun --watch --env-file=../../.env.local src/index.ts",

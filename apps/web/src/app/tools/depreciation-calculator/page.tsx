@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { DepreciationCalculator } from '@/components/tools/depreciation-calculator'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Car Depreciation Calculator UAE | Value Loss Calculator | Revvup',
-  description: 'Calculate how much your car will depreciate over time in UAE. See yearly value loss and resale estimates.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'car depreciation calculator uae, car value loss dubai, depreciation rates uae',
 }
 

@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { PrivacyPolicy } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Revvup',
-  description: 'Privacy Policy for REVVUP platform operated by AISH CAPITALS FZCO. Learn how we collect, use, and protect your personal data.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Privacy Policy - Revvup',
-    description: 'Privacy Policy for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

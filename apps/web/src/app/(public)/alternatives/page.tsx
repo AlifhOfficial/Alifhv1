@@ -8,6 +8,7 @@ import { Metadata } from 'next';
 import { AlternativesView } from '@/components/pages/alternatives/alternatives-view';
 import { faqData } from '@/data/faq-data';
 import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 // Get user FAQ items that are relevant to alternatives/comparison
 const userFaqItems = faqData.find((cat) => cat.id === 'users')?.items || [];
@@ -28,7 +29,7 @@ const alternativesFaqItems = [
 
 export const metadata: Metadata = {
   title: 'Best Free Car Marketplace in Dubai UAE — Complete Guide 2026 | Revvup',
-  description: 'Complete guide to selling and buying cars in Dubai without fees. Learn why thousands switched to free car listings, no paid boosts, and honest rankings. Compare all features and make the right choice for your car sale.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: [
     // Competitor alternatives
     'dubizzle alternative',
@@ -68,7 +69,7 @@ export const metadata: Metadata = {
   ].join(', '),
   openGraph: {
     title: 'Best Free Car Marketplace in Dubai UAE — Complete Guide 2026',
-    description: 'Complete guide to selling cars in Dubai without fees. Free forever. No listing fees. No paid boosts.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'article',
     url: 'https://revvup.ae/alternatives',
   },
@@ -78,7 +79,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Best Free Car Marketplace in Dubai UAE — Complete Guide 2026',
-    description: 'Complete guide to selling cars in Dubai without fees. Free forever.',
+    description: REVVUP_META_DESCRIPTION,
   },
 };
 

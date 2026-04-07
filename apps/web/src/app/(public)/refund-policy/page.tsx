@@ -5,13 +5,14 @@
 
 import { Metadata } from 'next';
 import { RefundPolicy } from '@/components/pages/legal';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'Refund & Cancellation Policy - Revvup',
-  description: 'Refund and Cancellation Policy for REVVUP platform operated by AISH CAPITALS FZCO. Learn about our subscription cancellation and refund procedures.',
+  description: REVVUP_META_DESCRIPTION,
   openGraph: {
     title: 'Refund & Cancellation Policy - Revvup',
-    description: 'Refund and Cancellation Policy for REVVUP platform operated by AISH CAPITALS FZCO.',
+    description: REVVUP_META_DESCRIPTION,
     type: 'website',
   },
 };

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Next.js web application",
+  "description": "Revvup is Dubai's fee-free car marketplace. No listing fees, no paid boosts, no ads. Quality ranks. Book test drives online. Get the Revvup mobile app.",
   "packageManager": "bun@1.2.5",
   "scripts": {
     "dev": "next dev -H 0.0.0.0 --turbo",

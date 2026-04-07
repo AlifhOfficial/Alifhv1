@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 export const metadata: Metadata = {
   title: 'System Status | Revvup',
-  description: 'Current status and uptime information for Revvup services',
+  description: REVVUP_META_DESCRIPTION,
 }
 
 export default function StatusLayout({

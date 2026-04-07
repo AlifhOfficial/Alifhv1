@@ -23,6 +23,7 @@ import {
   getCachedHasShowroom,
 } from '@/lib/listing-detail-cache';
 import { getCachedUserStats } from '@/lib/user-stats-cache';
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (!listing || listing.moderationStatus !== 'approved' || listing.lifecycleStatus !== 'active') {
       return {
         title: 'Listing Not Found | Revvup',
-        description: 'This car listing is no longer available.',
+        description: REVVUP_META_DESCRIPTION,
         robots: { index: false, follow: true },
       };
     }
@@ -52,17 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }).format(listing.price);
     const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
     const title = `${carTitle} — ${priceFormatted} | Revvup`;
-    const locationLabel = listing.emirate ? listing.emirate.replace(/_/g, ' ') : null;
-    const summaryBits = [
-      listing.mileage ? `${listing.mileage.toLocaleString()} km` : null,
-      listing.specs ? `${listing.specs} Specs` : null,
-      locationLabel,
-    ].filter(Boolean);
-    const description = [
-      `${carTitle} for ${priceFormatted}.`,
-      summaryBits.length > 0 ? `${summaryBits.join(' • ')}.` : null,
-      'Buy and sell cars on Revvup. Free. Forever.',
-    ].filter(Boolean).join(' ');
+    const description = REVVUP_META_DESCRIPTION;
 
     const ogImageUrl = buildListingBrandedImageUrl(id);
 
@@ -97,7 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     console.error('[generateMetadata] Failed to fetch listing:', error);
     return {
       title: 'Car Listing | Revvup',
-      description: 'View car listing details on Revvup UAE.',
+      description: REVVUP_META_DESCRIPTION,
     };
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { CarValuationTool } from '@/components/tools/car-valuation-tool'
+import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +10,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'Free Car Valuation Calculator UAE | Instant Market Value | Revvup',
-  description: 'Get instant free car valuation in UAE. Calculate your car\'s market value based on make, model, year, mileage, and condition. No registration required.',
+  description: REVVUP_META_DESCRIPTION,
   keywords: 'car valuation uae, car value calculator dubai, car worth uae, estimate car value dubai',
 }
 
