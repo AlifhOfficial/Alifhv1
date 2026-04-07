@@ -168,7 +168,7 @@ export type CarMake = (typeof CAR_MAKES)[number];
 // CAR MODELS BY MAKE
 // ============================================================================
 
-export const CAR_MODELS: Record<string, readonly string[]> = {
+const BASE_CAR_MODELS: Record<string, readonly string[]> = {
   'Acura': ['ILX', 'Integra', 'MDX', 'NSX', 'RDX', 'RLX', 'TLX'],
   'Alfa Romeo': ['Giulia', 'Stelvio', 'Tonale', '4C', 'Giulietta'],
   'Alpine': ['A110', 'A290'],
@@ -239,6 +239,19 @@ export const CAR_MODELS: Record<string, readonly string[]> = {
   'Xpeng': ['G3', 'G6', 'G9', 'P5', 'P7', 'X9'],
   'Other': [],
 } as const;
+
+function withOtherModel(
+  modelsByMake: Record<string, readonly string[]>
+): Record<string, readonly string[]> {
+  return Object.fromEntries(
+    Object.entries(modelsByMake).map(([make, models]) => {
+      if (models.includes('Other')) return [make, models];
+      return [make, [...models, 'Other']];
+    })
+  );
+}
+
+export const CAR_MODELS = withOtherModel(BASE_CAR_MODELS);
 
 // ============================================================================
 // ENGINE SIZE RANGES (Simplified)
@@ -621,11 +634,10 @@ export function generateListingSlug(
   year: number,
   uniqueId: string
 ): string {
-  const slugify = (str: string) =>
-    str
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+  const slugify = (str: string) => {
+    const cleaned = str.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return cleaned.replace(/(^-+)|(-+$)/g, '');
+  };
 
   return `${slugify(make)}-${slugify(model)}-${year}-${uniqueId.slice(0, 8)}`;
 }
@@ -643,6 +655,7 @@ export function getModelsForMake(make: string): readonly string[] {
 // ============================================================================
 
 export function isValidMakeModelCombo(make: string, model: string): boolean {
+  if (model === 'Other' || model === 'other') return true;
   const models = CAR_MODELS[make];
   if (!models) return false;
   return models.includes(model);

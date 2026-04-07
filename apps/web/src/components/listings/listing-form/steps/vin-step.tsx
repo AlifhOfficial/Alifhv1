@@ -66,7 +66,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
   const modelOptions = useMemo(() => {
     if (!data.make) return [];
     const models = getModelsForMake(data.make);
-    return [...models.map(m => ({ value: m, label: m })), { value: 'other', label: 'Other' }];
+    return models.map(m => ({ value: m, label: m }));
   }, [data.make]);
   
   const handleVINDecode = useCallback((response: VINCheckResponse) => {
@@ -234,7 +234,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               value={data.make || ''}
               onValueChange={(v) => {
                 updateField('make', v);
-                updateField('model', '');
+                updateField('model', v === 'Other' ? 'Other' : '');
               }}
               placeholder="Select make"
               searchPlaceholder="Search makes..."

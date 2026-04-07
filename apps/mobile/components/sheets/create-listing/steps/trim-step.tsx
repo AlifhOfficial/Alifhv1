@@ -20,7 +20,7 @@ import type { StepContentProps } from '../create-listing-flow';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const TRIM_EXAMPLES = ['Sport', 'Luxury', 'Premium', 'Base', 'Limited', 'Platinum', 'SE', 'XLE'];
+const TRIM_EXAMPLES = ['Sport', 'Luxury', 'Premium', 'Base', 'Limited', 'Platinum', 'SE', 'XLE', 'Other'];
 
 // ─────────────────────────────────────────────────────────────────────────────
 

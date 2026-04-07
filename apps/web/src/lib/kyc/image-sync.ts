@@ -46,6 +46,56 @@ interface DiditImageUrls {
   livenessReferenceImage?: string | null;
 }
 
+function isPrivateIpv4(hostname: string): boolean {
+  const parts = hostname.split('.').map(n => Number(n));
+  if (parts.length !== 4 || parts.some(n => Number.isNaN(n) || n < 0 || n > 255)) return false;
+
+  const [a, b] = parts;
+  if (a === 10) return true;
+  if (a === 127) return true;
+  if (a === 0) return true;
+  if (a === 169 && b === 254) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true;
+  return false;
+}
+
+function isLocalOrPrivateHost(hostname: string): boolean {
+  const lower = hostname.toLowerCase();
+  if (lower === 'localhost' || lower.endsWith('.localhost')) return true;
+  if (lower === '::1') return true;
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(lower)) return isPrivateIpv4(lower);
+  if (lower.includes(':')) {
+    if (lower.startsWith('fe80:')) return true; // link-local
+    if (lower.startsWith('fc') || lower.startsWith('fd')) return true; // ULA
+  }
+  return false;
+}
+
+function isAllowedImageUrl(rawUrl: string): boolean {
+  try {
+    const url = new URL(rawUrl);
+    if (url.protocol !== 'https:') return false;
+    if (isLocalOrPrivateHost(url.hostname)) return false;
+
+    const configuredHosts = (process.env.DIDIT_IMAGE_HOSTS || process.env.DIDIT_IMAGE_HOST || '')
+      .split(',')
+      .map(h => h.trim().toLowerCase())
+      .filter(Boolean);
+
+    const defaultAllowSuffixes = ['didit.me', 'didit.ai', 'amazonaws.com'];
+    const allowed = configuredHosts.length > 0 ? configuredHosts : defaultAllowSuffixes;
+
+    return allowed.some((host) => {
+      if (url.hostname === host) return true;
+      return url.hostname.endsWith(`.${host}`);
+    });
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Downloads an image from a URL, compresses it, and uploads to R2 private storage
  */
@@ -54,6 +104,7 @@ async function downloadAndUploadImage(
   r2Key: string
 ): Promise<string | null> {
   try {
+    if (!isAllowedImageUrl(sourceUrl)) return null;
     const response = await fetch(sourceUrl, {
       headers: { 'User-Agent': 'Revvup-KYC-Sync/1.0' },
     });

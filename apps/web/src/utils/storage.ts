@@ -297,7 +297,8 @@ export function getCdnListingImageUrls(url: string | null | undefined): { thumb:
  * @returns Normalized key with forward slashes
  */
 export function normalizeKey(key: string): string {
-  return key.replace(/\\+/g, "/").replace(/^\/+|\/+$/g, "");
+  const normalized = key.replace(/\\+/g, "/");
+  return normalized.replace(/(^\/+)|(\/+$)/g, "");
 }
 
 /**

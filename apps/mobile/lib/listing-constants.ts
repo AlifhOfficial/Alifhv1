@@ -52,7 +52,7 @@ export type CarMake = (typeof CAR_MAKES)[number];
 // CAR MODELS BY MAKE
 // ============================================================================
 
-export const CAR_MODELS: Record<string, readonly string[]> = {
+const BASE_CAR_MODELS: Record<string, readonly string[]> = {
   'Acura': ['ILX', 'Integra', 'MDX', 'NSX', 'RDX', 'RLX', 'TLX'],
   'Alfa Romeo': ['Giulia', 'Stelvio', 'Tonale', '4C', 'Giulietta'],
   'Alpine': ['A110', 'A290'],
@@ -123,6 +123,19 @@ export const CAR_MODELS: Record<string, readonly string[]> = {
   'Xpeng': ['G3', 'G6', 'G9', 'P5', 'P7', 'X9'],
   'Other': [],
 } as const;
+
+function withOtherModel(
+  modelsByMake: Record<string, readonly string[]>
+): Record<string, readonly string[]> {
+  return Object.fromEntries(
+    Object.entries(modelsByMake).map(([make, models]) => {
+      if (models.includes('Other')) return [make, models];
+      return [make, [...models, 'Other']];
+    })
+  );
+}
+
+export const CAR_MODELS = withOtherModel(BASE_CAR_MODELS);
 
 export function getModelsForMake(make: string): readonly string[] {
   return CAR_MODELS[make] ?? [];

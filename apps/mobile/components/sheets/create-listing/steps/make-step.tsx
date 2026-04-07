@@ -66,7 +66,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
     (make: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       if (make !== data.make) {
-        onUpdate({ make, model: '', trim: '' });
+        onUpdate({ make, model: make === 'Other' ? 'Other' : '', trim: '' });
       } else {
         onUpdate({ make });
       }
