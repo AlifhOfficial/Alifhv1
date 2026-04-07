@@ -19,8 +19,6 @@ import { EMICalculator } from './emi-calculator';
 import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
 import { SimilarListings } from './similar-listings';
-import { JsonLd } from '@/components/seo/json-ld';
-import { generateVehicleSchema } from '@/lib/seo-schema';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, AlertTriangle, CheckCircle2 } from 'lucide-react';
@@ -300,21 +298,6 @@ export function ListingDetailView({
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* SEO: Vehicle Schema for Rich Snippets */}
-      {listing && listing.isPublic && (
-        <JsonLd 
-          data={generateVehicleSchema(listing, sellerData ? {
-            type: sellerData.type,
-            name: sellerData.type === 'partner' 
-              ? sellerData.partner?.brandName 
-              : `${sellerData.userProfile?.firstName || ''} ${sellerData.userProfile?.lastName || ''}`.trim(),
-            verified: sellerData.type === 'partner'
-              ? sellerData.partner?.isVerified
-              : sellerData.userProfile?.kycVerified,
-          } : undefined)}
-        />
-      )}
-      
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 compact:px-6 large:px-8 overflow-x-hidden">
           {/* Admin Preview Banner */}

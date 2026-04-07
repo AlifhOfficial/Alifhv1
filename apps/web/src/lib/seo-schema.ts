@@ -211,6 +211,60 @@ export function generateWebsiteSchema() {
   };
 }
 
+interface ShowroomForSchema {
+  slug: string;
+  brandName: string;
+  description?: string | null;
+  website?: string | null;
+  phone?: string | null;
+  emirate?: string | null;
+  city?: string | null;
+  address?: string | null;
+  logoUrl?: string | null;
+  imageUrl?: string | null;
+  googleRating?: number | null;
+  googleReviewCount?: number | null;
+}
+
+/**
+ * Generate AutoDealer schema for showroom pages
+ * Helps search engines and LLMs understand dealer entities
+ */
+export function generateAutoDealerSchema(showroom: ShowroomForSchema) {
+  const baseUrl = 'https://revvup.ae';
+  const showroomUrl = `${baseUrl}/showroom/${showroom.slug}`;
+  const locationLabel = showroom.city && showroom.emirate
+    ? `${showroom.city}, ${showroom.emirate}`
+    : showroom.emirate || 'UAE';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AutoDealer',
+    name: showroom.brandName,
+    url: showroomUrl,
+    ...(showroom.logoUrl && { logo: showroom.logoUrl }),
+    ...(showroom.imageUrl && { image: showroom.imageUrl }),
+    ...(showroom.description && { description: showroom.description }),
+    ...(showroom.website && { sameAs: [showroom.website] }),
+    ...(showroom.phone && { telephone: showroom.phone }),
+    address: {
+      '@type': 'PostalAddress',
+      ...(showroom.address && { streetAddress: showroom.address }),
+      ...(showroom.city && { addressLocality: showroom.city }),
+      addressRegion: showroom.emirate || 'UAE',
+      addressCountry: 'AE',
+    },
+    areaServed: locationLabel,
+    ...(showroom.googleRating && showroom.googleReviewCount && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: showroom.googleRating,
+        reviewCount: showroom.googleReviewCount,
+      },
+    }),
+  };
+}
+
 /**
  * Generate BreadcrumbList schema for better navigation in search results
  */

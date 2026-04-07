@@ -13,7 +13,8 @@ import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ShowroomPageClient } from './client';
-import { REVVUP_META_DESCRIPTION } from '@/lib/brand-messaging';
+import { JsonLd } from '@/components/seo/json-ld';
+import { generateAutoDealerSchema } from '@/lib/seo-schema';
 import {
   getCachedPublicShowroom,
   getCachedPublicShowroomListings,
@@ -115,7 +116,11 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
     ? `${brandName} | Premium Car Showroom in UAE | Revvup`
     : (showroom.seoTitle || `${brandName} | Premium Car Showroom in UAE | Revvup`);
   
-  const description = REVVUP_META_DESCRIPTION;
+  const city = showroom.partner?.city || '';
+  const emirate = showroom.partner?.emirate || 'UAE';
+  const locationLabel = city ? `${city}, ${emirate}` : emirate;
+  const description = showroom.seoDescription ||
+    `${brandName} showroom in ${locationLabel}. Browse verified inventory on Revvup with quality-ranked listings and no paid boosts.`;
   
   const image = showroom.seoImageUrl || showroom.heroImageUrl || '/opengraph-image';
   const location = showroom.partner?.emirate || 'UAE';
@@ -184,6 +189,20 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
   
   const heroVideoUrl = showroom?.heroVideoFileUrl || null;
   const heroImageUrl = showroom?.heroImageUrl || null;
+  const showroomBrandName = showroom.partner?.brandName || 'Showroom';
+  const showroomCity = showroom.partner?.city || '';
+  const showroomEmirate = showroom.partner?.emirate || 'UAE';
+  const showroomLocationLabel = showroomCity
+    ? `${showroomCity}, ${showroomEmirate}`
+    : showroomEmirate;
+  const showroomDescription =
+    showroom.seoDescription ||
+    `${showroomBrandName} showroom in ${showroomLocationLabel}. Browse verified inventory on Revvup with quality-ranked listings and no paid boosts.`;
+  const showroomLogoUrl = showroom.partner?.logo
+    ? (showroom.partner.logo.startsWith('http')
+        ? showroom.partner.logo
+        : `https://cdn.revvup.ae/${showroom.partner.logo.replace(/^\\//, '')}`)
+    : null;
 
   return (
     <>
@@ -205,6 +224,22 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           fetchPriority="high"
         />
       )}
+      <JsonLd
+        data={generateAutoDealerSchema({
+          slug,
+          brandName: showroomBrandName,
+          description: showroomDescription,
+          website: showroom.partner?.website || null,
+          phone: showroom.partner?.phone || null,
+          emirate: showroom.partner?.emirate || null,
+          city: showroom.partner?.city || null,
+          address: showroom.partner?.address || null,
+          logoUrl: showroomLogoUrl,
+          imageUrl: showroom.seoImageUrl || showroom.heroImageUrl || null,
+          googleRating: showroom.partner?.googleRating || null,
+          googleReviewCount: showroom.partner?.googleReviewCount || null,
+        })}
+      />
       <div className="sr-only">
         {`Showroom summary: ${showroom.partner?.brandName || 'Dealer'} in ${
           showroom.partner?.emirate || 'UAE'

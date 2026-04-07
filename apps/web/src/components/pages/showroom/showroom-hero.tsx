@@ -22,6 +22,9 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
   const partner = showroom.partner;
   const videoRef = useRef<HTMLVideoElement>(null);
   const theme = getAmbientTheme(showroom.ambientStyle);
+  const locationLabel = partner.city && partner.emirate
+    ? `${partner.city}, ${partner.emirate}`
+    : (partner.emirate || 'UAE');
   
   // Video state
   const [isMuted, setIsMuted] = useState(true);
@@ -75,6 +78,9 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
             {partner.brandName}
           </span>
           <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
+            {partner.brandName} Showroom in {locationLabel}
+          </h1>
+          <h2 className="mt-3 text-title3 compact:text-title2 font-semibold tracking-tight">
             {(() => {
               const tagline = showroom.heroTagline || `Welcome to ${partner.brandName}`;
               const words = tagline.split(' ');
@@ -93,7 +99,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 </>
               );
             })()}
-          </h1>
+          </h2>
         </div>
 
         {/* ================================================================== */}
