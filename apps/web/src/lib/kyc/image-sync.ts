@@ -105,12 +105,15 @@ function getAllowedImageUrl(rawUrl: string): URL | null {
     const pathSegments = url.pathname.split('/');
     if (pathSegments.some(segment => segment === '..')) return null;
 
+    // Simple additional sanity check on the path to avoid obviously malformed URLs
+    if (!url.pathname.startsWith('/')) return null;
+    
     // Extract path and search from user input
     const pathAndSearch = url.pathname + url.search;
     
     // Construct URL using allowlist hostname with user-provided path
     // Hostname and protocol come from allowlist, only path/search from user input
-    const safeUrl = new URL(`https://${url.hostname}${pathAndSearch}`);
+    const safeUrl = new URL(`https://${allowedHostname}${pathAndSearch}`);
     
     return safeUrl;
   } catch {
