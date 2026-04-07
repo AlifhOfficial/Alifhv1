@@ -82,10 +82,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
           <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {partner.brandName}
           </span>
-          <h1 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
+          <h1 className="sr-only">
             {partner.brandName} Showroom in {locationLabel}
           </h1>
-          <h2 className="mt-3 text-title3 compact:text-title2 font-semibold tracking-tight">
+          <h2 className="text-title2 compact:text-title1 large:text-display font-semibold tracking-tight">
             {(() => {
               const tagline = showroom.heroTagline || `Welcome to ${partner.brandName}`;
               const words = tagline.split(' ');
