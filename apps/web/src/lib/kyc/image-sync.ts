@@ -84,7 +84,9 @@ function getAllowedImageUrl(rawUrl: string): URL | null {
       .map(h => h.trim().toLowerCase())
       .filter(Boolean);
 
-    const defaultAllowSuffixes = ['didit.me', 'didit.ai', 'amazonaws.com'];
+    // Default to known Didit domains only; any broader hosts (for example S3 buckets)
+    // must be explicitly configured via environment variables.
+    const defaultAllowSuffixes = ['didit.me', 'didit.ai'];
     const allowed = configuredHosts.length > 0 ? configuredHosts : defaultAllowSuffixes;
 
     const isHostAllowed = allowed.some((host) => {
@@ -92,7 +94,13 @@ function getAllowedImageUrl(rawUrl: string): URL | null {
       return url.hostname.endsWith(`.${host}`);
     });
 
-    return isHostAllowed ? url : null;
+    if (!isHostAllowed) return null;
+
+    // Basic path traversal protection: reject any ".." segment in the path
+    const hasPathTraversal = url.pathname.split('/').some(segment => segment === '..');
+    if (hasPathTraversal) return null;
+
+    return url;
   } catch {
     return null;
   }
