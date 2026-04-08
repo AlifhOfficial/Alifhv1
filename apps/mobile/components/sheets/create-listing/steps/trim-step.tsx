@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
@@ -45,6 +45,15 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
   return (
     <StepContainer>
+      <View style={styles.sectionHeader}>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+          Trim (Optional)
+        </Text>
+        <Text variant={SheetTypography.supporting} tone="muted">
+          Add your exact trim or variant name
+        </Text>
+      </View>
+
       {/* Input */}
       <TextInput
         style={[
@@ -66,7 +75,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick picks */}
       <View style={styles.section}>
-        <Text variant="subhead" tone="muted">Quick picks</Text>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Quick picks</Text>
         <View style={styles.chipWrap}>
           {TRIM_EXAMPLES.map((trim) => {
             const isSelected = trim.toLowerCase() === localTrim.toLowerCase();
@@ -83,7 +92,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="subhead"
+                  variant={isSelected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {trim}
@@ -96,7 +105,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Hint */}
       <View style={[styles.hintBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="subhead" tone="muted">
+        <Text variant={SheetTypography.supporting} tone="muted">
           Trim is optional but helps buyers identify your exact variant.
         </Text>
       </View>
@@ -107,10 +116,13 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  sectionHeader: {
+    gap: Spacing.xs,
+  },
   input: {
     height: Sizes.actionButtonLg,
     borderWidth: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
     ...Typography.body,
   },

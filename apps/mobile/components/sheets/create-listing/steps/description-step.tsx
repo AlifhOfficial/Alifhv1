@@ -12,7 +12,7 @@ import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
@@ -120,26 +120,31 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
       {/* Text Input */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Description</Text>
+          <View style={styles.titleBlock}>
+            <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Description</Text>
+            <Text variant={SheetTypography.supporting} tone="muted">
+              Share condition, service history, and standout details
+            </Text>
+          </View>
           <HapticPressable
             onPress={() => generateAIDescription(hasDescription)}
             disabled={isGenerating}
             style={styles.aiLink}
           >
             {isGenerating ? (
-              <ActivityIndicator size={12} color={colors.primary} />
+              <ActivityIndicator size={12} color={colors.labelSecondary} />
             ) : hasDescription ? (
               <RefreshCw size={14} color={colors.primary} strokeWidth={2} />
             ) : (
               <Sparkles size={14} color={colors.primary} strokeWidth={2} />
             )}
-              <Text variant="subhead" style={{ color: colors.primary }}>
+              <Text variant={SheetTypography.rowLabel} style={{ color: colors.primary }}>
               {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
             </Text>
           </HapticPressable>
         </View>
         {generateError && (
-          <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.error }} tone="secondary">
             {generateError}
           </Text>
         )}
@@ -163,7 +168,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
         />
         <View style={styles.charCount}>
           <Text
-            variant="subhead"
+            variant={SheetTypography.supporting}
             style={{ color: isNearLimit ? colors.warning : colors.labelQuaternary }}
            tone="secondary">
             {charCount}/{MAX_DESCRIPTION}
@@ -182,8 +187,13 @@ const styles = StyleSheet.create({
   },
   labelRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  titleBlock: {
+    flex: 1,
+    gap: Spacing.xs,
   },
   aiLink: {
     flexDirection: 'row',
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: Spacing["5xl"],
     borderWidth: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: Spacing.md,
     ...Typography.body,
     lineHeight: Typography.body.lineHeight,

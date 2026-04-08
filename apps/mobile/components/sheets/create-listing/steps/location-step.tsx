@@ -11,7 +11,7 @@ import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 
@@ -45,7 +45,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Emirate</Text>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Emirate</Text>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -62,7 +62,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="subhead"
+                  variant={isActive ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
                   style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {emirate.label}
@@ -76,8 +76,8 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>City / Area</Text>
-          <Text variant="subhead" tone="muted">
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>City / Area</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">
             Optional
           </Text>
         </View>
@@ -103,7 +103,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* Selected summary */}
       {data.emirate && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Text variant="subhead" tone="secondary">
+          <Text variant={SheetTypography.rowLabel} tone="secondary">
             {data.emirate}{data.city ? `, ${data.city}` : ''}
           </Text>
         </View>
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   input: {
     height: Sizes.actionButtonLg,
     borderWidth: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
     ...Typography.body,
   },

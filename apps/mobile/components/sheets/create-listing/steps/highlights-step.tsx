@@ -12,7 +12,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { LISTING_TAGS } from '@/lib/filter-constants';
 
@@ -48,12 +48,12 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Highlight Tags</Text>
-          <Text variant="subhead" tone="muted">
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Highlight Tags</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">
             Select up to {MAX_TAGS}
           </Text>
         </View>
-        <Text variant="subhead" tone="secondary" style={styles.description}>
+        <Text variant={SheetTypography.supporting} tone="secondary" style={styles.description}>
           Help buyers find your listing with relevant highlights
         </Text>
         
@@ -75,10 +75,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Text
-                  variant="subhead"
-                  style={{ color: isSelected ? colors.background : colors.label }}
-                >
+                <Text variant={isSelected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel} style={{ color: isSelected ? colors.background : colors.label }}>
                   {tag.label}
                 </Text>
               </HapticPressable>
@@ -87,7 +84,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
         </View>
 
         {tags.length >= MAX_TAGS && (
-          <Text variant="subhead" tone="muted" style={styles.hint}>
+          <Text variant={SheetTypography.supporting} tone="muted" style={styles.hint}>
             Remove a tag to add another
           </Text>
         )}
@@ -96,7 +93,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
       {/* Summary */}
       {tags.length > 0 && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Text variant="subhead" tone="secondary">
+          <Text variant={SheetTypography.rowLabel} tone="secondary">
             {tags.length} highlight{tags.length !== 1 ? 's' : ''} selected
           </Text>
         </View>

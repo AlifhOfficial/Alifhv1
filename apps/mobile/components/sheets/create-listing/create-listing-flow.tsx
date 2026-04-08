@@ -12,16 +12,15 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { ChevronLeft, X } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, SheetChrome, SheetTypography } from '@/constants/theme';
+import { Colors, Spacing, Sizes, SheetChrome, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import {
   EMPTY_DATA,
   SHEET_STEPS,
   validateStep,
-  getProgress,
   type CreateListingData,
   type SheetStepId,
   type StepContentProps,
@@ -144,7 +143,6 @@ export function CreateListingSheetContent({
 
   const currentStep = SHEET_STEPS[currentStepIndex];
   const currentStepId = currentStep?.id;
-  const progress = getProgress(currentStepIndex + 1);
 
   const updateData = useCallback((updates: Partial<CreateListingData>) => {
     setData((prev) => ({ ...prev, ...updates }));
@@ -240,26 +238,19 @@ export function CreateListingSheetContent({
   const isOptionalStep = currentStep && !currentStep.required;
   const stepError = validateStep(currentStepId, data);
   const canProceed = !stepError || isOptionalStep;
-  const primaryLabel = isOptionalStep && stepError ? 'Skip' : 'Next';
   const isReviewStep = currentStepId === 'review';
   const StepContent = currentStep ? STEP_CONTENT[currentStepId] : null;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
       <View style={styles.fixedHeader}>
-        <View style={styles.progressSection}>
-          <View style={[styles.progressTrack, { backgroundColor: colors.fill2 }]}> 
-            <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: colors.primary }]} />
-          </View>
-        </View>
-
-        <View style={[styles.header, { borderBottomColor: colors.border }]}> 
+        <View style={styles.header}> 
           <View style={styles.headerLeft}>
             {currentStepIndex > initialStepIndex && (
               <HapticPressable
                 onPress={goToPrevStep}
                 hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.fill2 }]}
+                style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
               >
                 <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
               </HapticPressable>
@@ -267,7 +258,7 @@ export function CreateListingSheetContent({
           </View>
 
           <View style={styles.headerCenter}>
-            <Text variant={SheetTypography.headerTitle} tone="muted" uppercase>
+            <Text variant={SheetTypography.rowLabel} tone="secondary">
               {currentStep?.label || 'Create Listing'}
             </Text>
           </View>
@@ -277,21 +268,19 @@ export function CreateListingSheetContent({
               <HapticPressable
                 onPress={isOptionalStep && stepError ? skipStep : goToNextStep}
                 disabled={!canProceed && !isOptionalStep}
-                style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
+                style={[styles.circleButton, { backgroundColor: canProceed ? colors.primary : colors.surfaceSecondary }]}
               >
-                <Text
-                  variant={SheetTypography.rowLabelSelected}
-                  style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}
-                  uppercase
-                >
-                  {primaryLabel}
-                </Text>
+                <ChevronRight
+                  size={Sizes.iconSm}
+                  color={canProceed ? colors.primaryForeground : colors.labelQuaternary}
+                  strokeWidth={2}
+                />
               </HapticPressable>
             ) : (
               <HapticPressable
                 onPress={handleClose}
                 hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.fill2 }]}
+                style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
               >
                 <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
               </HapticPressable>
@@ -310,6 +299,33 @@ export function CreateListingSheetContent({
             editingListingId={listingId}
           />
         )}
+      </View>
+
+      <View style={styles.footerProgressSection}>
+        <View style={styles.progressDotsRow}>
+          {SHEET_STEPS.map((step, index) => {
+            const isActive = index === currentStepIndex;
+            const isCompleted = index < currentStepIndex;
+            const dotColor = isActive || isCompleted ? colors.label : colors.fill2;
+            const dotSize = isActive ? 7 : 5;
+
+            return (
+              <View
+                key={step.id}
+                style={[
+                  styles.progressDot,
+                  {
+                    width: dotSize,
+                    height: dotSize,
+                    borderRadius: dotSize / 2,
+                    backgroundColor: dotColor,
+                    opacity: isActive ? 1 : isCompleted ? 0.9 : 0.7,
+                  },
+                ]}
+              />
+            );
+          })}
+        </View>
       </View>
     </View>
   );
@@ -383,26 +399,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  fixedHeader: {},
-  progressSection: {
-    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
+  fixedHeader: {
     paddingTop: Spacing.xs,
-  },
-  progressTrack: {
-    height: 2,
-    borderRadius: Radius.sm,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: Radius.sm,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xs,
     paddingBottom: SheetChrome.headerPaddingBottom,
   },
   headerLeft: {
@@ -427,15 +432,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  nextButton: {
-    paddingVertical: SheetChrome.headerActionPaddingVertical,
-    paddingHorizontal: SheetChrome.headerActionPaddingHorizontal,
-    borderRadius: Radius.full,
-  },
   contentArea: {
     flex: 1,
     overflow: 'hidden',
   },
+  footerProgressSection: {
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
+    alignItems: 'center',
+    paddingBottom: Spacing.sm,
+  },
+  progressDotsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  progressDot: {},
 });
 
 export default CreateListingFlow;

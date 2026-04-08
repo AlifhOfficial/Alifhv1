@@ -107,7 +107,10 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
     <View style={styles.container}>
       {/* Search - outside FlatList to prevent focus loss */}
       <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+          Search Make
+        </Text>
+        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
+    gap: Spacing.xs,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchBox: {
@@ -165,7 +169,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     height: Layout.hitTarget,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
   },
   searchInput: {
     flex: 1,

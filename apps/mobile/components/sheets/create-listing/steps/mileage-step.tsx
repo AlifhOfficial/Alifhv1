@@ -56,6 +56,15 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
   return (
     <StepContainer>
+      <View style={styles.sectionHeader}>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+          Odometer
+        </Text>
+        <Text variant={SheetTypography.supporting} tone="muted">
+          Current mileage in kilometers
+        </Text>
+      </View>
+
       {/* Input */}
       <View
         style={[
@@ -131,13 +140,17 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  sectionHeader: {
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderWidth: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     height: Layout.hitTarget,
   },
   input: {

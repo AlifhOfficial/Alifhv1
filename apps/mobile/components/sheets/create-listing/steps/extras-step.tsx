@@ -13,7 +13,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Plus, X } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { VEHICLE_EXTRAS } from '@/lib/filter-constants';
 
@@ -58,9 +58,9 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Vehicle Extras</Text>
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Vehicle Extras</Text>
           {extras.length > 0 && (
-            <Text variant="subhead" tone="secondary">
+            <Text variant={SheetTypography.supporting} tone="secondary">
               {extras.length} selected
             </Text>
           )}
@@ -82,7 +82,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="subhead"
+                  variant={isSelected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {extra.label}
@@ -95,8 +95,11 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Custom extras input */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Add Custom Extra</Text>
-        <View style={[styles.inputRow, { backgroundColor: colors.surfaceSecondary }]}>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Add Custom Extra</Text>
+        <Text variant={SheetTypography.supporting} tone="muted">
+          Add unique options not listed above
+        </Text>
+        <View style={[styles.inputRow, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
           <TextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="e.g. Custom exhaust..."
@@ -128,7 +131,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   key={extra}
                   style={[styles.customChip, { backgroundColor: colors.label }]}
                 >
-                  <Text variant="subhead" style={{ color: colors.background }}>
+                  <Text variant={SheetTypography.rowLabel} style={{ color: colors.background }}>
                     {extra}
                   </Text>
                   <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
@@ -171,7 +174,8 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
     paddingLeft: Spacing.md,
     gap: Spacing.sm,
   },
@@ -181,9 +185,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   addButton: {
-    width: Spacing["4xl"],
-    height: Spacing["4xl"],
-    borderRadius: Radius.md,
+    width: Sizes.actionButtonLg,
+    height: Sizes.actionButtonLg,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.xs,

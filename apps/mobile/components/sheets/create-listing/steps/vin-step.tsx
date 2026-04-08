@@ -9,14 +9,15 @@
 
 import { Text } from '@/components/ui';
 import React, { useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, ActivityIndicator, Switch, TextInput } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { checkVin } from '@/lib/sell-car-user-api';
 import { validateVin } from '../types';
+import { SheetToggle } from '../sheet-toggle';
 
 import type { StepContentProps } from '../types';
 import { StepContainer } from '../step-container';
@@ -24,21 +25,6 @@ import { StepContainer } from '../step-container';
 // ─────────────────────────────────────────────────────────────────────────────
 
 type VinStatus = 'idle' | 'checking' | 'verified' | 'taken' | 'invalid';
-
-function getStatusColor(
-  status: VinStatus,
-  colors: { success: string; error: string; border: string }
-): string {
-  switch (status) {
-    case 'verified':
-      return colors.success;
-    case 'taken':
-    case 'invalid':
-      return colors.error;
-    default:
-      return colors.border;
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -119,10 +105,14 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
     [status, onUpdate, verifyVin]
   );
 
-  const borderColor = getStatusColor(status, colors);
-
   return (
     <StepContainer>
+      <View style={styles.sectionHeader}>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">
+          Vehicle VIN
+        </Text>
+      </View>
+
       {/* VIN Input */}
       <View style={styles.inputWrapper}>
         <TextInput
@@ -131,10 +121,9 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
             {
               backgroundColor: colors.surfaceSecondary,
               color: colors.label,
-              borderColor,
             },
           ]}
-          placeholder="e.g. WVWZZZ3CZWE123456"
+          placeholder="Enter 17-character VIN"
           placeholderTextColor={colors.placeholder}
           value={localVin}
           onChangeText={handleVinChange}
@@ -159,11 +148,11 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Character count */}
       <View style={styles.countRow}>
-        <Text variant="subhead" tone="muted">
+        <Text variant={SheetTypography.supporting} tone="muted">
           {localVin.length}/17
         </Text>
         {status === 'verified' && (
-          <Text variant="subhead" style={{ color: colors.success }} tone="secondary">
+          <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.success }}>
             Verified
           </Text>
         )}
@@ -173,31 +162,30 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {errorMsg && (
         <View style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Text variant="subhead" style={{ color: colors.error, flex: 1 }}>
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.error, flex: 1 }}>
             {errorMsg}
           </Text>
         </View>
       )}
 
       {/* VIN Visibility Toggle */}
-      <View style={[styles.visibilitySection, { backgroundColor: colors.fill2 }]}>
+      <View style={[styles.visibilitySection, { borderTopColor: colors.border }]}> 
         <View style={styles.visibilityContent}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Show VIN publicly</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Show VIN publicly</Text>
         </View>
-        <Switch
-          value={data.vinVisibility === 'public'}
-          onValueChange={(value) => {
+        <SheetToggle
+          enabled={data.vinVisibility === 'public'}
+          onToggle={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onUpdate({ vinVisibility: value ? 'public' : 'private' });
+            onUpdate({ vinVisibility: data.vinVisibility === 'public' ? 'private' : 'public' });
           }}
-          trackColor={{ false: colors.fill2, true: colors.success + '80' }}
-          thumbColor={data.vinVisibility === 'public' ? colors.success : colors.labelQuaternary}
+          colors={colors}
         />
       </View>
 
       {/* Info */}
-      <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="subhead" tone="muted">
+      <View style={styles.infoBox}>
+        <Text variant={SheetTypography.supporting} tone="muted">
           Find your VIN on the driver&apos;s door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
         </Text>
       </View>
@@ -208,13 +196,15 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  sectionHeader: {
+    marginBottom: Spacing.sm,
+  },
   inputWrapper: {
     position: 'relative',
   },
   vinInput: {
     height: Sizes.actionButtonLg,
-    borderWidth: 1.5,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
     paddingRight: Spacing["5xl"],
     ...Typography.body,
@@ -231,33 +221,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: Spacing.xs,
   },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.md,
+    paddingVertical: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   visibilitySection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.xl,
+    paddingTop: Spacing.lg,
+    marginTop: Spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   visibilityContent: {
     flex: 1,
-    gap: Spacing.xs,
     marginRight: Spacing.md,
   },
   infoBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.md,
+    marginTop: Spacing.sm,
   },
 });
 

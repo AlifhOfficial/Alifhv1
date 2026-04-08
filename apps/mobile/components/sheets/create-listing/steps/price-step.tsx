@@ -8,11 +8,12 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { View, StyleSheet, Switch, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, SheetTypography } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { SheetToggle } from '../sheet-toggle';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../types';
@@ -64,6 +65,15 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Price Input */}
       <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+            Asking Price
+          </Text>
+          <Text variant={SheetTypography.supporting} tone="muted">
+            Enter the full amount in AED
+          </Text>
+        </View>
+
         <View
           style={[
             styles.inputBox,
@@ -124,16 +134,15 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Negotiable toggle */}
       <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Price Negotiable?</Text>
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Price Negotiable?</Text>
           <Text variant={SheetTypography.supporting} tone="muted">
             Let buyers know you&apos;re open to offers
           </Text>
         </View>
-        <Switch
-          value={data.isNegotiable || false}
-          onValueChange={handleNegotiableToggle}
-          trackColor={{ false: colors.fill2, true: colors.label + '80' }}
-          thumbColor={data.isNegotiable ? colors.label : colors.labelQuaternary}
+        <SheetToggle
+          enabled={data.isNegotiable || false}
+          onToggle={() => handleNegotiableToggle(!(data.isNegotiable || false))}
+          colors={colors}
         />
       </View>
     </StepContainer>
@@ -147,6 +156,9 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     marginBottom: Spacing.xl,
   },
+  sectionHeader: {
+    gap: Spacing.xs,
+  },
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -154,7 +166,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     borderWidth: 1,
     borderRadius: Radius.xl,
-    height: Spacing["5xl"] + Spacing.lg,
+    height: Sizes.actionButtonLg + Spacing.md,
   },
   input: {
     flex: 1,

@@ -13,7 +13,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Plus } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { MAX_SPECIAL_NOTES, MAX_SPECIAL_NOTE_LENGTH } from '@/lib/listing-constants';
 
@@ -72,19 +72,19 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Special Notes</Text>
-          <Text variant="subhead" tone="muted">
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Special Notes</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">
             {notes.length}/{MAX_SPECIAL_NOTES}
           </Text>
         </View>
-        <Text variant="subhead" tone="secondary">
+        <Text variant={SheetTypography.supporting} tone="secondary">
           Add specific details buyers should know about your vehicle
         </Text>
       </View>
 
       {/* Quick Notes */}
       <View style={styles.section}>
-        <Text variant="subhead" tone="muted">
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
           Quick add
         </Text>
         <View style={styles.chipsWrap}>
@@ -105,7 +105,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="subhead"
+                  variant={isAdded ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
                   numberOfLines={1}
                   style={{ color: isAdded ? colors.background : colors.label }}
                 >
@@ -120,7 +120,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Existing Notes */}
       {notes.length > 0 && (
         <View style={styles.section}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Your Notes</Text>
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Your Notes</Text>
           <View style={styles.notesList}>
             {notes.map((note, index) => (
               <View
@@ -130,7 +130,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                   { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
                 ]}
               >
-                <Text variant="subhead" style={{ flex: 1 }}>
+                <Text variant={SheetTypography.rowLabel} style={{ flex: 1 }}>
                   {note}
                 </Text>
                 <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
@@ -145,7 +145,10 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom Note Input */}
       {notes.length < MAX_SPECIAL_NOTES && (
         <View style={styles.section}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Add Custom Note</Text>
+          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Add Custom Note</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">
+            Keep each note concise and specific
+          </Text>
           <View style={styles.inputRow}>
             <TextInput
               style={[
@@ -231,14 +234,14 @@ const styles = StyleSheet.create({
     flex: 1,
     height: Sizes.actionButtonLg,
     borderWidth: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
     ...Typography.body,
   },
   addButton: {
-    width: Spacing["5xl"],
+    width: Sizes.actionButtonLg,
     height: Sizes.actionButtonLg,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },

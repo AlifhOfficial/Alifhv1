@@ -332,7 +332,7 @@ function RootLayoutNav() {
               title: 'Create Listing',
               presentation: 'formSheet',
               sheetGrabberVisible: true,
-              sheetAllowedDetents: [0.95],
+              sheetAllowedDetents: [0.62, 0.9],
               headerShown: false,
               contentStyle: { backgroundColor: colors.sheet },
             }}
