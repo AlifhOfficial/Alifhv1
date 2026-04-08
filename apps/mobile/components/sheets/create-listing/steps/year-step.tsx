@@ -108,16 +108,13 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <View style={styles.container}>
       {/* Search - outside FlatList to prevent focus loss */}
-      <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
-          Search Year
-        </Text>
-        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
+      <View style={[styles.searchWrapper, { backgroundColor: colors.surface }]}> 
+        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}> 
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
             placeholder="Search year..."
-            placeholderTextColor={colors.placeholder}
+            placeholderTextColor={colors.labelQuaternary}
             value={query}
             onChangeText={setQuery}
             keyboardType="number-pad"
@@ -174,7 +171,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
     gap: Spacing.xs,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchBox: {
     flexDirection: 'row',
@@ -182,12 +178,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.xl,
-    borderWidth: 1.5,
     gap: Spacing.sm,
   },
   searchInput: {
     flex: 1,
-    ...Typography.body,
+    ...Typography.subhead,
     paddingVertical: Spacing.xs,
   },
   listContent: {

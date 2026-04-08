@@ -52,7 +52,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Transmission */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Transmission</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Transmission</Text>
         <View style={styles.chipWrap}>
           {TRANSMISSION_TYPES.map((type) => {
             const isSelected = data.transmission === type.value;
@@ -82,7 +82,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Fuel Type */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Fuel Type</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Fuel Type</Text>
         <View style={styles.chipWrap}>
           {FUEL_TYPES.map((fuel) => {
             const isSelected = data.fuelType === fuel.value;
@@ -112,7 +112,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Engine Size */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Engine Size</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Engine Size</Text>
         <View style={styles.chipWrap}>
           {ENGINE_SIZES.map((size) => {
             const isSelected = data.engineSize === size.value;

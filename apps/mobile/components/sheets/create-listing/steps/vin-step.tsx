@@ -124,7 +124,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
             },
           ]}
           placeholder="Enter 17-character VIN"
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.labelQuaternary}
           value={localVin}
           onChangeText={handleVinChange}
           autoCapitalize="characters"
@@ -152,7 +152,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
           {localVin.length}/17
         </Text>
         {status === 'verified' && (
-          <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.success }}>
+          <Text variant={SheetTypography.supporting} style={{ color: colors.success }}>
             Verified
           </Text>
         )}
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
     paddingRight: Spacing["5xl"],
-    ...Typography.body,
+    ...Typography.subhead,
     letterSpacing: Typography.footnoteEmphasized.letterSpacing,
   },
   statusIcon: {

@@ -121,7 +121,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
       <View style={styles.section}>
         <View style={styles.labelRow}>
           <View style={styles.titleBlock}>
-            <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Description</Text>
+            <Text variant={SheetTypography.rowLabel} tone="secondary">Description</Text>
             <Text variant={SheetTypography.supporting} tone="muted">
               Share condition, service history, and standout details
             </Text>
@@ -158,7 +158,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             },
           ]}
           placeholder="Describe your vehicle's condition, history, notable features..."
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.labelQuaternary}
           value={description}
           onChangeText={handleChange}
           multiline
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: Radius.xl,
     padding: Spacing.md,
-    ...Typography.body,
-    lineHeight: Typography.body.lineHeight,
+    ...Typography.subhead,
+    lineHeight: Typography.subhead.lineHeight,
     textAlignVertical: 'top',
   },
   charCount: {

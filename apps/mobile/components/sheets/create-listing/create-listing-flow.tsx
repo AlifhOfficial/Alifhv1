@@ -246,13 +246,21 @@ export function CreateListingSheetContent({
       <View style={styles.fixedHeader}>
         <View style={styles.header}> 
           <View style={styles.headerLeft}>
-            {currentStepIndex > initialStepIndex && (
+            {currentStepIndex > initialStepIndex ? (
               <HapticPressable
                 onPress={goToPrevStep}
                 hitSlop={Spacing.md}
                 style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
               >
                 <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
+              </HapticPressable>
+            ) : (
+              <HapticPressable
+                onPress={handleClose}
+                hitSlop={Spacing.md}
+                style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
+              >
+                <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
               </HapticPressable>
             )}
           </View>

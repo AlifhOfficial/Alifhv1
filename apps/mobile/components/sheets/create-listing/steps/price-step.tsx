@@ -66,7 +66,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Price Input */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">
             Asking Price
           </Text>
           <Text variant={SheetTypography.supporting} tone="muted">
@@ -84,9 +84,13 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
             AED
           </Text>
           <TextInput
-            style={[styles.input, { color: colors.label }]}
+            style={[
+              styles.input,
+              data.price ? styles.inputFilled : styles.inputPlaceholder,
+              { color: colors.label },
+            ]}
             placeholder="0"
-            placeholderTextColor={colors.placeholder}
+            placeholderTextColor={colors.labelQuaternary}
             value={data.price || ''}
             onChangeText={handleChange}
             keyboardType="number-pad"
@@ -104,7 +108,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">
           Quick select
         </Text>
         <View style={styles.presetsRow}>
@@ -134,7 +138,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Negotiable toggle */}
       <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Price Negotiable?</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Price Negotiable?</Text>
           <Text variant={SheetTypography.supporting} tone="muted">
             Let buyers know you&apos;re open to offers
           </Text>
@@ -170,9 +174,14 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.title3Emphasized,
     paddingVertical: Spacing.sm,
     textAlign: 'left',
+  },
+  inputPlaceholder: {
+    ...Typography.subhead,
+  },
+  inputFilled: {
+    ...Typography.title3Emphasized,
   },
   presetsRow: {
     flexDirection: 'row',

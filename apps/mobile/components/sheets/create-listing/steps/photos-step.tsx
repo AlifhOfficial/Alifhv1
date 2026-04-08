@@ -184,8 +184,8 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.primaryForeground }} uppercase>
-                  COVER
+                <Text variant={SheetTypography.supporting} style={{ color: colors.primaryForeground }}>
+                  Cover
                 </Text>
               </View>
             )}

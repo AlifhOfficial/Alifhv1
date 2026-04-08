@@ -81,7 +81,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
       return (
         <HapticPressable
           onPress={() => handleSelect(make)}
-          style={[styles.item, { borderBottomColor: colors.border }]}
+          style={styles.item}
         >
           <View style={styles.itemContent}>
             <Text
@@ -106,16 +106,13 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <View style={styles.container}>
       {/* Search - outside FlatList to prevent focus loss */}
-      <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
-          Search Make
-        </Text>
-        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
+      <View style={[styles.searchWrapper, { backgroundColor: colors.surface }]}> 
+        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}> 
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
             placeholder="Search makes..."
-            placeholderTextColor={colors.placeholder}
+            placeholderTextColor={colors.labelQuaternary}
             value={query}
             onChangeText={setQuery}
             autoCorrect={false}
@@ -161,7 +158,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
     gap: Spacing.xs,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchBox: {
     flexDirection: 'row',
@@ -170,7 +166,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     height: Layout.hitTarget,
     borderRadius: Radius.xl,
-    borderWidth: 1.5,
   },
   searchInput: {
     flex: 1,
@@ -185,7 +180,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemContent: {
     flex: 1,

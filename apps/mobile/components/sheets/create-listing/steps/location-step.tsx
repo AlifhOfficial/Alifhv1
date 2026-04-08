@@ -45,7 +45,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Emirate</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Emirate</Text>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -76,7 +76,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>City / Area</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">City / Area</Text>
           <Text variant={SheetTypography.supporting} tone="muted">
             Optional
           </Text>
@@ -92,7 +92,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
             },
           ]}
           placeholder="e.g. Downtown, JBR, Al Ain..."
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.labelQuaternary}
           value={data.city || ''}
           onChangeText={handleCityChange}
           autoCapitalize="words"
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    ...Typography.body,
+    ...Typography.subhead,
   },
   summaryBox: {
     padding: Spacing.md,

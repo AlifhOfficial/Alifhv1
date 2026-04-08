@@ -58,7 +58,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Vehicle Extras</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Vehicle Extras</Text>
           {extras.length > 0 && (
             <Text variant={SheetTypography.supporting} tone="secondary">
               {extras.length} selected
@@ -95,7 +95,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Custom extras input */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Add Custom Extra</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Add Custom Extra</Text>
         <Text variant={SheetTypography.supporting} tone="muted">
           Add unique options not listed above
         </Text>
@@ -103,7 +103,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
           <TextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="e.g. Custom exhaust..."
-            placeholderTextColor={colors.placeholder}
+            placeholderTextColor={colors.labelQuaternary}
             value={customExtra}
             onChangeText={setCustomExtra}
             onSubmitEditing={addCustomExtra}
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: Radius.xl,
-    borderWidth: 1.5,
+    borderWidth: 1,
     paddingLeft: Spacing.md,
     gap: Spacing.sm,
   },

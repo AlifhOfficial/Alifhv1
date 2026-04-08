@@ -46,7 +46,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <StepContainer>
       <View style={styles.sectionHeader}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">
           Trim (Optional)
         </Text>
         <Text variant={SheetTypography.supporting} tone="muted">
@@ -65,7 +65,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
           },
         ]}
         placeholder="e.g. Sport, AMG, M-Sport..."
-        placeholderTextColor={colors.placeholder}
+        placeholderTextColor={colors.labelQuaternary}
         value={localTrim}
         onChangeText={handleChange}
         autoCapitalize="words"
@@ -75,7 +75,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick picks */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Quick picks</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Quick picks</Text>
         <View style={styles.chipWrap}>
           {TRIM_EXAMPLES.map((trim) => {
             const isSelected = trim.toLowerCase() === localTrim.toLowerCase();
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    ...Typography.body,
+    ...Typography.subhead,
   },
   section: {
     gap: Spacing.sm,

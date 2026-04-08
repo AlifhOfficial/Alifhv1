@@ -98,7 +98,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Body Type */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Body Type</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Body Type</Text>
         <View style={styles.chipWrap}>
           {BODY_TYPES.map((type) => {
             const isSelected = data.bodyType === type.value;
@@ -128,7 +128,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Exterior Color */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Exterior Color</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Exterior Color</Text>
         <View style={styles.chipWrap}>
           {EXTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -144,7 +144,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Interior Color */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Interior Color</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Interior Color</Text>
         <View style={styles.chipWrap}>
           {INTERIOR_COLORS.map((color) => (
             <ColorChip

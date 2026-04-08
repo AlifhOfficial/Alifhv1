@@ -44,7 +44,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Regional Specs */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Regional Specs</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Regional Specs</Text>
         <View style={styles.chipWrap}>
           {SPECS_TYPES.map((spec) => {
             const isSelected = data.specs === spec.value;
@@ -74,7 +74,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Steering Side */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Steering Side</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Steering Side</Text>
         <View style={styles.chipWrap}>
           {STEERING_SIDES.map((side) => {
             const isSelected = data.steeringSide === side.value;

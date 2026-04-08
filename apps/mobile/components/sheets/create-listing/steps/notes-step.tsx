@@ -72,7 +72,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Special Notes</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Special Notes</Text>
           <Text variant={SheetTypography.supporting} tone="muted">
             {notes.length}/{MAX_SPECIAL_NOTES}
           </Text>
@@ -84,7 +84,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick Notes */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">
           Quick add
         </Text>
         <View style={styles.chipsWrap}>
@@ -120,7 +120,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Existing Notes */}
       {notes.length > 0 && (
         <View style={styles.section}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Your Notes</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Your Notes</Text>
           <View style={styles.notesList}>
             {notes.map((note, index) => (
               <View
@@ -145,7 +145,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom Note Input */}
       {notes.length < MAX_SPECIAL_NOTES && (
         <View style={styles.section}>
-          <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Add Custom Note</Text>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Add Custom Note</Text>
           <Text variant={SheetTypography.supporting} tone="muted">
             Keep each note concise and specific
           </Text>
@@ -160,7 +160,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 },
               ]}
               placeholder="e.g. New exhaust system installed"
-              placeholderTextColor={colors.placeholder}
+              placeholderTextColor={colors.labelQuaternary}
               value={noteInput}
               onChangeText={setNoteInput}
               onSubmitEditing={addNote}
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    ...Typography.body,
+    ...Typography.subhead,
   },
   addButton: {
     width: Sizes.actionButtonLg,

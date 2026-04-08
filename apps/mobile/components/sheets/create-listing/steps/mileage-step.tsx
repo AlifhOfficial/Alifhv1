@@ -57,7 +57,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <StepContainer>
       <View style={styles.sectionHeader}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">
           Odometer
         </Text>
         <Text variant={SheetTypography.supporting} tone="muted">
@@ -75,7 +75,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
         <TextInput
           style={[styles.input, { color: colors.label }]}
           placeholder="Enter mileage"
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.labelQuaternary}
           value={localMileage}
           onChangeText={handleChange}
           keyboardType="number-pad"
@@ -92,7 +92,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
           </Text>
           {isLowMileage && (
             <View style={[styles.badge, { backgroundColor: colors.successMuted }]}>
-              <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.success }} tone="secondary">
+              <Text variant={SheetTypography.supporting} style={{ color: colors.success }} tone="secondary">
                 Low mileage
               </Text>
             </View>
@@ -102,7 +102,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Quick select</Text>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Quick select</Text>
         <View style={styles.presetsRow}>
           {MILEAGE_PRESETS.map((preset) => {
             const isActive = preset.value === localMileage;
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.body,
+    ...Typography.subhead,
     paddingVertical: Spacing.none,
   },
   formattedRow: {

@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { usePreventRemove } from '@react-navigation/native';
+
+import { useAlert } from '@/components/ui';
 
 import {
   CreateListingSheetContent,
@@ -13,17 +16,21 @@ import { useTheme } from '@/context/theme-context';
 
 export default function CreateListingSheetScreen() {
   const params = useLocalSearchParams<{ flowId?: string }>();
+  const navigation = useNavigation();
+  const { showAlert } = useAlert();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   const flowId = typeof params.flowId === 'string' ? params.flowId : '';
   const session = flowId ? getCreateListingFlowSession(flowId) : undefined;
   const didCloseRef = useRef(false);
+  const [preventRemove, setPreventRemove] = useState(true);
 
   const closeFlow = useCallback(
     (navigateBack: boolean) => {
       if (didCloseRef.current) return;
       didCloseRef.current = true;
+      setPreventRemove(false);
 
       session?.onClose();
       if (flowId) {
@@ -40,6 +47,30 @@ export default function CreateListingSheetScreen() {
     },
     [flowId, session],
   );
+
+  usePreventRemove(preventRemove && !!session, (event) => {
+    if (didCloseRef.current) return;
+
+    showAlert('Exit Listing?', 'Are you sure? You will lose all progress.', [
+      { text: 'Keep Editing', style: 'cancel' },
+      {
+        text: 'Exit',
+        style: 'destructive',
+        onPress: () => {
+          if (didCloseRef.current) return;
+          didCloseRef.current = true;
+          setPreventRemove(false);
+
+          session?.onClose();
+          if (flowId) {
+            deleteCreateListingFlowSession(flowId);
+          }
+
+          navigation.dispatch(event.data.action);
+        },
+      },
+    ]);
+  });
 
   useEffect(() => {
     if (!flowId || !session) {
