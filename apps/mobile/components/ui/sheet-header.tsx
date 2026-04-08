@@ -25,7 +25,7 @@ export function SheetHeader({
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { borderBottomColor: colors.sheetBorder }, style]}>
+    <View collapsable={false} style={[styles.container, { borderBottomColor: colors.sheetBorder }, style]}>
       <View style={styles.topRow}>
         <View style={styles.titleWrap}>
           <Text variant={titleVariant} style={[styles.title, { color: colors.sheetLabel }]} numberOfLines={2}>
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     minWidth: SheetChrome.headerPlaceholderWidth,
+    paddingHorizontal: Spacing.xs,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     minWidth: SheetChrome.headerPlaceholderWidth,
+    paddingHorizontal: Spacing.xs,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },

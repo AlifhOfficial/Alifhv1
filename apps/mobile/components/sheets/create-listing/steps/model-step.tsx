@@ -8,8 +8,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, FlatList, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check, AlertCircle } from 'lucide-react-native';
@@ -108,7 +107,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
       <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}>
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
-          <BottomSheetTextInput
+          <TextInput
             style={[styles.searchInput, { color: colors.label }]}
             placeholder={`Search ${data.make} models...`}
             placeholderTextColor={colors.placeholder}
@@ -129,7 +128,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
         </Text>
       </View>
 
-      <BottomSheetFlatList
+      <FlatList
         data={models}
         keyExtractor={(item: string) => item}
         renderItem={renderItem}

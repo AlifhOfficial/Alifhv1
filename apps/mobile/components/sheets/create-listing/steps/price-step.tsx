@@ -8,8 +8,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { View, StyleSheet, Switch } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, Switch, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Typography, Colors, Spacing, Radius } from '@/constants/theme';
@@ -74,7 +73,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
           <Text variant="body" tone="muted">
             AED
           </Text>
-          <BottomSheetTextInput
+          <TextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="0"
             placeholderTextColor={colors.placeholder}

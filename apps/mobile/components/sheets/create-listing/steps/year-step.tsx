@@ -8,8 +8,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BottomSheetFlatList, BottomSheetFlatListMethods, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, FlatList, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
@@ -39,7 +38,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const listRef = useRef<BottomSheetFlatListMethods>(null);
+  const listRef = useRef<FlatList<string>>(null);
   const [query, setQuery] = useState('');
 
   // Filter years based on search query
@@ -112,7 +111,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
       <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}>
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
-          <BottomSheetTextInput
+          <TextInput
             style={[styles.searchInput, { color: colors.label }]}
             placeholder="Search year..."
             placeholderTextColor={colors.placeholder}
@@ -130,7 +129,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         </View>
       </View>
 
-      <BottomSheetFlatList
+      <FlatList
         ref={listRef}
         data={years}
         keyExtractor={(item: string) => item}

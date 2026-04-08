@@ -460,7 +460,6 @@ export default function SearchScreen() {
           style={[
             styles.searchInputContainer,
             {
-              backgroundColor: colors.background,
               borderColor: colors.border,
             },
           ]}
@@ -543,7 +542,7 @@ export default function SearchScreen() {
                 <ActivityIndicator size="small" color={colors.labelQuaternary} />
               </View>
             ) : suggestions.length > 0 ? (
-              <View style={[styles.suggestionsContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+              <View style={[styles.suggestionsContainer, { borderColor: colors.border }]}> 
                 {suggestions.slice(0, 8).map((suggestion, index) => {
                   const category = SUGGESTION_CATEGORIES[suggestion.type];
                   return (
@@ -743,8 +742,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing['2xl'],
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.lg,
   },
   section: {
     marginBottom: Spacing.lg,
@@ -823,6 +822,7 @@ const styles = StyleSheet.create({
     height: Sizes.actionButtonSm,
     borderRadius: Radius.full,
     borderWidth: StyleSheet.hairlineWidth,
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
   },

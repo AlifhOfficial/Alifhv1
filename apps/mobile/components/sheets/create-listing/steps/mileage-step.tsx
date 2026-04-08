@@ -8,8 +8,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Typography, Colors, Spacing, Radius, Layout } from '@/constants/theme';
@@ -64,7 +63,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
           { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
         ]}
       >
-        <BottomSheetTextInput
+        <TextInput
           style={[styles.input, { color: colors.label }]}
           placeholder="Enter mileage"
           placeholderTextColor={colors.placeholder}

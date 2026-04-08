@@ -8,8 +8,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 
@@ -144,7 +143,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             {generateError}
           </Text>
         )}
-        <BottomSheetTextInput
+        <TextInput
           style={[
             styles.textArea,
             {

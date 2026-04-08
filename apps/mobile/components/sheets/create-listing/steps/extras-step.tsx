@@ -9,8 +9,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Plus, X } from 'lucide-react-native';
 
@@ -98,7 +97,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
       <View style={styles.section}>
         <Text variant="caption1Emphasized" tone="muted" uppercase>Add Custom Extra</Text>
         <View style={[styles.inputRow, { backgroundColor: colors.surfaceSecondary }]}>
-          <BottomSheetTextInput
+          <TextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="e.g. Custom exhaust..."
             placeholderTextColor={colors.placeholder}

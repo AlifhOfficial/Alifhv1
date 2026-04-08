@@ -16,6 +16,7 @@ const NATIVE_SHEET_LEAF_ROUTES = new Set([
   'sign-up-sheet',
   'verify-email-sheet',
   'forgot-password-sheet',
+  'create-listing-sheet',
   'listing-description',
   'listing-specs',
   'listing-features',

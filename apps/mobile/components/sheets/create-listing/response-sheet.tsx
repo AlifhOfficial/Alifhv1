@@ -1,41 +1,20 @@
 /**
- * ResponseSheet — Lightweight feedback sheet for create listing flow
+ * ResponseSheet — Lightweight feedback modal for create listing flow
  *
- * Replaces Alert.alert() with a consistent sheet-based UX.
- * Shows errors, success messages, and validation warnings.
- *
- * Usage:
- *   <ResponseSheet
- *     visible={showError}
- *     type="error"
- *     title="Upload Failed"
- *     message="Something went wrong. Please try again."
- *     onDismiss={() => setShowError(false)}
- *     onRetry={() => retryUpload()}
- *   />
+ * Native fallback replacement for the old Gorhom-based response sheet.
  *
  * @module components/sheets/create-listing/response-sheet
  */
 
-import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
-import React, { useCallback, useRef, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import {
-  BottomSheetModal,
-  BottomSheetBackdrop,
-  BottomSheetView,
-  type BottomSheetHandleProps,
-} from '@gorhom/bottom-sheet';
+import { Text, HapticPressable } from '@/components/ui';
+import React, { useEffect, useCallback } from 'react';
+import { View, StyleSheet, Modal, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { AlertCircle, CheckCircle, AlertTriangle, Info } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, SheetSnapPoints } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import type { ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
 
 export type ResponseType = 'error' | 'success' | 'warning' | 'info';
 
@@ -45,17 +24,11 @@ export interface ResponseSheetProps {
   title: string;
   message?: string;
   onDismiss: () => void;
-  /** Optional retry action for errors */
   onRetry?: () => void;
   retryLabel?: string;
-  /** Optional primary action */
   primaryLabel?: string;
   onPrimary?: () => void;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
 
 function getIcon(type: ResponseType, color: string, size: number) {
   const props = { size, color, strokeWidth: 2 };
@@ -99,10 +72,6 @@ function getHaptic(type: ResponseType) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────────────────────────────────
-
 export function ResponseSheet({
   visible,
   type,
@@ -116,169 +85,132 @@ export function ResponseSheet({
 }: ResponseSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  // Present/dismiss based on visible prop
   useEffect(() => {
     if (visible) {
-      bottomSheetRef.current?.present();
       Haptics.notificationAsync(getHaptic(type));
-    } else {
-      bottomSheetRef.current?.dismiss();
     }
   }, [visible, type]);
 
-  const handleSheetChanges = useCallback(
-    (index: number) => {
-      if (index === -1) {
-        onDismiss();
-      }
-    },
-    [onDismiss]
-  );
-
   const handleDismiss = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    bottomSheetRef.current?.dismiss();
-  }, []);
+    onDismiss();
+  }, [onDismiss]);
 
   const handleRetry = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    bottomSheetRef.current?.dismiss();
+    onDismiss();
     onRetry?.();
-  }, [onRetry]);
+  }, [onDismiss, onRetry]);
 
   const handlePrimary = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    bottomSheetRef.current?.dismiss();
+    onDismiss();
     onPrimary?.();
-  }, [onPrimary]);
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-        pressBehavior="close"
-      />
-    ),
-    []
-  );
-
-  const renderHandle = useCallback(
-    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={handleDismiss} />,
-    [handleDismiss]
-  );
+  }, [onDismiss, onPrimary]);
 
   const iconColor = getIconColor(type, colors);
   const hasActions = onRetry || onPrimary;
 
   return (
-    <BottomSheetModal
-      ref={bottomSheetRef}
-      snapPoints={SheetSnapPoints.singlePeek}
-      enableDynamicSizing={false}
-      enablePanDownToClose
-      onChange={handleSheetChanges}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={{
-        backgroundColor: colors.sheet,
-        borderTopLeftRadius: Radius.sheet,
-        borderTopRightRadius: Radius.sheet,
-        borderCurve: 'continuous',
-      }}
-      handleComponent={renderHandle}
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleDismiss}
+      presentationStyle="overFullScreen"
     >
-      <BottomSheetView style={styles.container}>
-        {/* Icon */}
-        <View style={[styles.iconWrapper, { backgroundColor: iconColor + '15' }]}>
-          {getIcon(type, iconColor, 32)}
-        </View>
+      <View style={styles.backdropContainer}>
+        <Pressable style={styles.backdrop} onPress={handleDismiss} />
 
-        {/* Title */}
-        <Text variant="subheadEmphasized" style={styles.title}>
-          {title}
-        </Text>
+        <View style={[styles.card, { backgroundColor: colors.sheet, borderColor: colors.sheetBorder }]}> 
+          <View style={[styles.iconWrapper, { backgroundColor: `${iconColor}15` }]}> 
+            {getIcon(type, iconColor, 32)}
+          </View>
 
-        {/* Message */}
-        {message && (
-          <Text variant="body" tone="secondary" style={styles.message}>
-            {message}
+          <Text variant="subheadEmphasized" style={styles.title}>
+            {title}
           </Text>
-        )}
 
-        {/* Actions */}
-        <View style={styles.actions}>
-          {hasActions ? (
-            <>
+          {message ? (
+            <Text variant="body" tone="secondary" style={styles.message}>
+              {message}
+            </Text>
+          ) : null}
+
+          <View style={styles.actions}>
+            {hasActions ? (
+              <>
+                <HapticPressable
+                  onPress={handleDismiss}
+                  style={[styles.secondaryButton, { backgroundColor: colors.fill2 }]}
+                >
+                  <Text variant="body" style={{ color: colors.label }}>
+                    Dismiss
+                  </Text>
+                </HapticPressable>
+
+                {onRetry ? (
+                  <HapticPressable
+                    onPress={handleRetry}
+                    style={[styles.primaryButton, { backgroundColor: colors.primary }]}
+                  >
+                    <Text variant="body" style={{ color: colors.primaryForeground }}>
+                      {retryLabel}
+                    </Text>
+                  </HapticPressable>
+                ) : null}
+
+                {onPrimary && primaryLabel ? (
+                  <HapticPressable
+                    onPress={handlePrimary}
+                    style={[styles.primaryButton, { backgroundColor: colors.primary }]}
+                  >
+                    <Text variant="body" style={{ color: colors.primaryForeground }}>
+                      {primaryLabel}
+                    </Text>
+                  </HapticPressable>
+                ) : null}
+              </>
+            ) : (
               <HapticPressable
                 onPress={handleDismiss}
-                style={[styles.secondaryButton, { backgroundColor: colors.fill2 }]}
+                style={[styles.fullButton, { backgroundColor: colors.fill2 }]}
               >
                 <Text variant="body" style={{ color: colors.label }}>
-                  Dismiss
+                  OK
                 </Text>
               </HapticPressable>
-
-              {onRetry && (
-                <HapticPressable
-                  onPress={handleRetry}
-                  style={[styles.primaryButton, { backgroundColor: colors.primary }]}
-                >
-                  <Text variant="body" style={{ color: colors.primaryForeground }}>
-                    {retryLabel}
-                  </Text>
-                </HapticPressable>
-              )}
-
-              {onPrimary && primaryLabel && (
-                <HapticPressable
-                  onPress={handlePrimary}
-                  style={[styles.primaryButton, { backgroundColor: colors.primary }]}
-                >
-                  <Text variant="body" style={{ color: colors.primaryForeground }}>
-                    {primaryLabel}
-                  </Text>
-                </HapticPressable>
-              )}
-            </>
-          ) : (
-            <HapticPressable
-              onPress={handleDismiss}
-              style={[styles.fullButton, { backgroundColor: colors.fill2 }]}
-            >
-              <Text variant="body" style={{ color: colors.label }}>
-                OK
-              </Text>
-            </HapticPressable>
-          )}
+            )}
+          </View>
         </View>
-      </BottomSheetView>
-    </BottomSheetModal>
+      </View>
+    </Modal>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Styles
-// ─────────────────────────────────────────────────────────────────────────────
-
 const styles = StyleSheet.create({
-  sheetContainer: {
-    marginHorizontal: Spacing.lg,
-  },
-  container: {
+  backdropContainer: {
     flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  card: {
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing['2xl'],
   },
   iconWrapper: {
-    width: Spacing["5xl"] + Spacing.lg,
-    height: Spacing["5xl"] + Spacing.lg,
-    borderRadius: (Spacing["5xl"] + Spacing.lg) / 2,
+    width: Spacing['5xl'] + Spacing.lg,
+    height: Spacing['5xl'] + Spacing.lg,
+    borderRadius: (Spacing['5xl'] + Spacing.lg) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
@@ -295,7 +227,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.sm,
     width: '100%',
-    marginTop: 'auto',
   },
   secondaryButton: {
     flex: 1,

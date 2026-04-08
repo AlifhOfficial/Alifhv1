@@ -8,8 +8,7 @@
  */
 
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Spacing } from '@/constants/theme';
@@ -25,7 +24,7 @@ interface StepContainerProps {
 
 /**
  * Consistent scrollable container for step content.
- * Use this instead of wrapping content in BottomSheetScrollView directly.
+ * Use this instead of wrapping content in ScrollView directly.
  */
 export function StepContainer({
   children,
@@ -37,7 +36,7 @@ export function StepContainer({
   const insets = useSafeAreaInsets();
 
   return (
-    <BottomSheetScrollView
+    <ScrollView
       style={[styles.scrollView, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}
       contentContainerStyle={[
         styles.content,
@@ -46,10 +45,11 @@ export function StepContainer({
       ]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
-      bounces={true}
+      bounces
+      contentInsetAdjustmentBehavior="automatic"
     >
       {children}
-    </BottomSheetScrollView>
+    </ScrollView>
   );
 }
 

@@ -9,8 +9,7 @@
 
 import { Text } from '@/components/ui';
 import React, { useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, ActivityIndicator, Switch, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
@@ -126,7 +125,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* VIN Input */}
       <View style={styles.inputWrapper}>
-        <BottomSheetTextInput
+        <TextInput
           style={[
             styles.vinInput,
             {

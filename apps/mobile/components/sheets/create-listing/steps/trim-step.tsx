@@ -8,8 +8,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Typography, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
@@ -47,7 +46,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <StepContainer>
       {/* Input */}
-      <BottomSheetTextInput
+      <TextInput
         style={[
           styles.input,
           {

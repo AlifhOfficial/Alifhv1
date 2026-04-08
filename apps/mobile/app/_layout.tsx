@@ -7,7 +7,6 @@ import { Stack, router as expoRouter , usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
@@ -328,6 +327,17 @@ function RootLayoutNav() {
             }}
           />
           <Stack.Screen
+            name="create-listing-sheet"
+            options={{
+              title: 'Create Listing',
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.95],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
             name="listing-description"
             options={{
               presentation: 'formSheet',
@@ -533,14 +543,12 @@ export default function RootLayout() {
                     <SearchProvider>
                       <AuthProvider>
                         <FavoritesProvider>
-                          <BottomSheetModalProvider>
-                            <WebSocketWrapper>
-                              <NotificationWrapper>
-                                <RootLayoutNav />
-                                <OfflineBanner />
-                              </NotificationWrapper>
-                            </WebSocketWrapper>
-                          </BottomSheetModalProvider>
+                          <WebSocketWrapper>
+                            <NotificationWrapper>
+                              <RootLayoutNav />
+                              <OfflineBanner />
+                            </NotificationWrapper>
+                          </WebSocketWrapper>
                         </FavoritesProvider>
                       </AuthProvider>
                     </SearchProvider>
