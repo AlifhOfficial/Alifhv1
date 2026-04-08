@@ -11,7 +11,7 @@ import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, SheetChrome } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface StepContainerProps {
@@ -28,7 +28,7 @@ interface StepContainerProps {
  */
 export function StepContainer({
   children,
-  bottomPadding = Spacing['3xl'],
+  bottomPadding = SheetChrome.bottomSafeAreaSpacing,
   noPadding = false,
 }: StepContainerProps) {
   const { colorScheme } = useTheme();
@@ -59,10 +59,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    paddingTop: Spacing.lg,
+    paddingTop: SheetChrome.contentPaddingTop,
+    gap: SheetChrome.rowGap,
   },
   withPadding: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
   },
 });
 

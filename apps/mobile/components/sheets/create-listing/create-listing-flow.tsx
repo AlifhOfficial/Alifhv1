@@ -14,7 +14,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { ChevronLeft, X } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetChrome, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import {
@@ -24,6 +24,7 @@ import {
   getProgress,
   type CreateListingData,
   type SheetStepId,
+  type StepContentProps,
 } from './types';
 
 import {
@@ -75,13 +76,7 @@ const STEP_CONTENT: Record<SheetStepId, React.ComponentType<StepContentProps>> =
   review: ReviewStepContent,
 };
 
-export interface StepContentProps {
-  data: CreateListingData;
-  onUpdate: (updates: Partial<CreateListingData>) => void;
-  onSubmitSuccess?: (listingId: string, approved: boolean, isDraft?: boolean) => void;
-  onGoToStep?: (index: number) => void;
-  editingListingId?: string;
-}
+export type { StepContentProps } from './types';
 
 export interface CreateListingSheetContentProps {
   onClose: () => void;
@@ -272,7 +267,7 @@ export function CreateListingSheetContent({
           </View>
 
           <View style={styles.headerCenter}>
-            <Text variant="caption1Emphasized" tone="muted" uppercase>
+            <Text variant={SheetTypography.headerTitle} tone="muted" uppercase>
               {currentStep?.label || 'Create Listing'}
             </Text>
           </View>
@@ -285,7 +280,7 @@ export function CreateListingSheetContent({
                 style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
                 <Text
-                  variant="caption1Emphasized"
+                  variant={SheetTypography.rowLabelSelected}
                   style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}
                   uppercase
                 >
@@ -390,7 +385,7 @@ const styles = StyleSheet.create({
   },
   fixedHeader: {},
   progressSection: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: Spacing.xs,
   },
   progressTrack: {
@@ -406,15 +401,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: Spacing.sm,
-    paddingBottom: Spacing.md,
+    paddingBottom: SheetChrome.headerPaddingBottom,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    minWidth: Spacing['5xl'],
+    minWidth: SheetChrome.headerPlaceholderWidth,
   },
   headerCenter: {
     flexDirection: 'row',
@@ -422,7 +417,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   headerRight: {
-    minWidth: Spacing['5xl'],
+    minWidth: SheetChrome.headerPlaceholderWidth,
     alignItems: 'flex-end',
   },
   circleButton: {
@@ -433,8 +428,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   nextButton: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.lg,
+    paddingVertical: SheetChrome.headerActionPaddingVertical,
+    paddingHorizontal: SheetChrome.headerActionPaddingHorizontal,
     borderRadius: Radius.full,
   },
   contentArea: {

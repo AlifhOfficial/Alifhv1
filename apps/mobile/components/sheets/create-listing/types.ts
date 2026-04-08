@@ -143,6 +143,15 @@ export interface SheetStepProps {
   onClose: () => void;
 }
 
+/** Shared content props for individual step components. */
+export interface StepContentProps {
+  data: CreateListingData;
+  onUpdate: (updates: Partial<CreateListingData>) => void;
+  onSubmitSuccess?: (listingId: string, approved: boolean, isDraft?: boolean) => void;
+  onGoToStep?: (index: number) => void;
+  editingListingId?: string;
+}
+
 // ─── Progress helpers ────────────────────────────────────────────────────────
 
 export function getProgress(currentStep: number): number {

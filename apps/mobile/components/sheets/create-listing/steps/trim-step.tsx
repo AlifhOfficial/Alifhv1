@@ -15,7 +15,7 @@ import { Typography, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 

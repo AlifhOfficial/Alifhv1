@@ -11,11 +11,11 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, Switch, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -70,7 +70,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
             { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
           ]}
         >
-          <Text variant="body" tone="muted">
+          <Text variant={SheetTypography.supporting} tone="muted">
             AED
           </Text>
           <TextInput
@@ -86,7 +86,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
         {/* Formatted display */}
         {data.price && priceNum > 0 && (
-          <Text variant="title3Emphasized" style={{ color: colors.label, textAlign: 'center' }}>
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.label, textAlign: 'center' }}>
             AED {priceNum.toLocaleString()}
           </Text>
         )}
@@ -94,7 +94,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Text variant="subhead" tone="muted">
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>
           Quick select
         </Text>
         <View style={styles.presetsRow}>
@@ -112,10 +112,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Text
-                  variant="subhead"
-                  style={{ color: isActive ? colors.background : colors.label }}
-                >
+                <Text variant={isActive ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel} style={{ color: isActive ? colors.background : colors.label }}>
                   {preset.label}
                 </Text>
               </HapticPressable>
@@ -128,7 +125,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
           <Text variant="caption1Emphasized" tone="muted" uppercase>Price Negotiable?</Text>
-          <Text variant="subhead" tone="muted">
+          <Text variant={SheetTypography.supporting} tone="muted">
             Let buyers know you&apos;re open to offers
           </Text>
         </View>

@@ -18,7 +18,7 @@ import { useTheme } from '@/context/theme-context';
 import { checkVin } from '@/lib/sell-car-user-api';
 import { validateVin } from '../types';
 
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 import { StepContainer } from '../step-container';
 
 // ─────────────────────────────────────────────────────────────────────────────

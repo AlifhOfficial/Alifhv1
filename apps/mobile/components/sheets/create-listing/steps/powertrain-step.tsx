@@ -16,7 +16,7 @@ import { useTheme } from '@/context/theme-context';
 import { TRANSMISSION_TYPES, FUEL_TYPES, ENGINE_SIZES } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 

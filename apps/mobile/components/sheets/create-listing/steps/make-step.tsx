@@ -13,11 +13,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { CAR_MAKES } from '@/lib/filter-constants';
 
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -85,13 +85,13 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         >
           <View style={styles.itemContent}>
             <Text
-              variant={isSelected ? 'bodyEmphasized' : 'body'}
+              variant={isSelected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
               style={{ color: isSelected ? colors.label : colors.labelSecondary }}
             >
               {make}
             </Text>
             {isPopular && (
-              <Text variant="subhead" tone="muted">Popular</Text>
+              <Text variant={SheetTypography.supporting} tone="muted">Popular</Text>
             )}
           </View>
           {isSelected && (
@@ -139,7 +139,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text variant="body" tone="secondary">No makes found for &quot;{query}&quot;</Text>
+            <Text variant={SheetTypography.rowLabel} tone="secondary">No makes found for &quot;{query}&quot;</Text>
           </View>
         }
       />

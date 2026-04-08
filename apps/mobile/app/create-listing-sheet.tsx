@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -18,6 +18,28 @@ export default function CreateListingSheetScreen() {
 
   const flowId = typeof params.flowId === 'string' ? params.flowId : '';
   const session = flowId ? getCreateListingFlowSession(flowId) : undefined;
+  const didCloseRef = useRef(false);
+
+  const closeFlow = useCallback(
+    (navigateBack: boolean) => {
+      if (didCloseRef.current) return;
+      didCloseRef.current = true;
+
+      session?.onClose();
+      if (flowId) {
+        deleteCreateListingFlowSession(flowId);
+      }
+
+      if (!navigateBack) return;
+
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/inventory');
+      }
+    },
+    [flowId, session],
+  );
 
   useEffect(() => {
     if (!flowId || !session) {
@@ -31,6 +53,14 @@ export default function CreateListingSheetScreen() {
     }
   }, [flowId, session]);
 
+  useEffect(() => {
+    return () => {
+      // Native swipe-down dismiss can unmount this screen without calling our explicit close handler.
+      // Keep parent visibility in sync so the flow can always be reopened.
+      closeFlow(false);
+    };
+  }, [closeFlow]);
+
   if (!flowId || !session) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.sheet }}>
@@ -40,13 +70,7 @@ export default function CreateListingSheetScreen() {
   }
 
   const handleClose = () => {
-    session.onClose();
-    deleteCreateListingFlowSession(flowId);
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/inventory');
-    }
+    closeFlow(true);
   };
 
   return <CreateListingSheetContent {...toSheetContentProps(session)} onClose={handleClose} />;

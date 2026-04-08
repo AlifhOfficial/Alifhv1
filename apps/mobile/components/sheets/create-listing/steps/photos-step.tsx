@@ -17,13 +17,13 @@ import DraggableFlatList, {
 import * as Haptics from 'expo-haptics';
 import { X, ImagePlus, GripVertical } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '@/components/user-inventory-management/utilities/image-upload';
 import { CDN_BASE, getThumbUrl } from '@/lib/config';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -240,7 +240,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         {uploading && uploadProgress.total > 0 ? (
           <View style={styles.uploadingContent}>
             <ActivityIndicator size="small" color={colors.label} />
-            <Text variant="body" tone="secondary">
+              <Text variant={SheetTypography.rowLabel} tone="secondary">
               {`Uploading ${uploadProgress.done} of ${uploadProgress.total}...`}
             </Text>
           </View>

@@ -18,7 +18,7 @@ import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 

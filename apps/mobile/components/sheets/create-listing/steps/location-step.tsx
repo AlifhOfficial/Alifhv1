@@ -16,7 +16,7 @@ import { useTheme } from '@/context/theme-context';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -11,11 +11,11 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -72,18 +72,18 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
           keyboardType="number-pad"
           returnKeyType="done"
         />
-        <Text variant="body" tone="muted">km</Text>
+        <Text variant={SheetTypography.supporting} tone="muted">km</Text>
       </View>
 
       {/* Formatted display */}
       {localMileage && (
         <View style={styles.formattedRow}>
-          <Text variant="title3Emphasized" style={{ color: colors.label }}>
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.label }}>
             {mileageNum.toLocaleString()} km
           </Text>
           {isLowMileage && (
             <View style={[styles.badge, { backgroundColor: colors.successMuted }]}>
-              <Text variant="subhead" style={{ color: colors.success }} tone="secondary">
+              <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.success }} tone="secondary">
                 Low mileage
               </Text>
             </View>
@@ -93,7 +93,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Text variant="subhead" tone="muted">Quick select</Text>
+        <Text variant={SheetTypography.supportingEmphasized} tone="muted" uppercase>Quick select</Text>
         <View style={styles.presetsRow}>
           {MILEAGE_PRESETS.map((preset) => {
             const isActive = preset.value === localMileage;
@@ -109,7 +109,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Text variant="subhead" style={{ color: isActive ? colors.background : colors.label }}>
+                <Text variant={isActive ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel} style={{ color: isActive ? colors.background : colors.label }}>
                   {preset.label}
                 </Text>
               </HapticPressable>
@@ -120,7 +120,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="subhead" tone="muted">
+        <Text variant={SheetTypography.supporting} tone="muted">
           Odometer reading in kilometers. Vehicles under 5,000 km are marked as &quot;new condition&quot;.
         </Text>
       </View>

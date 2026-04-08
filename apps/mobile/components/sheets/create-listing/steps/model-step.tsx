@@ -13,11 +13,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check, AlertCircle } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getModelsForMake } from '@/lib/filter-constants';
 
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           style={[styles.item, { borderBottomColor: colors.border }]}
         >
           <Text
-            variant={isSelected ? 'bodyEmphasized' : 'body'}
+            variant={isSelected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
             style={{ color: isSelected ? colors.label : colors.labelSecondary }}
           >
             {model}
@@ -94,7 +94,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
     return (
       <View style={styles.noMakeState}>
         <AlertCircle size={Sizes.iconLg} color={colors.labelQuaternary} strokeWidth={1.5} />
-        <Text variant="body" tone="secondary" style={{ textAlign: 'center' }}>
+        <Text variant={SheetTypography.rowLabel} tone="secondary" style={{ textAlign: 'center' }}>
           Please select a make first
         </Text>
       </View>
@@ -123,7 +123,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
             </HapticPressable>
           )}
         </View>
-        <Text variant="subhead" tone="muted" style={styles.modelCount}>
+        <Text variant={SheetTypography.supporting} tone="muted" style={styles.modelCount}>
           {allModels.length} models
         </Text>
       </View>
@@ -140,7 +140,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text variant="body" tone="secondary">
+            <Text variant={SheetTypography.rowLabel} tone="secondary">
               {query ? `No models found for "${query}"` : 'No models available'}
             </Text>
           </View>

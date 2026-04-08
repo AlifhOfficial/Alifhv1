@@ -13,10 +13,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -84,16 +84,16 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         <HapticPressable onPress={() => handleSelect(year)} style={styles.item}>
           <View style={styles.itemContent}>
             <Text
-              variant={isSelected ? 'bodyEmphasized' : 'body'}
+              variant={isSelected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
               style={{ color: isSelected ? colors.label : colors.labelSecondary }}
             >
               {year}
             </Text>
             {isRecent && (
-              <Text variant="subhead" tone="muted">Recent</Text>
+              <Text variant={SheetTypography.supporting} tone="muted">Recent</Text>
             )}
             {isClassic && (
-              <Text variant="subhead" tone="muted">Classic</Text>
+              <Text variant={SheetTypography.supporting} tone="muted">Classic</Text>
             )}
           </View>
           {isSelected && (
@@ -137,7 +137,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        getItemLayout={(_: string[] | null | undefined, index: number) => ({
+        getItemLayout={(_: ArrayLike<string> | null | undefined, index: number) => ({
           length: 56 + Spacing.xs,
           offset: (56 + Spacing.xs) * index,
           index,
@@ -152,7 +152,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text variant="body" tone="secondary">No year found for &quot;{query}&quot;</Text>
+            <Text variant={SheetTypography.rowLabel} tone="secondary">No year found for &quot;{query}&quot;</Text>
           </View>
         }
       />

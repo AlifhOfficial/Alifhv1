@@ -17,7 +17,7 @@ import { useTheme } from '@/context/theme-context';
 import { LISTING_TAGS } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 const MAX_TAGS = 3;
 

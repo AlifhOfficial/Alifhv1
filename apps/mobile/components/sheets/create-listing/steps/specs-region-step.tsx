@@ -16,7 +16,7 @@ import { useTheme } from '@/context/theme-context';
 import { SPECS_TYPES, STEERING_SIDES } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -12,15 +12,14 @@ import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Check, AlertCircle, Save } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 import { createListing, updateListing } from '@/lib/sell-car-user-api';
 import { CDN_BASE } from '@/lib/config';
 
-import type { StepContentProps } from '../create-listing-flow';
 import { StepContainer } from '../step-container';
-import { dataToPayload } from '../types';
+import { dataToPayload, type CreateListingData } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -30,7 +29,9 @@ function toAbsoluteUrl(url: string): string {
   return `${CDN_BASE}/${url.startsWith('/') ? url.slice(1) : url}`;
 }
 
-interface ReviewStepContentProps extends StepContentProps {
+interface ReviewStepContentProps {
+  data: CreateListingData;
+  onUpdate: (updates: Partial<CreateListingData>) => void;
   onSubmitSuccess?: (listingId: string, approved: boolean, isDraft?: boolean) => void;
   onGoToStep?: (stepIndex: number) => void;
   editingListingId?: string;
@@ -141,9 +142,9 @@ export function ReviewStepContent({
         )}
         
         <View style={styles.heroInfo}>
-          <Text variant="headline" numberOfLines={2}>{vehicleTitle}</Text>
-          {data.trim && <Text variant="subhead" tone="muted">{data.trim}</Text>}
-            <Text variant="title3Emphasized" style={{ color: colors.primary, marginTop: Spacing.xs }}>
+          <Text variant={SheetTypography.rowLabelSelected} numberOfLines={2}>{vehicleTitle}</Text>
+          {data.trim && <Text variant={SheetTypography.supporting} tone="muted">{data.trim}</Text>}
+            <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primary, marginTop: Spacing.xs }}>
             AED {priceNum.toLocaleString()}
           </Text>
         </View>
@@ -152,16 +153,16 @@ export function ReviewStepContent({
       {/* Quick Stats */}
       <View style={styles.statsRow}>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Text variant="subhead" tone="muted">Mileage</Text>
-          <Text variant="body">{mileageNum.toLocaleString()} km</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">Mileage</Text>
+          <Text variant={SheetTypography.rowLabel}>{mileageNum.toLocaleString()} km</Text>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Text variant="subhead" tone="muted">Location</Text>
-          <Text variant="body" numberOfLines={1}>{emirateLabel}</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">Location</Text>
+          <Text variant={SheetTypography.rowLabel} numberOfLines={1}>{emirateLabel}</Text>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Text variant="subhead" tone="muted">Photos</Text>
-          <Text variant="body">{data.images.length}</Text>
+          <Text variant={SheetTypography.supporting} tone="muted">Photos</Text>
+          <Text variant={SheetTypography.rowLabel}>{data.images.length}</Text>
         </View>
       </View>
 
@@ -169,7 +170,7 @@ export function ReviewStepContent({
       {!canPublish && missingItems.length > 0 && (
         <View style={[styles.warningBox, { backgroundColor: colors.warningMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.warning} strokeWidth={2} />
-          <Text variant="subhead" style={{ color: colors.warning, flex: 1 }}>
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.warning, flex: 1 }}>
             Missing: {missingItems.join(', ')}
           </Text>
         </View>
@@ -179,7 +180,7 @@ export function ReviewStepContent({
       {error && (
         <View style={[styles.warningBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Text variant="subhead" style={{ color: colors.error, flex: 1 }}>
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.error, flex: 1 }}>
             {error}
           </Text>
         </View>
@@ -200,7 +201,7 @@ export function ReviewStepContent({
           ) : (
             <>
               <Check size={Sizes.iconSm} color={canPublish ? colors.background : colors.labelQuaternary} strokeWidth={2} />
-              <Text variant="body" style={{ color: canPublish ? colors.background : colors.labelQuaternary, }}>
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: canPublish ? colors.background : colors.labelQuaternary, }}>
                 Publish
               </Text>
             </>
@@ -214,7 +215,7 @@ export function ReviewStepContent({
             style={[styles.draftBtn, { borderColor: colors.border }]}
           >
             <Save size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
-            <Text variant="body" tone="secondary">Draft</Text>
+            <Text variant={SheetTypography.rowLabel} tone="secondary">Draft</Text>
           </HapticPressable>
         )}
       </View>

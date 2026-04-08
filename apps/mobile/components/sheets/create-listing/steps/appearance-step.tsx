@@ -15,7 +15,7 @@ import { Colors, Spacing, Radius, VehicleColorSwatches, type ColorPalette } from
 import { useTheme } from '@/context/theme-context';
 import { BODY_TYPES, EXTERIOR_COLORS, INTERIOR_COLORS } from '@/lib/filter-constants';
 
-import type { StepContentProps } from '../create-listing-flow';
+import type { StepContentProps } from '../types';
 import { StepContainer } from '../step-container';
 
 // ─────────────────────────────────────────────────────────────────────────────
