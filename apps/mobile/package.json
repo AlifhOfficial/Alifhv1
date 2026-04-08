@@ -22,7 +22,7 @@
     "submit:android": "eas submit --platform android --profile production",
     "update:preview": "eas update --branch preview --message",
     "update:prod": "eas update --branch production --message",
-    "lint": "expo lint"
+    "lint": "expo lint --max-warnings=0 && echo \"mobile lint: clean (0 warnings)\""
   },
   "dependencies": {
     "@expo/vector-icons": "15.1.1",

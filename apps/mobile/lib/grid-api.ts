@@ -14,7 +14,6 @@ import { getPartnersList, type PartnerListItem } from './partner-api';
 import { getShowroomsList, type ShowroomCardData } from './showroom-api';
 import { 
   BODY_TYPES, 
-  CAR_MAKES, 
   FUEL_TYPES,
   SPECS_TYPES,
 } from './listing-constants';
@@ -273,22 +272,33 @@ export function createCategoryGridConfig(
 ): CategoryGridConfig {
   const searchParams: SearchParams = { limit: 6, sortBy: 'popular' };
   let subtitle = '';
+  const bodyTypeValues = new Set(BODY_TYPES.map((item) => item.value));
+  const fuelTypeValues = new Set(FUEL_TYPES.map((item) => item.value));
+  const specsValues = new Set(SPECS_TYPES.map((item) => item.value));
   
   switch (categoryType) {
     case 'bodyType':
-      searchParams.bodyType = categoryValue;
+      if (bodyTypeValues.has(categoryValue as typeof BODY_TYPES[number]['value'])) {
+        searchParams.bodyType = [categoryValue as typeof BODY_TYPES[number]['value']];
+      }
       subtitle = BODY_TYPE_SUBTITLES[categoryValue] || `Browse ${categoryLabel}`;
       break;
     case 'fuelType':
-      searchParams.fuelType = categoryValue;
+      if (fuelTypeValues.has(categoryValue as typeof FUEL_TYPES[number]['value'])) {
+        searchParams.fuelType = [categoryValue as typeof FUEL_TYPES[number]['value']];
+      }
       subtitle = FUEL_TYPE_SUBTITLES[categoryValue] || `Browse ${categoryLabel}`;
       break;
     case 'condition':
-      searchParams.condition = categoryValue;
+      if (categoryValue === 'new' || categoryValue === 'used') {
+        searchParams.condition = categoryValue;
+      }
       subtitle = categoryValue === 'new' ? 'Brand new, never registered' : 'Pre-owned vehicles';
       break;
     case 'specs':
-      searchParams.specs = categoryValue;
+      if (specsValues.has(categoryValue as typeof SPECS_TYPES[number]['value'])) {
+        searchParams.specs = [categoryValue as typeof SPECS_TYPES[number]['value']];
+      }
       subtitle = SPECS_SUBTITLES[categoryValue] || `Browse ${categoryLabel}`;
       break;
     case 'make_group':

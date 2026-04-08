@@ -68,7 +68,7 @@ export function useLocation(options: UseLocationOptions = {}): UseLocationReturn
     }
 
     return true;
-  }, []);
+  }, [showAlert]);
 
   const reverseGeocode = useCallback(async (
     latitude: number,

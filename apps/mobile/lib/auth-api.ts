@@ -6,6 +6,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Passkey as NativePasskey } from 'react-native-passkey';
 import { API_BASE, AUTH_ENDPOINTS } from './config';
 
 // Storage keys
@@ -36,14 +37,14 @@ export interface AuthUser {
   firstName?: string | null;
   lastName?: string | null;
   useGeneratedAvatar?: boolean;
-  partnerMemberships?: Array<{
+  partnerMemberships?: {
     staffId: string;
     partnerId: string;
     partnerName: string;
     partnerLogo?: string | null;
     partnerTier?: string | null;
     staffRole: string;
-  }>;
+  }[];
 }
 
 export interface AuthSession {
@@ -610,8 +611,6 @@ export async function refreshSession(): Promise<AuthResult> {
 // PASSKEY OPERATIONS
 // ============================================================================
 
-import { Passkey as NativePasskey } from 'react-native-passkey';
-
 export interface PasskeyResult {
   success: boolean;
   error?: string;
@@ -765,7 +764,7 @@ export async function deletePasskey(id: string): Promise<PasskeyResult> {
  * List all passkeys for the authenticated user
  * Uses Better Auth passkey plugin endpoint: GET /api/auth/passkey/list-user-passkeys
  */
-export async function listPasskeys(): Promise<{ success: boolean; passkeys: Array<{ id: string; name: string | null; createdAt: string }>; error?: string }> {
+export async function listPasskeys(): Promise<{ success: boolean; passkeys: { id: string; name: string | null; createdAt: string }[]; error?: string }> {
   try {
     const response = await authFetch(AUTH_ENDPOINTS.PASSKEY_LIST, {
       method: 'GET',

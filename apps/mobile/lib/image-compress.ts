@@ -15,7 +15,6 @@
  */
 
 import * as ImageManipulator from 'expo-image-manipulator';
-import { Platform } from 'react-native';
 
 // ============================================================================
 // Types
@@ -114,15 +113,12 @@ async function resizeImage(
   // Calculate target dimensions preserving aspect ratio
   const aspectRatio = origW / origH;
   let targetWidth: number;
-  let targetHeight: number;
   
   if (aspectRatio > maxWidth / maxHeight) {
     // Constrain by width
     targetWidth = maxWidth;
-    targetHeight = Math.round(maxWidth / aspectRatio);
   } else {
     // Constrain by height
-    targetHeight = maxHeight;
     targetWidth = Math.round(maxHeight * aspectRatio);
   }
   

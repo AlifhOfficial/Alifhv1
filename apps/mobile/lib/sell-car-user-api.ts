@@ -16,7 +16,7 @@
  */
 
 import { API_BASE, getAppImageUrl } from './config';
-import { getStoredSession, type AuthSession } from './auth-api';
+import { getStoredSession } from './auth-api';
 
 // ============================================================================
 // TYPES — Create / Edit Listing Form
@@ -165,7 +165,7 @@ export interface MyListingCard {
   /** AI moderation info for pending review listings */
   aiModeration?: {
     reasoning?: string;
-    flags?: Array<string | { code: string; severity?: string; message?: string }>;
+    flags?: (string | { code: string; severity?: string; message?: string })[];
     confidence?: number;
   } | null;
 }
