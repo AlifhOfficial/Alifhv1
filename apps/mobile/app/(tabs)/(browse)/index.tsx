@@ -303,24 +303,8 @@ export default function BrowseScreen() {
 
   // Handle filter pill press
   const handleFilterPillPress = useCallback((type: FilterPillType) => {
-    switch (type) {
-      case 'make':
-        router.push('/(tabs)/(browse)/filter-make');
-        break;
-      case 'model':
-        router.push('/(tabs)/(browse)/filter-model');
-        break;
-      case 'price':
-        router.push('/(tabs)/(browse)/filter-price');
-        break;
-      case 'yearMileage':
-        router.push('/(tabs)/(browse)/filter-year-mileage');
-        break;
-      case 'location':
-        router.push('/(tabs)/(browse)/filter-location');
-        break;
-    }
-  }, [router]);
+    router.push({ pathname: '/(tabs)/(browse)/menu', params: { viewMode, section: type } });
+  }, [router, viewMode]);
 
   // Stable callbacks for FilterPills (prevents ScrollView scroll-reset)
   const handleSettingsPress = useCallback(() => {

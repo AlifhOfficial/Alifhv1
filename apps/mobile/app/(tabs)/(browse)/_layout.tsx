@@ -47,7 +47,7 @@ export default function BrowseLayout() {
         options={{
           presentation: 'formSheet',
           sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.58],
+          sheetExpandsWhenScrolledToEdge: true,
           headerShown: false,
           contentStyle: { backgroundColor: colors.sheet },
         }}
