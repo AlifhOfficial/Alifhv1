@@ -35,6 +35,7 @@ import {
   type InteriorColor,
   type EngineSize,
   type SellerType,
+  type UAEEmirate,
 } from '@/lib/filter-constants';
 import type { ExportStatus } from '@/lib/listing-constants';
 import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
@@ -193,7 +194,7 @@ export default function BrowseMenuScreen() {
   const [mileageMin, setMileageMin] = useState(filterParams.mileageMin?.toString() ?? '');
   const [mileageMax, setMileageMax] = useState(filterParams.mileageMax?.toString() ?? '');
 
-  const [selectedEmirates, setSelectedEmirates] = useState<string[]>(filterParams.emirate ?? []);
+  const [selectedEmirates, setSelectedEmirates] = useState<UAEEmirate[]>(filterParams.emirate ?? []);
   const [selectedSpecs, setSelectedSpecs] = useState<SpecsType[]>((filterParams.specs ?? []) as SpecsType[]);
   const [selectedSellerType, setSelectedSellerType] = useState<SellerType | undefined>(filterParams.sellerType);
   const [selectedExportStatus, setSelectedExportStatus] = useState<ExportStatus[]>((filterParams.exportStatus ?? []) as ExportStatus[]);

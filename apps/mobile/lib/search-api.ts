@@ -16,7 +16,7 @@ import {
   type SearchFacets,
   type SearchParams as SharedSearchParams,
   type SearchSortOption,
-} from '../../../packages/database/src/schema/search-types';
+} from './search-types';
 
 export type { FacetBucket, SearchFacets, SearchSortOption };
 

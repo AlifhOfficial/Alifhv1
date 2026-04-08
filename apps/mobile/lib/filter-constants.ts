@@ -79,6 +79,9 @@ export {
   type VehicleCondition,
   type CarMake,
   type EngineSize,
+  type DoorsOption,
+  type SeatingOption,
+  type ExportStatus,
 } from './listing-constants';
 
 // ============================================================================

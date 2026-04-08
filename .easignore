@@ -5,14 +5,25 @@
 docs/
 logo/
 
-# Exclude non-mobile apps
-apps/web/
-apps/ws/
-apps/preprocessing/
+# Exclude non-mobile app contents but keep workspace manifests for Bun
+apps/web/*
+!apps/web/package.json
 
-# Exclude non-mobile packages
-packages/ai/
-packages/database/
+apps/ws/*
+!apps/ws/package.json
+
+apps/preprocessing/*
+!apps/preprocessing/package.json
+!apps/preprocessing/package.preprocessing.json
+
+# Exclude non-mobile package contents but keep workspace manifests for Bun
+packages/ai/*
+!packages/ai/package.json
+
+packages/database/*
+!packages/database/package.json
+!packages/database/src/
+!packages/database/src/**
 
 # Root config files not needed for mobile (keep package.json for monorepo)
 turbo.json
