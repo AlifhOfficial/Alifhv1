@@ -8,6 +8,7 @@ import { Text, type TextProps } from './text';
 
 type SheetHeaderProps = {
   title: string;
+  left?: ReactNode;
   right?: ReactNode;
   titleVariant?: TextProps['variant'];
   style?: StyleProp<ViewStyle>;
@@ -15,6 +16,7 @@ type SheetHeaderProps = {
 
 export function SheetHeader({
   title,
+  left,
   right,
   titleVariant = SheetTypography.headerTitle,
   style,
@@ -30,6 +32,7 @@ export function SheetHeader({
             {title}
           </Text>
         </View>
+        {left ? <View style={styles.leftSlot}>{left}</View> : null}
         {right ? <View style={styles.rightSlot}>{right}</View> : null}
       </View>
     </View>
@@ -52,6 +55,15 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+  },
+  leftSlot: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    minWidth: SheetChrome.headerPlaceholderWidth,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   rightSlot: {
     position: 'absolute',

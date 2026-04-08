@@ -47,67 +47,8 @@ export default function BrowseLayout() {
         options={{
           presentation: 'formSheet',
           sheetGrabberVisible: true,
-          sheetExpandsWhenScrolledToEdge: true,
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
-      />
-      <Stack.Screen
-        name="filter-make"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
           sheetAllowedDetents: [0.9],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
-      />
-      <Stack.Screen
-        name="filter-model"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.9],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
-      />
-      <Stack.Screen
-        name="filter-price"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.7],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
-      />
-      <Stack.Screen
-        name="filter-year-mileage"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.78],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
-      />
-      <Stack.Screen
-        name="filter-location"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.72],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
-      />
-      <Stack.Screen
-        name="more-filters"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.92],
+          sheetExpandsWhenScrolledToEdge: false,
           headerShown: false,
           contentStyle: { backgroundColor: colors.sheet },
         }}

@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Keyboard, ScrollView, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
-import { Colors, Typography, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
+import { Colors, Typography, Spacing, Radius, Sizes, SheetChrome, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { queryKeys } from '@/lib/query-client';
@@ -72,7 +71,6 @@ function triggerHaptic() {
 export default function SearchScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const { applySearch, updateFilterParams } = useSearch();
 
   const [query, setQuery] = useState('');
@@ -377,7 +375,7 @@ export default function SearchScreen() {
   const canApply = !!(query.trim() || hasSelections);
   const makes = facets?.make ?? [];
 
-  const selectionSummary = useMemo(() => {
+  const selectionBreadcrumbs = useMemo(() => {
     const parts: string[] = [];
 
     if (selectedPartner) parts.push(`Dealer: ${selectedPartner.name}`);
@@ -393,7 +391,7 @@ export default function SearchScreen() {
     if (selectedCondition) parts.push(selectedCondition);
     if (selectedSellerType) parts.push(selectedSellerType);
 
-    return parts.join(' > ');
+    return parts;
   }, [
     selectedPartner,
     selectedMakes,
@@ -421,50 +419,56 @@ export default function SearchScreen() {
       style={[
         styles.chip,
         {
-          backgroundColor: isSelected ? colors.primaryMuted : colors.surfaceSecondary,
-          borderColor: isSelected ? colors.primary : colors.border,
+          backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+          borderColor: isSelected ? colors.label : colors.border,
         },
       ]}
       onPress={onPress}
     >
-      <Text variant="subhead" style={{ color: isSelected ? colors.primary : colors.label }} tone="secondary">
+      <Text variant="subhead" style={{ color: isSelected ? colors.background : colors.label }}>
         {label}
       </Text>
       {!isSelected && count !== undefined && (
-        <Text variant="subhead" tone="muted">
+        <Text variant="caption1" style={{ color: colors.labelTertiary }}>
           {count}
         </Text>
       )}
-      {isSelected && <Ionicons name="close" size={Spacing.md} color={colors.primary} />}
+      {isSelected && <Ionicons name="close" size={Spacing.md} color={colors.background} />}
     </HapticPressable>
   );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <SheetHeader title="Search" />
+      <SheetHeader
+        title="Search"
+        left={
+          <HapticPressable
+            onPress={clearAllSelections}
+            hitSlop={Spacing.sm}
+            style={[
+              styles.headerActionButton,
+              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            ]}
+          >
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.error} />
+          </HapticPressable>
+        }
+      />
 
       <View style={styles.controls}>
-        <View style={[styles.headerTopRow, { justifyContent: 'flex-end', marginBottom: Spacing.sm }]}>
-          <HapticPressable
-            style={[styles.applyButton, { backgroundColor: canApply ? colors.primary : colors.fill2 }]}
-            onPress={handleApply}
-            disabled={!canApply}
-          >
-            <Text
-              variant="caption1Emphasized"
-              style={{ color: canApply ? colors.primaryForeground : colors.labelQuaternary }}
-              uppercase
-            >
-              Apply
-            </Text>
-          </HapticPressable>
-        </View>
-
-        <View style={[styles.searchInputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}> 
-          <Ionicons name="search" size={Spacing.xl} color={colors.labelQuaternary} style={{ marginTop: Spacing.xs }} />
+        <View
+          style={[
+            styles.searchInputContainer,
+            {
+              backgroundColor: colors.background,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Ionicons name="search" size={Sizes.iconSm} color={colors.labelTertiary} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
-            placeholder={'Search by keyword, make, model, dealer...\ne.g. "Audi RS5", "accident free", "sunroof"'}
+            placeholder="Search make, model, dealer"
             placeholderTextColor={colors.placeholder}
             value={query}
             onChangeText={setQuery}
@@ -472,30 +476,18 @@ export default function SearchScreen() {
             returnKeyType="search"
             autoCapitalize="none"
             autoCorrect={false}
-            multiline
-            scrollEnabled={false}
-            textAlignVertical="top"
             blurOnSubmit
           />
-          {query.length > 0 && (
-            <HapticPressable onPress={() => setQuery('')} hitSlop={Spacing.md}>
-              <Ionicons name="close-circle" size={Sizes.iconSm} color={colors.labelQuaternary} />
+          {canApply ? (
+            <HapticPressable
+              onPress={handleApply}
+              hitSlop={Spacing.sm}
+              style={[styles.inputIconButton, { backgroundColor: colors.primary }]}
+            >
+              <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primaryForeground} />
             </HapticPressable>
-          )}
+          ) : null}
         </View>
-
-        {hasSelections && (
-          <View style={styles.selectionSummary}>
-            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
-              {selectionSummary}
-            </Text>
-            <HapticPressable onPress={clearAllSelections} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
-                Clear
-              </Text>
-            </HapticPressable>
-          </View>
-        )}
       </View>
 
       <ScrollView
@@ -504,10 +496,46 @@ export default function SearchScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {hasSelections && (
+          <View style={styles.selectionSummary}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.breadcrumbsRow}
+            >
+              {selectionBreadcrumbs.map((part, index) => (
+                <React.Fragment key={`${part}-${index}`}>
+                  <View
+                    style={[
+                      styles.breadcrumbChip,
+                      {
+                        backgroundColor: colors.surfaceSecondary,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                  >
+                    <Text variant="footnote" style={{ color: colors.labelTertiary }} numberOfLines={1}>
+                      {part}
+                    </Text>
+                  </View>
+                  {index < selectionBreadcrumbs.length - 1 ? (
+                    <Ionicons
+                      name="chevron-forward"
+                      size={Spacing.md}
+                      color={colors.labelQuaternary}
+                      style={styles.breadcrumbChevron}
+                    />
+                  ) : null}
+                </React.Fragment>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         {query.trim().length > 0 && (
           <View style={styles.section}>
-            <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
-              SUGGESTIONS
+            <Text variant="subheadEmphasized" style={[styles.sectionLabel, { color: colors.label }]}> 
+              Suggestions
             </Text>
 
             {isLoadingSuggestions ? (
@@ -555,8 +583,8 @@ export default function SearchScreen() {
 
         <View style={styles.section}>
           <View style={styles.hierarchyLevel}>
-            <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
-              MAKE
+            <Text variant="subheadEmphasized" style={[styles.sectionLabel, { color: colors.label }]}> 
+              Make
             </Text>
             {isLoadingFacets ? (
               <View style={styles.loadingRow}>
@@ -587,8 +615,8 @@ export default function SearchScreen() {
           {selectedMakes.length > 0 && (
             <View style={styles.hierarchyLevel}>
               <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-              <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
-                MODEL
+              <Text variant="subheadEmphasized" style={[styles.sectionLabel, { color: colors.label }]}> 
+                Model
               </Text>
               {modelFacets.length === 0 ? (
                 <Text variant="subhead" tone="muted" style={styles.emptyText}>
@@ -620,13 +648,13 @@ export default function SearchScreen() {
                         setShowAllModels((prev) => !prev);
                       }}
                     >
-                      <Text variant="subhead" style={{ color: colors.primary }} tone="secondary">
+                      <Text variant="subhead" style={{ color: colors.label }}>
                         {showAllModels ? 'Show Less' : `View All (${modelFacets.length})`}
                       </Text>
                       <Ionicons
                         name={showAllModels ? 'chevron-up' : 'chevron-down'}
                         size={Spacing.md}
-                        color={colors.primary}
+                        color={colors.label}
                       />
                     </HapticPressable>
                   )}
@@ -638,8 +666,8 @@ export default function SearchScreen() {
           {selectedMakes.length > 0 && selectedModels.length > 0 && (
             <View style={styles.hierarchyLevel}>
               <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-              <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
-                TRIM
+              <Text variant="subheadEmphasized" style={[styles.sectionLabel, { color: colors.label }]}> 
+                Trim
               </Text>
               {trimFacets.length === 0 ? (
                 <Text variant="subhead" tone="muted" style={styles.emptyText}>
@@ -662,9 +690,8 @@ export default function SearchScreen() {
             </View>
           )}
         </View>
-
-        <View style={{ height: insets.bottom + Spacing['3xl'] }} />
       </ScrollView>
+
     </View>
   );
 }
@@ -675,60 +702,55 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   controls: {
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
-  },
-  headerTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.md,
-  },
-  applyButton: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.full,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
+    paddingBottom: Spacing.md,
   },
   searchInputContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    minHeight: Spacing['5xl'] * 2,
-    borderRadius: Radius.xl,
+    alignItems: 'center',
+    height: Spacing['5xl'],
+    borderRadius: Radius.full,
+    borderCurve: 'continuous',
     borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.xs,
     gap: Spacing.sm,
   },
   searchInput: {
     flex: 1,
     ...Typography.subhead,
-    lineHeight: Typography.subhead.lineHeight,
     paddingTop: Spacing.none,
     paddingBottom: Spacing.none,
-    minHeight: Spacing['5xl'],
-    textAlignVertical: 'top',
   },
   selectionSummary: {
-    flexDirection: 'row',
+    marginBottom: Spacing.md,
+  },
+  breadcrumbsRow: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
+    gap: Spacing.xs,
+  },
+  breadcrumbChip: {
+    borderWidth: 1,
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    maxWidth: 220,
+  },
+  breadcrumbChevron: {
+    marginHorizontal: Spacing.xs,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: Spacing.lg,
+    paddingBottom: Spacing['2xl'],
   },
   section: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   sectionLabel: {
     marginBottom: Spacing.sm,
-    marginLeft: Spacing.xs,
   },
   loadingRow: {
     paddingVertical: Spacing.xl,
@@ -782,10 +804,26 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,
+  },
+  inputIconButton: {
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
+    borderRadius: Radius.full,
+    borderCurve: 'continuous',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerActionButton: {
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

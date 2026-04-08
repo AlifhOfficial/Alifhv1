@@ -2,12 +2,11 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 
 const GROUP_LABELS: Record<string, string> = {
   sort: 'Sort',
@@ -83,7 +82,6 @@ function getGroupLabel(key: string) {
 export default function ActiveFiltersScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const { getSearchChips, removeSearchParam, removeFilterParam, clearSearch, clearFilterParams, resetSort, sortBy } = useSearch();
 
   const chips = getSearchChips();
@@ -138,7 +136,30 @@ export default function ActiveFiltersScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <SheetHeader title="Active Filters" />
+      <SheetHeader
+        title="Active Filters"
+        left={
+          <HapticPressable
+            onPress={clearAll}
+            hitSlop={Spacing.sm}
+            style={[
+              styles.headerActionButton,
+              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            ]}
+          >
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.error} />
+          </HapticPressable>
+        }
+        right={
+          <HapticPressable
+            onPress={() => router.back()}
+            hitSlop={Spacing.sm}
+            style={[styles.headerActionButton, { backgroundColor: colors.primary }]}
+          >
+            <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primaryForeground} />
+          </HapticPressable>
+        }
+      />
 
       {!hasFilters ? (
         <View style={styles.emptyState}>
@@ -159,6 +180,7 @@ export default function ActiveFiltersScreen() {
                   <HapticPressable
                     key={`${chip.key}-${chip.value}-${chip.index ?? idx}`}
                     disabled={chip.locked}
+                    onPress={() => removeChip(chip)}
                     style={[styles.chip, { backgroundColor: colors.fill2, borderColor: colors.border, opacity: chip.locked ? 0.7 : 1 }]}
                   >
                     <Text variant="subhead" style={{ color: colors.label }} numberOfLines={1}>{chip.label}</Text>
@@ -179,26 +201,6 @@ export default function ActiveFiltersScreen() {
         </View>
       )}
 
-      <View
-        style={[
-          styles.footer,
-          {
-            backgroundColor: colors.sheet,
-            borderTopColor: colors.sheetBorder,
-            paddingBottom: insets.bottom + Spacing.md,
-          },
-        ]}
-      >
-        <HapticPressable
-          onPress={clearAll}
-          style={[
-            styles.footerButton,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-          ]}
-        >
-          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear All</Text>
-        </HapticPressable>
-      </View>
     </View>
   );
 }
@@ -252,15 +254,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  footer: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingTop: Spacing.md,
-  },
-  footerButton: {
-    height: Spacing['5xl'],
+  headerActionButton: {
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
     borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
   },
 });

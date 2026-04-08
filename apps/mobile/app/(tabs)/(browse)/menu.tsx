@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -12,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Check, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
@@ -37,7 +37,7 @@ import {
   type SellerType,
 } from '@/lib/filter-constants';
 import type { ExportStatus } from '@/lib/listing-constants';
-import { Colors, Radius, SheetChrome, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 
 const PRICE_PRESETS = [
   { label: 'Under 50K', min: undefined, max: 50000 },
@@ -171,7 +171,6 @@ export default function BrowseMenuScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const {
     filterParams,
     updateFilterParams,
@@ -349,7 +348,30 @@ export default function BrowseMenuScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]} collapsable={false}>
-      <SheetHeader title="All Filters" />
+      <SheetHeader
+        title="All Filters"
+        left={
+          <HapticPressable
+            onPress={clearAll}
+            hitSlop={Spacing.sm}
+            style={[
+              styles.headerActionButton,
+              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            ]}
+          >
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.error} />
+          </HapticPressable>
+        }
+        right={
+          <HapticPressable
+            onPress={applyFilters}
+            hitSlop={Spacing.sm}
+            style={[styles.headerActionButton, { backgroundColor: colors.primary }]}
+          >
+            <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primaryForeground} />
+          </HapticPressable>
+        }
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -563,21 +585,6 @@ export default function BrowseMenuScreen() {
       </FilterSection>
       </ScrollView>
 
-      {/* Floating bottom action bar */}
-      <View style={[styles.footer, { backgroundColor: colors.sheet, borderTopColor: colors.sheetBorder, paddingBottom: insets.bottom + Spacing.md }]}>
-        <HapticPressable
-          onPress={clearAll}
-          style={[styles.footerButton, styles.footerButtonClear, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
-        >
-          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear All</Text>
-        </HapticPressable>
-        <HapticPressable
-          onPress={applyFilters}
-          style={[styles.footerButton, styles.footerButtonApply, { backgroundColor: colors.primary }]}
-        >
-          <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>Apply</Text>
-        </HapticPressable>
-      </View>
     </View>
   );
 }
@@ -645,27 +652,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  applyButton: {
+  headerActionButton: {
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
     borderRadius: Radius.full,
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.md,
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  footerButton: {
-    flex: 1,
-    height: Spacing['5xl'],
-    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  footerButtonClear: {
-    borderWidth: 1,
-  },
-  footerButtonApply: {},
 });
