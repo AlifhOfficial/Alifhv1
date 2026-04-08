@@ -11,7 +11,7 @@ import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 
@@ -24,6 +24,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const cityRef = useRef<TextInput>(null);
+  const selectedEmirate = UAE_EMIRATES.find((emirate) => emirate.value === data.emirate);
 
   const handleEmirateSelect = useCallback(
     (value: string) => {
@@ -87,11 +88,10 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
             styles.input,
             {
               backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
               color: colors.label,
             },
           ]}
-          placeholder="e.g. Downtown, JBR, Al Ain..."
+          placeholder="Enter city or area"
           placeholderTextColor={colors.labelQuaternary}
           value={data.city || ''}
           onChangeText={handleCityChange}
@@ -104,7 +104,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {data.emirate && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
           <Text variant={SheetTypography.rowLabel} tone="secondary">
-            {data.emirate}{data.city ? `, ${data.city}` : ''}
+            {selectedEmirate?.label ?? data.emirate}{data.city ? `, ${data.city}` : ''}
           </Text>
         </View>
       )}
@@ -137,10 +137,9 @@ const styles = StyleSheet.create({
   },
   input: {
     height: Sizes.actionButtonLg,
-    borderWidth: 1,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    ...Typography.subhead,
+    ...InputTypography,
   },
   summaryBox: {
     padding: Spacing.md,

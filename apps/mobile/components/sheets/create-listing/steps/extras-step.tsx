@@ -13,7 +13,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Plus, X } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { VEHICLE_EXTRAS } from '@/lib/filter-constants';
 
@@ -57,14 +57,57 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <StepContainer>
       <View style={styles.section}>
-        <View style={styles.headerRow}>
-          <Text variant={SheetTypography.rowLabel} tone="secondary">Vehicle Extras</Text>
-          {extras.length > 0 && (
-            <Text variant={SheetTypography.supporting} tone="secondary">
-              {extras.length} selected
-            </Text>
-          )}
+        <Text variant={SheetTypography.rowLabel} tone="secondary">Add custom</Text>
+        <View style={[styles.inputRow, { backgroundColor: colors.surfaceSecondary }]}> 
+          <TextInput
+            style={[styles.input, { color: colors.label }]}
+            placeholder="Add a custom feature"
+            placeholderTextColor={colors.labelQuaternary}
+            value={customExtra}
+            onChangeText={setCustomExtra}
+            onSubmitEditing={addCustomExtra}
+            returnKeyType="done"
+          />
+          <HapticPressable
+            onPress={addCustomExtra}
+            disabled={!customExtra.trim()}
+            style={[
+              styles.addButton,
+              { backgroundColor: customExtra.trim() ? colors.label : colors.fill2 },
+            ]}
+          >
+            <Plus size={Sizes.iconSm} color={customExtra.trim() ? colors.background : colors.labelQuaternary} strokeWidth={2} />
+          </HapticPressable>
         </View>
+
+        {/* Custom extras list */}
+        {extras.filter((e) => !VEHICLE_EXTRAS.some((v) => v.value === e)).length > 0 && (
+          <View style={styles.customList}>
+            {extras
+              .filter((e) => !VEHICLE_EXTRAS.some((v) => v.value === e))
+              .map((extra) => (
+                <View
+                  key={extra}
+                  style={[styles.customChip, { backgroundColor: colors.label }]}
+                >
+                  <Text variant={SheetTypography.rowLabel} style={{ color: colors.background }}>
+                    {extra}
+                  </Text>
+                  <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
+                    <X size={14} color={colors.background} strokeWidth={2} />
+                  </HapticPressable>
+                </View>
+              ))}
+          </View>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        {extras.length > 0 && (
+          <Text variant={SheetTypography.supporting} tone="muted">
+            {extras.length} selected
+          </Text>
+        )}
 
         <View style={styles.chipWrap}>
           {VEHICLE_EXTRAS.map((extra) => {
@@ -92,56 +135,6 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
           })}
         </View>
       </View>
-
-      {/* Custom extras input */}
-      <View style={styles.section}>
-        <Text variant={SheetTypography.rowLabel} tone="secondary">Add Custom Extra</Text>
-        <Text variant={SheetTypography.supporting} tone="muted">
-          Add unique options not listed above
-        </Text>
-        <View style={[styles.inputRow, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
-          <TextInput
-            style={[styles.input, { color: colors.label }]}
-            placeholder="e.g. Custom exhaust..."
-            placeholderTextColor={colors.labelQuaternary}
-            value={customExtra}
-            onChangeText={setCustomExtra}
-            onSubmitEditing={addCustomExtra}
-            returnKeyType="done"
-          />
-          <HapticPressable
-            onPress={addCustomExtra}
-            disabled={!customExtra.trim()}
-            style={[
-              styles.addButton,
-              { backgroundColor: customExtra.trim() ? colors.primary : colors.fill2 },
-            ]}
-          >
-            <Plus size={Sizes.iconSm} color={customExtra.trim() ? colors.primaryForeground : colors.labelQuaternary} strokeWidth={2} />
-          </HapticPressable>
-        </View>
-
-        {/* Custom extras list */}
-        {extras.filter((e) => !VEHICLE_EXTRAS.some((v) => v.value === e)).length > 0 && (
-          <View style={styles.customList}>
-            {extras
-              .filter((e) => !VEHICLE_EXTRAS.some((v) => v.value === e))
-              .map((extra) => (
-                <View
-                  key={extra}
-                  style={[styles.customChip, { backgroundColor: colors.label }]}
-                >
-                  <Text variant={SheetTypography.rowLabel} style={{ color: colors.background }}>
-                    {extra}
-                  </Text>
-                  <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
-                    <X size={14} color={colors.background} strokeWidth={2} />
-                  </HapticPressable>
-                </View>
-              ))}
-          </View>
-        )}
-      </View>
     </StepContainer>
   );
 }
@@ -152,11 +145,6 @@ const styles = StyleSheet.create({
   section: {
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   chipWrap: {
     flexDirection: 'row',
@@ -175,14 +163,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: Radius.xl,
-    borderWidth: 1,
     paddingLeft: Spacing.md,
     gap: Spacing.sm,
+    height: Sizes.actionButtonLg,
   },
   input: {
     flex: 1,
-    ...Typography.subhead,
-    paddingVertical: Spacing.md,
+    ...InputTypography,
+    paddingVertical: Spacing.none,
   },
   addButton: {
     width: Sizes.actionButtonLg,

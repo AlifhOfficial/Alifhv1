@@ -13,7 +13,7 @@ import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { checkVin } from '@/lib/sell-car-user-api';
 import { validateVin } from '../types';
@@ -207,8 +207,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
     paddingRight: Spacing["5xl"],
-    ...Typography.subhead,
-    letterSpacing: Typography.footnoteEmphasized.letterSpacing,
+    ...InputTypography,
   },
   statusIcon: {
     position: 'absolute',

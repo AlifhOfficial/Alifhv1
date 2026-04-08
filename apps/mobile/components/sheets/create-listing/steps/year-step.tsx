@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import type { StepContentProps } from '../types';
@@ -113,7 +113,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
-            placeholder="Search year..."
+            placeholder="Search years"
             placeholderTextColor={colors.labelQuaternary}
             value={query}
             onChangeText={setQuery}
@@ -176,14 +176,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
     borderRadius: Radius.xl,
     gap: Spacing.sm,
+    height: Sizes.actionButtonLg,
   },
   searchInput: {
     flex: 1,
-    ...Typography.subhead,
-    paddingVertical: Spacing.xs,
+    ...InputTypography,
+    paddingVertical: Spacing.none,
   },
   listContent: {
     paddingHorizontal: Spacing.lg,

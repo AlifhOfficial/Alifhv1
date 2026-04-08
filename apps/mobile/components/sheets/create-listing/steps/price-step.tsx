@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { SheetToggle } from '../sheet-toggle';
 
@@ -77,7 +77,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
         <View
           style={[
             styles.inputBox,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            { backgroundColor: colors.surfaceSecondary },
           ]}
         >
           <Text variant={SheetTypography.supporting} tone="muted">
@@ -89,7 +89,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
               data.price ? styles.inputFilled : styles.inputPlaceholder,
               { color: colors.label },
             ]}
-            placeholder="0"
+            placeholder="Enter amount"
             placeholderTextColor={colors.labelQuaternary}
             value={data.price || ''}
             onChangeText={handleChange}
@@ -167,21 +167,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    paddingHorizontal: Spacing.lg,
-    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
     borderRadius: Radius.xl,
-    height: Sizes.actionButtonLg + Spacing.md,
+    height: Sizes.actionButtonLg,
   },
   input: {
     flex: 1,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.none,
     textAlign: 'left',
   },
   inputPlaceholder: {
-    ...Typography.subhead,
+    ...InputTypography,
   },
   inputFilled: {
-    ...Typography.title3Emphasized,
+    ...InputTypography,
   },
   presetsRow: {
     flexDirection: 'row',

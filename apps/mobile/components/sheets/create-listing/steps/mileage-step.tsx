@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Layout, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
@@ -61,7 +61,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
           Odometer
         </Text>
         <Text variant={SheetTypography.supporting} tone="muted">
-          Current mileage in kilometers
+          In kilometers
         </Text>
       </View>
 
@@ -69,12 +69,12 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       <View
         style={[
           styles.inputBox,
-          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          { backgroundColor: colors.surfaceSecondary },
         ]}
       >
         <TextInput
           style={[styles.input, { color: colors.label }]}
-          placeholder="Enter mileage"
+          placeholder="Enter mileage (km)"
           placeholderTextColor={colors.labelQuaternary}
           value={localMileage}
           onChangeText={handleChange}
@@ -128,9 +128,9 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Info */}
-      <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
+      <View style={styles.infoBox}>
         <Text variant={SheetTypography.supporting} tone="muted">
-          Odometer reading in kilometers. Vehicles under 5,000 km are marked as &quot;new condition&quot;.
+          Enter the current odometer reading.
         </Text>
       </View>
     </StepContainer>
@@ -149,13 +149,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    borderWidth: 1,
     borderRadius: Radius.xl,
-    height: Layout.hitTarget,
+    height: Sizes.actionButtonLg,
   },
   input: {
     flex: 1,
-    ...Typography.subhead,
+    ...InputTypography,
     paddingVertical: Spacing.none,
   },
   formattedRow: {
@@ -185,9 +184,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   infoBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.xl,
+    marginTop: Spacing.md,
   },
 });
 

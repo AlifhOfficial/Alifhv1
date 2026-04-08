@@ -103,7 +103,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Summary */}
-      <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
+      <View style={styles.summaryBox}>
         <Text variant={SheetTypography.supporting} tone="muted">
           {SPECS_TYPES.find((s) => s.value === data.specs)?.label ?? 'GCC'} specs
           {' · '}
@@ -133,9 +133,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   summaryBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    alignItems: 'center',
+    marginTop: Spacing.sm,
   },
 });
 

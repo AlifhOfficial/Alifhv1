@@ -12,7 +12,7 @@ import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography, SheetTypography } from '@/constants/theme';
+import { Colors, Spacing, Radius, InputTypography, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
@@ -154,10 +154,9 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             {
               backgroundColor: colors.surfaceSecondary,
               color: colors.label,
-              borderColor: colors.border,
             },
           ]}
-          placeholder="Describe your vehicle's condition, history, notable features..."
+          placeholder="Share condition, service history, standout details"
           placeholderTextColor={colors.labelQuaternary}
           value={description}
           onChangeText={handleChange}
@@ -202,11 +201,10 @@ const styles = StyleSheet.create({
   },
   textArea: {
     minHeight: Spacing["5xl"],
-    borderWidth: 1,
     borderRadius: Radius.xl,
     padding: Spacing.md,
-    ...Typography.subhead,
-    lineHeight: Typography.subhead.lineHeight,
+    ...InputTypography,
+    lineHeight: InputTypography.lineHeight,
     textAlignVertical: 'top',
   },
   charCount: {

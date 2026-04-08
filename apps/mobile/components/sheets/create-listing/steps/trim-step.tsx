@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
@@ -47,31 +47,32 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.sectionHeader}>
         <Text variant={SheetTypography.rowLabel} tone="secondary">
-          Trim (Optional)
+          Trim
         </Text>
         <Text variant={SheetTypography.supporting} tone="muted">
-          Add your exact trim or variant name
+          Optional
         </Text>
       </View>
 
       {/* Input */}
-      <TextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: colors.surfaceSecondary,
-            color: colors.label,
-            borderColor: colors.border,
-          },
-        ]}
-        placeholder="e.g. Sport, AMG, M-Sport..."
-        placeholderTextColor={colors.labelQuaternary}
-        value={localTrim}
-        onChangeText={handleChange}
-        autoCapitalize="words"
-        autoCorrect={false}
-        returnKeyType="done"
-      />
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.surfaceSecondary,
+              color: colors.label,
+            },
+          ]}
+          placeholder="Enter trim (optional)"
+          placeholderTextColor={colors.labelQuaternary}
+          value={localTrim}
+          onChangeText={handleChange}
+          autoCapitalize="words"
+          autoCorrect={false}
+          returnKeyType="done"
+        />
+      </View>
 
       {/* Quick picks */}
       <View style={styles.section}>
@@ -104,9 +105,9 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Hint */}
-      <View style={[styles.hintBox, { backgroundColor: colors.fill2 }]}>
+      <View style={styles.hintBox}>
         <Text variant={SheetTypography.supporting} tone="muted">
-          Trim is optional but helps buyers identify your exact variant.
+          Leave blank if you don&apos;t know the exact trim.
         </Text>
       </View>
     </StepContainer>
@@ -118,13 +119,16 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 const styles = StyleSheet.create({
   sectionHeader: {
     gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  inputWrapper: {
+    position: 'relative',
   },
   input: {
     height: Sizes.actionButtonLg,
-    borderWidth: 1,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    ...Typography.subhead,
+    ...InputTypography,
   },
   section: {
     gap: Spacing.sm,
@@ -142,9 +146,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   hintBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.xl,
+    marginTop: Spacing.md,
   },
 });
 

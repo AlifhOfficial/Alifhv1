@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check, AlertCircle } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getModelsForMake } from '@/lib/filter-constants';
 
@@ -109,7 +109,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
-            placeholder={`Search ${data.make} models...`}
+            placeholder={`Search ${data.make} models`}
             placeholderTextColor={colors.labelQuaternary}
             value={query}
             onChangeText={setQuery}
@@ -167,12 +167,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    height: Layout.hitTarget,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.xl,
   },
   searchInput: {
     flex: 1,
-    ...Typography.subhead,
+    ...InputTypography,
     paddingVertical: Spacing.none,
   },
   modelCount: {

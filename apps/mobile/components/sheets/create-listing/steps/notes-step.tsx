@@ -13,7 +13,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Plus } from 'lucide-react-native';
 
-import { Typography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
+import { InputTypography, Colors, Spacing, Radius, Sizes, Layout, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { MAX_SPECIAL_NOTES, MAX_SPECIAL_NOTE_LENGTH } from '@/lib/listing-constants';
 
@@ -156,10 +156,9 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 {
                   backgroundColor: colors.surfaceSecondary,
                   color: colors.label,
-                  borderColor: colors.border,
                 },
               ]}
-              placeholder="e.g. New exhaust system installed"
+              placeholder="Add a short note"
               placeholderTextColor={colors.labelQuaternary}
               value={noteInput}
               onChangeText={setNoteInput}
@@ -233,10 +232,9 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: Sizes.actionButtonLg,
-    borderWidth: 1,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    ...Typography.subhead,
+    ...InputTypography,
   },
   addButton: {
     width: Sizes.actionButtonLg,
