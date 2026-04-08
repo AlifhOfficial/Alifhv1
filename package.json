@@ -44,7 +44,7 @@
     "react-dom": "19.2.0",
     "@types/react": "~19.2.10",
     "@types/react-dom": "19.2.3",
-    "drizzle-orm": "0.45.1"
+    "drizzle-orm": "0.45.2"
   },
   "dependencies": {
     "cheerio": "1.2.0"
