@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
-import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import type { SearchSortOption } from '@/lib/search-api';
@@ -37,7 +37,7 @@ export default function SortScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.sheet }]}>
       <SheetHeader title="Sort By" />
 
       <View style={styles.list}>
@@ -50,19 +50,19 @@ export default function SortScreen() {
               style={styles.listItem}
             >
               <Text
-                variant={selected ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
-                style={{ color: selected ? colors.sheetLabel : colors.sheetLabelMuted }}
+                variant={selected ? 'calloutEmphasized' : 'callout'}
+                style={{ color: selected ? colors.label : colors.labelTertiary }}
               >
                 {option.label}
               </Text>
               <View
                 style={[
                   styles.radio,
-                  { borderColor: selected ? colors.sheetLabelMuted : colors.sheetBorder },
+                  { borderColor: selected ? colors.labelTertiary : colors.sheetBorder },
                 ]}
               >
                 {selected && (
-                  <View style={[styles.radioInner, { backgroundColor: colors.sheetLabelMuted }]} />
+                  <View style={[styles.radioInner, { backgroundColor: colors.labelTertiary }]} />
                 )}
               </View>
             </HapticPressable>

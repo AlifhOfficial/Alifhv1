@@ -10,7 +10,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { Plus } from 'lucide-react-native';
+import { Check, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
@@ -52,23 +52,51 @@ const MILEAGE_PRESETS = [
   { label: 'Under 100K', max: 100000 },
 ];
 
+const YEAR_PRESETS = [
+  { label: '2023+', min: 2023, max: undefined },
+  { label: '2019-2022', min: 2019, max: 2022 },
+  { label: '2015-2018', min: 2015, max: 2018 },
+  { label: '2014 & older', min: undefined, max: 2014 },
+];
+
+type FilterSectionKey =
+  | 'quick'
+  | 'price'
+  | 'year'
+  | 'mileage'
+  | 'location'
+  | 'specs'
+  | 'sellerType'
+  | 'exportStatus'
+  | 'bodyType'
+  | 'fuelType'
+  | 'transmission'
+  | 'engineSize'
+  | 'exteriorColor'
+  | 'interiorColor';
+
+const filterSectionOpenState: Partial<Record<FilterSectionKey, boolean>> = {};
+
 // ── FilterSection ──────────────────────────────────────────────────────────────
 
 function FilterSection({
+  sectionKey,
   title,
   count,
   children,
   defaultOpen = false,
 }: {
+  sectionKey: FilterSectionKey;
   title: string;
   count: number;
   children: React.ReactNode;
   defaultOpen?: boolean;
 }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const initialOpen = filterSectionOpenState[sectionKey] ?? defaultOpen;
+  const [isOpen, setIsOpen] = useState(initialOpen);
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const rotation = useSharedValue(defaultOpen ? 1 : 0);
+  const rotation = useSharedValue(initialOpen ? 1 : 0);
 
   const chevronStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${interpolate(rotation.value, [0, 1], [0, 45])}deg` }],
@@ -77,6 +105,7 @@ function FilterSection({
   const toggle = () => {
     const next = !isOpen;
     rotation.value = withTiming(next ? 1 : 0, { duration: 250 });
+    filterSectionOpenState[sectionKey] = next;
     setIsOpen(next);
   };
 
@@ -270,6 +299,44 @@ export default function BrowseMenuScreen() {
     </HapticPressable>
   );
 
+  const renderRangeInput = (
+    value: string,
+    onChangeText: (text: string) => void,
+    placeholder: string,
+    maxLength?: number
+  ) => (
+    <View style={styles.inputWrapper}>
+      <TextInput
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.surfaceSecondary,
+            borderColor: colors.border,
+            color: colors.label,
+          },
+        ]}
+        placeholder={placeholder}
+        placeholderTextColor={colors.labelTertiary}
+        keyboardType="number-pad"
+        maxLength={maxLength}
+        value={value}
+        onChangeText={onChangeText}
+      />
+      {value.length > 0 ? (
+        <Animated.View
+          entering={FadeIn.duration(120)}
+          exiting={FadeOut.duration(90)}
+          style={[
+            styles.inputCheck,
+            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          ]}
+        >
+          <Check size={12} color={colors.label} strokeWidth={2.25} />
+        </Animated.View>
+      ) : null}
+    </View>
+  );
+
   const quickCount =
     (popularOnly ? 1 : 0) +
     (newCarsOnly ? 1 : 0) +
@@ -290,7 +357,7 @@ export default function BrowseMenuScreen() {
         showsVerticalScrollIndicator={false}
       >
 
-      <FilterSection title="Quick Filters" count={quickCount} defaultOpen={quickCount > 0}>
+      <FilterSection sectionKey="quick" title="Quick Filters" count={quickCount} defaultOpen={quickCount > 0}>
         <View style={styles.chipsRow}>
           {renderChip('Popular', popularOnly, () => setPopularOnly((prev) => !prev))}
           {renderChip('New Cars', newCarsOnly, () => setNewCarsOnly((prev) => !prev))}
@@ -300,7 +367,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Price" count={priceCount} defaultOpen={priceCount > 0}>
+      <FilterSection sectionKey="price" title="Price" count={priceCount} defaultOpen={priceCount > 0}>
         <View style={styles.chipsRow}>
           {PRICE_PRESETS.map((preset) => {
             const currentMin = priceMin ? parseInt(priceMin, 10) : undefined;
@@ -322,51 +389,41 @@ export default function BrowseMenuScreen() {
           })}
         </View>
         <View style={styles.rangeRow}>
-          <TextInput
-            style={[styles.input, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, color: colors.label }]}
-            placeholder="Min"
-            placeholderTextColor={colors.labelTertiary}
-            keyboardType="number-pad"
-            value={priceMin}
-            onChangeText={setPriceMin}
-          />
+          {renderRangeInput(priceMin, setPriceMin, 'Min')}
           <Text variant="body" tone="muted">-</Text>
-          <TextInput
-            style={[styles.input, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, color: colors.label }]}
-            placeholder="Max"
-            placeholderTextColor={colors.labelTertiary}
-            keyboardType="number-pad"
-            value={priceMax}
-            onChangeText={setPriceMax}
-          />
+          {renderRangeInput(priceMax, setPriceMax, 'Max')}
         </View>
       </FilterSection>
 
-      <FilterSection title="Year" count={yearCount} defaultOpen={yearCount > 0}>
+      <FilterSection sectionKey="year" title="Year" count={yearCount} defaultOpen={yearCount > 0}>
+        <View style={styles.chipsRow}>
+          {YEAR_PRESETS.map((preset) => {
+            const currentMin = yearMin ? parseInt(yearMin, 10) : undefined;
+            const currentMax = yearMax ? parseInt(yearMax, 10) : undefined;
+            const isActive = preset.min === currentMin && preset.max === currentMax;
+            return renderChip(
+              preset.label,
+              isActive,
+              () => {
+                if (isActive) {
+                  setYearMin('');
+                  setYearMax('');
+                } else {
+                  setYearMin(preset.min?.toString() ?? '');
+                  setYearMax(preset.max?.toString() ?? '');
+                }
+              }
+            );
+          })}
+        </View>
         <View style={styles.rangeRow}>
-          <TextInput
-            style={[styles.input, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, color: colors.label }]}
-            placeholder="Min"
-            placeholderTextColor={colors.labelTertiary}
-            keyboardType="number-pad"
-            maxLength={4}
-            value={yearMin}
-            onChangeText={setYearMin}
-          />
+          {renderRangeInput(yearMin, setYearMin, 'Min', 4)}
           <Text variant="body" tone="muted">-</Text>
-          <TextInput
-            style={[styles.input, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, color: colors.label }]}
-            placeholder="Max"
-            placeholderTextColor={colors.labelTertiary}
-            keyboardType="number-pad"
-            maxLength={4}
-            value={yearMax}
-            onChangeText={setYearMax}
-          />
+          {renderRangeInput(yearMax, setYearMax, 'Max', 4)}
         </View>
       </FilterSection>
 
-      <FilterSection title="Mileage" count={mileageCount} defaultOpen={mileageCount > 0}>
+      <FilterSection sectionKey="mileage" title="Mileage" count={mileageCount} defaultOpen={mileageCount > 0}>
         <View style={styles.chipsRow}>
           {MILEAGE_PRESETS.map((preset) => {
             const currentMax = mileageMax ? parseInt(mileageMax, 10) : undefined;
@@ -379,27 +436,13 @@ export default function BrowseMenuScreen() {
           })}
         </View>
         <View style={styles.rangeRow}>
-          <TextInput
-            style={[styles.input, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, color: colors.label }]}
-            placeholder="Min"
-            placeholderTextColor={colors.labelTertiary}
-            keyboardType="number-pad"
-            value={mileageMin}
-            onChangeText={setMileageMin}
-          />
+          {renderRangeInput(mileageMin, setMileageMin, 'Min')}
           <Text variant="body" tone="muted">-</Text>
-          <TextInput
-            style={[styles.input, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, color: colors.label }]}
-            placeholder="Max"
-            placeholderTextColor={colors.labelTertiary}
-            keyboardType="number-pad"
-            value={mileageMax}
-            onChangeText={setMileageMax}
-          />
+          {renderRangeInput(mileageMax, setMileageMax, 'Max')}
         </View>
       </FilterSection>
 
-      <FilterSection title="Location" count={selectedEmirates.length} defaultOpen={selectedEmirates.length > 0}>
+      <FilterSection sectionKey="location" title="Location" count={selectedEmirates.length} defaultOpen={selectedEmirates.length > 0}>
         <View style={styles.chipsRow}>
           {displayedLocations.map((option) => {
             const selected = selectedEmirates.includes(option.value);
@@ -415,7 +458,7 @@ export default function BrowseMenuScreen() {
         ) : null}
       </FilterSection>
 
-      <FilterSection title="Regional Specs" count={selectedSpecs.length} defaultOpen={selectedSpecs.length > 0}>
+      <FilterSection sectionKey="specs" title="Regional Specs" count={selectedSpecs.length} defaultOpen={selectedSpecs.length > 0}>
         <View style={styles.chipsRow}>
           {displayedSpecs.map((option) => {
             const selected = selectedSpecs.includes(option.value);
@@ -431,7 +474,7 @@ export default function BrowseMenuScreen() {
         ) : null}
       </FilterSection>
 
-      <FilterSection title="Seller Type" count={selectedSellerType ? 1 : 0} defaultOpen={!!selectedSellerType}>
+      <FilterSection sectionKey="sellerType" title="Seller Type" count={selectedSellerType ? 1 : 0} defaultOpen={!!selectedSellerType}>
         <View style={styles.chipsRow}>
           {SELLER_TYPE_OPTIONS.map((opt) => {
             const selected = selectedSellerType === opt.value;
@@ -442,7 +485,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Export Status" count={selectedExportStatus.length} defaultOpen={selectedExportStatus.length > 0}>
+      <FilterSection sectionKey="exportStatus" title="Export Status" count={selectedExportStatus.length} defaultOpen={selectedExportStatus.length > 0}>
         <View style={styles.chipsRow}>
           {EXPORT_STATUSES.map((option) => {
             const selected = selectedExportStatus.includes(option.value);
@@ -453,7 +496,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Body Type" count={selectedBodyTypes.length} defaultOpen={selectedBodyTypes.length > 0}>
+      <FilterSection sectionKey="bodyType" title="Body Type" count={selectedBodyTypes.length} defaultOpen={selectedBodyTypes.length > 0}>
         <View style={styles.chipsRow}>
           {BODY_TYPES.map((option) => {
             const selected = selectedBodyTypes.includes(option.value);
@@ -464,7 +507,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Fuel Type" count={selectedFuelTypes.length} defaultOpen={selectedFuelTypes.length > 0}>
+      <FilterSection sectionKey="fuelType" title="Fuel Type" count={selectedFuelTypes.length} defaultOpen={selectedFuelTypes.length > 0}>
         <View style={styles.chipsRow}>
           {FUEL_TYPES.map((option) => {
             const selected = selectedFuelTypes.includes(option.value);
@@ -475,7 +518,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Transmission" count={selectedTransmissions.length} defaultOpen={selectedTransmissions.length > 0}>
+      <FilterSection sectionKey="transmission" title="Transmission" count={selectedTransmissions.length} defaultOpen={selectedTransmissions.length > 0}>
         <View style={styles.chipsRow}>
           {TRANSMISSION_TYPES.map((option) => {
             const selected = selectedTransmissions.includes(option.value);
@@ -486,7 +529,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Engine Size" count={selectedEngineSizes.length} defaultOpen={selectedEngineSizes.length > 0}>
+      <FilterSection sectionKey="engineSize" title="Engine Size" count={selectedEngineSizes.length} defaultOpen={selectedEngineSizes.length > 0}>
         <View style={styles.chipsRow}>
           {ENGINE_SIZES.map((option) => {
             const selected = selectedEngineSizes.includes(option.value);
@@ -497,7 +540,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Exterior Color" count={selectedExteriorColors.length} defaultOpen={selectedExteriorColors.length > 0}>
+      <FilterSection sectionKey="exteriorColor" title="Exterior Color" count={selectedExteriorColors.length} defaultOpen={selectedExteriorColors.length > 0}>
         <View style={styles.chipsRow}>
           {EXTERIOR_COLORS.map((option) => {
             const selected = selectedExteriorColors.includes(option.value);
@@ -508,7 +551,7 @@ export default function BrowseMenuScreen() {
         </View>
       </FilterSection>
 
-      <FilterSection title="Interior Color" count={selectedInteriorColors.length} defaultOpen={selectedInteriorColors.length > 0}>
+      <FilterSection sectionKey="interiorColor" title="Interior Color" count={selectedInteriorColors.length} defaultOpen={selectedInteriorColors.length > 0}>
         <View style={styles.chipsRow}>
           {INTERIOR_COLORS.map((option) => {
             const selected = selectedInteriorColors.includes(option.value);
@@ -526,7 +569,7 @@ export default function BrowseMenuScreen() {
           onPress={clearAll}
           style={[styles.footerButton, styles.footerButtonClear, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
         >
-          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
+          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear All</Text>
         </HapticPressable>
         <HapticPressable
           onPress={applyFilters}
@@ -584,6 +627,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
+    paddingRight: Spacing['2xl'],
+  },
+  inputWrapper: {
+    flex: 1,
+    position: 'relative',
+  },
+  inputCheck: {
+    position: 'absolute',
+    right: Spacing.sm,
+    top: '50%',
+    marginTop: -8,
+    width: 16,
+    height: 16,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   applyButton: {
     borderRadius: Radius.full,

@@ -1,15 +1,89 @@
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
+const GROUP_LABELS: Record<string, string> = {
+  sort: 'Sort',
+  q: 'Keyword',
+  make: 'Make',
+  model: 'Model',
+  trim: 'Trim',
+  partnerId: 'Partner',
+  sellerId: 'Seller',
+  tags: 'Tags',
+  extras: 'Extras',
+  price: 'Price',
+  year: 'Year',
+  mileage: 'Mileage',
+  emirate: 'Location',
+  specs: 'Regional Specs',
+  bodyType: 'Body Type',
+  fuelType: 'Fuel Type',
+  transmission: 'Transmission',
+  engineSize: 'Engine Size',
+  exteriorColor: 'Exterior Color',
+  interiorColor: 'Interior Color',
+  condition: 'Condition',
+  sellerType: 'Seller Type',
+  exportStatus: 'Export Status',
+  isNegotiable: 'Negotiable',
+  isBlkListing: 'Black Listings',
+  isBlackTierPartner: 'Black Members',
+};
+
+const GROUP_ORDER = [
+  'sort',
+  'q',
+  'make',
+  'model',
+  'trim',
+  'price',
+  'year',
+  'mileage',
+  'emirate',
+  'specs',
+  'bodyType',
+  'fuelType',
+  'transmission',
+  'engineSize',
+  'exteriorColor',
+  'interiorColor',
+  'condition',
+  'sellerType',
+  'exportStatus',
+  'isNegotiable',
+  'isBlkListing',
+  'isBlackTierPartner',
+  'partnerId',
+  'sellerId',
+  'tags',
+  'extras',
+] as const;
+
+function toStartCase(value: string) {
+  return value
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function getGroupLabel(key: string) {
+  return GROUP_LABELS[key] ?? toStartCase(key);
+}
+
 export default function ActiveFiltersScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const { getSearchChips, removeSearchParam, removeFilterParam, clearSearch, clearFilterParams, resetSort, sortBy } = useSearch();
 
   const chips = getSearchChips();
@@ -35,6 +109,7 @@ export default function ActiveFiltersScreen() {
     if (sortBy !== 'relevance') {
       resetSort();
     }
+    router.back();
   };
 
   const grouped = useMemo(() => {
@@ -45,36 +120,48 @@ export default function ActiveFiltersScreen() {
       current.push(chip);
       map.set(key, current);
     }
-    return Array.from(map.entries());
+    return Array.from(map.entries())
+      .map(([key, groupChips]) => ({
+        key,
+        label: getGroupLabel(key),
+        chips: [...groupChips].sort((a, b) => a.label.localeCompare(b.label)),
+      }))
+      .sort((a, b) => {
+        const aIndex = GROUP_ORDER.indexOf(a.key as (typeof GROUP_ORDER)[number]);
+        const bIndex = GROUP_ORDER.indexOf(b.key as (typeof GROUP_ORDER)[number]);
+        const aRank = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+        const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+        if (aRank !== bRank) return aRank - bRank;
+        return a.label.localeCompare(b.label);
+      });
   }, [chips]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
       <SheetHeader title="Active Filters" />
 
-      <View style={{ alignItems: 'flex-end', marginBottom: Spacing.md }}>
-        <HapticPressable onPress={clearAll} hitSlop={Spacing.md}>
-          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
-        </HapticPressable>
-      </View>
-
       {!hasFilters ? (
         <View style={styles.emptyState}>
-          <Text variant="subhead" tone="muted">No active filters</Text>
+          <Text variant="subhead" style={{ color: colors.labelTertiary }}>No active filters</Text>
         </View>
       ) : (
         <View style={styles.sections}>
-          {grouped.map(([groupKey, groupChips]) => (
-            <View key={groupKey} style={styles.category}>
-              <Text variant="caption1Emphasized" tone="muted" uppercase>{groupKey}</Text>
+          {grouped.map((group) => (
+            <View key={group.key} style={styles.category}>
+              <Text
+                variant="subheadEmphasized"
+                style={{ color: colors.label }}
+              >
+                {group.label}
+              </Text>
               <View style={styles.chips}>
-                {groupChips.map((chip, idx) => (
+                {group.chips.map((chip, idx) => (
                   <HapticPressable
                     key={`${chip.key}-${chip.value}-${chip.index ?? idx}`}
                     disabled={chip.locked}
                     style={[styles.chip, { backgroundColor: colors.fill2, borderColor: colors.border, opacity: chip.locked ? 0.7 : 1 }]}
                   >
-                    <Text variant="subhead" numberOfLines={1}>{chip.label}</Text>
+                    <Text variant="subhead" style={{ color: colors.label }} numberOfLines={1}>{chip.label}</Text>
                     {!chip.locked ? (
                       <HapticPressable
                         onPress={() => removeChip(chip)}
@@ -91,6 +178,27 @@ export default function ActiveFiltersScreen() {
           ))}
         </View>
       )}
+
+      <View
+        style={[
+          styles.footer,
+          {
+            backgroundColor: colors.sheet,
+            borderTopColor: colors.sheetBorder,
+            paddingBottom: insets.bottom + Spacing.md,
+          },
+        ]}
+      >
+        <HapticPressable
+          onPress={clearAll}
+          style={[
+            styles.footerButton,
+            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          ]}
+        >
+          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear All</Text>
+        </HapticPressable>
+      </View>
     </View>
   );
 }
@@ -121,6 +229,7 @@ const styles = StyleSheet.create({
   sections: {
     marginTop: Spacing.md,
     gap: Spacing.md,
+    flex: 1,
   },
   category: {
     gap: Spacing.sm,
@@ -142,5 +251,16 @@ const styles = StyleSheet.create({
   clearIconWrap: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  footer: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: Spacing.md,
+  },
+  footerButton: {
+    height: Spacing['5xl'],
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
 });

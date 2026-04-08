@@ -128,6 +128,24 @@ export function BrowseTabBar({
               ]}
             >
               <Package2 size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
+              {hasFilters ? (
+                <View
+                  style={[
+                    styles.drawerBadge,
+                    {
+                      backgroundColor: colors.favorite,
+                      borderColor: colors.favorite,
+                    },
+                  ]}
+                >
+                  <Text
+                    variant="caption2Emphasized"
+                    style={{ color: colors.primaryForeground, fontVariant: ['tabular-nums'] }}
+                  >
+                    {activeFilterCount > 9 ? '9+' : activeFilterCount}
+                  </Text>
+                </View>
+              ) : null}
             </MotiPressable>
 
             <MotiPressable
@@ -234,6 +252,17 @@ const styles = StyleSheet.create({
     width: Sizes.actionButtonLg,
     height: Sizes.actionButtonLg,
     borderRadius: Sizes.actionButtonLg / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: BorderWidths.thin,
+  },
+  drawerBadge: {
+    position: 'absolute',
+    top: -Spacing.xs,
+    right: -Spacing.xs,
+    width: Spacing.lg,
+    height: Spacing.lg,
+    borderRadius: Spacing.lg / 2,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: BorderWidths.thin,

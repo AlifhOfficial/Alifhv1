@@ -298,7 +298,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 unreadCount={tab.name === '(messages)' ? unreadChats : 0}
                 unreadBadgeBgColor={colors.favorite}
                 unreadBadgeTextColor={colors.primaryForeground}
-                unreadBadgeBorderColor={colors.background}
+                unreadBadgeBorderColor={colors.favorite}
                 activeColor={chipActiveContent}
                 inactiveColor={chipInactiveContent}
                 transparentActiveColor={chipTransparentActiveContent}
@@ -409,19 +409,20 @@ const styles = StyleSheet.create({
   tabBadge: {
     position: 'absolute',
     top: -6,
-    right: -10,
-    width: 16,
-    height: 16,
-    borderRadius: Radius.full,
-    borderWidth: 1.5,
+    right: -8,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: BorderWidths.thin,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tabBadgeText: {
-    fontSize: 7,
-    lineHeight: 8,
+    fontSize: 10,
+    lineHeight: 12,
     fontFamily: AppFontFamilies.bold,
     includeFontPadding: false,
+    textAlign: 'center',
   },
   overlayLayer: {
     position: 'absolute',
