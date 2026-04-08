@@ -8,16 +8,16 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, StyleSheet, Image, ActivityIndicator, Dimensions, Modal, Pressable } from 'react-native';
 import DraggableFlatList, { 
   ScaleDecorator, 
   RenderItemParams 
 } from 'react-native-draggable-flatlist';
 import * as Haptics from 'expo-haptics';
-import { X, ImagePlus, GripVertical } from 'lucide-react-native';
+import { X, ImagePlus } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetChrome, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '@/components/user-inventory-management/utilities/image-upload';
 import { CDN_BASE, getThumbUrl } from '@/lib/config';
@@ -28,9 +28,10 @@ import type { StepContentProps } from '../types';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const IMAGE_GAP = Spacing.sm;
-const GRID_COLUMNS = 3;
-const IMAGE_SIZE = (SCREEN_WIDTH - Spacing.lg * 2 - Spacing.md * 2 - IMAGE_GAP * 2) / GRID_COLUMNS;
+const IMAGE_GAP = Spacing.md;
+const GRID_COLUMNS = 2;
+const IMAGE_SIZE =
+  (SCREEN_WIDTH - SheetChrome.contentPaddingHorizontal * 2 - IMAGE_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
 const MAX_IMAGES = 30;
 
 function toAbsoluteUrl(url: string): string {
@@ -55,7 +56,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
+  const [perceivedDone, setPerceivedDone] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   // Optimistic: local file:// URIs shown in grid IMMEDIATELY after picker returns.
   // Each entry is removed once its upload succeeds (→ CDN key added to data.images)
@@ -64,6 +67,30 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
   // Accumulates CDN keys during an in-progress upload batch to avoid stale closures.
   const cdnKeysRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    if (!uploading) {
+      setPerceivedDone(0);
+      return;
+    }
+
+    if (!uploadProgress.total) {
+      setPerceivedDone(0);
+      return;
+    }
+
+    setPerceivedDone((prev) => Math.max(prev, uploadProgress.done));
+
+    const interval = setInterval(() => {
+      setPerceivedDone((prev) => {
+        const cap = Math.min(uploadProgress.total, Math.max(uploadProgress.done, Math.ceil(uploadProgress.total * 0.9)));
+        if (prev >= cap) return prev;
+        return Math.min(cap, prev + 1);
+      });
+    }, 450);
+
+    return () => clearInterval(interval);
+  }, [uploading, uploadProgress.done, uploadProgress.total]);
 
   const handlePickImages = useCallback(async () => {
     setError(null);
@@ -124,27 +151,23 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     }
   }, [data.vin, data.vinVerified, data.images, onUpdate]);
 
-  const handleDeleteImage = useCallback(
-    (url: string) => {
-      Alert.alert('Remove Photo', 'Are you sure?', [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteListingImageByUrl(url);
-            } catch {
-              /* best-effort */
-            }
-            onUpdate({ images: data.images.filter((u) => u !== url) });
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          },
-        },
-      ]);
-    },
-    [data.images, onUpdate]
-  );
+  const handleDeleteImage = useCallback((url: string) => {
+    setDeleteTarget(url);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    setDeleteTarget(null);
+
+    try {
+      await deleteListingImageByUrl(target);
+    } catch {
+      /* best-effort */
+    }
+    onUpdate({ images: data.images.filter((u) => u !== target) });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }, [data.images, deleteTarget, onUpdate]);
 
   // Drag end — only CDN items participate in drag; reconstruct CDN-only order
   const handleDragEnd = useCallback(
@@ -190,16 +213,14 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
               </View>
             )}
 
-            {/* Drag handle — only for confirmed images */}
+            {/* Drag affordance — long press anywhere */}
             {!isUploading && (
               <HapticPressable
                 onLongPress={drag}
-                delayLongPress={100}
+                delayLongPress={120}
                 disabled={isActive}
-                style={[styles.dragHandle, { backgroundColor: colors.label + '80' }]}
-              >
-                <GripVertical size={12} color={colors.background} />
-              </HapticPressable>
+                style={styles.dragHotspot}
+              />
             )}
 
             {/* Delete button — only for confirmed images */}
@@ -232,23 +253,23 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
       <HapticPressable
         onPress={handlePickImages}
         disabled={uploading}
-        style={[
-          styles.uploadButton,
-          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-        ]}
+        style={[styles.uploadButton, { backgroundColor: colors.surfaceSecondary }]}
       >
         {uploading && uploadProgress.total > 0 ? (
           <View style={styles.uploadingContent}>
             <ActivityIndicator size="small" color={colors.label} />
-              <Text variant={SheetTypography.rowLabel} tone="secondary">
-              {`Uploading ${uploadProgress.done} of ${uploadProgress.total}...`}
+            <Text variant={SheetTypography.rowLabel} tone="secondary">
+              {`Uploading ${perceivedDone} of ${uploadProgress.total}`}
             </Text>
           </View>
         ) : (
           <View style={styles.uploadContent}>
-            <ImagePlus size={Sizes.iconLg} color={colors.labelQuaternary} strokeWidth={1.5} />
+            <ImagePlus size={Sizes.iconLg} color={colors.labelSecondary} strokeWidth={1.5} />
+            <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.label, textAlign: 'center' }}>
+              Add photos
+            </Text>
             <Text variant={SheetTypography.supporting} tone="muted">
-              Add Photos ({totalCount}/{MAX_IMAGES})
+              {totalCount}/{MAX_IMAGES} uploaded
             </Text>
           </View>
         )}
@@ -274,10 +295,48 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             scrollEnabled={false}
           />
           <Text variant={SheetTypography.supporting} tone="muted" style={{ marginTop: Spacing.sm }}>
-            Hold and drag to reorder
+            Long press a photo to reorder
           </Text>
         </View>
       )}
+
+      <Modal
+        transparent
+        visible={!!deleteTarget}
+        animationType="fade"
+        onRequestClose={() => setDeleteTarget(null)}
+      >
+        <Pressable
+          style={[styles.overlay, { backgroundColor: colors.overlay }]}
+          onPress={() => setDeleteTarget(null)}
+        />
+        <View style={[styles.modalCard, { backgroundColor: colors.surfaceSecondary }]}>
+          <Text variant="subheadEmphasized" style={{ color: colors.label }}>
+            Remove photo?
+          </Text>
+          <Text variant="footnote" tone="secondary">
+            This photo will be removed from the listing.
+          </Text>
+          <View style={styles.modalActions}>
+            <HapticPressable
+              onPress={() => setDeleteTarget(null)}
+              style={[styles.modalButton, { backgroundColor: colors.surface }]}
+            >
+              <Text variant="subhead" style={{ color: colors.label }}>
+                Keep
+              </Text>
+            </HapticPressable>
+            <HapticPressable
+              onPress={confirmDelete}
+              style={[styles.modalButton, { backgroundColor: colors.error }]}
+            >
+              <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>
+                Remove
+              </Text>
+            </HapticPressable>
+          </View>
+        </View>
+      </Modal>
     </StepContainer>
   );
 }
@@ -286,17 +345,19 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
 const styles = StyleSheet.create({
   uploadButton: {
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    borderRadius: Radius.lg,
-    paddingVertical: Spacing.lg,
+    borderRadius: Radius.xl,
+    paddingVertical: Spacing["4xl"],
+    paddingHorizontal: Spacing.lg,
+    minHeight: Sizes.actionButtonLg * 3.5,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
   },
   uploadContent: {
     alignItems: 'center',
-    gap: Spacing.xs,
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    width: '100%',
   },
   uploadingContent: {
     flexDirection: 'row',
@@ -313,7 +374,7 @@ const styles = StyleSheet.create({
   imageCard: {
     width: IMAGE_SIZE,
     height: IMAGE_SIZE,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
   },
   imageCardActive: {
@@ -337,15 +398,8 @@ const styles = StyleSheet.create({
     paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
-  dragHandle: {
-    position: 'absolute',
-    bottom: Spacing.xs,
-    left: Spacing.xs,
-    width: Spacing["2xl"],
-    height: Spacing["2xl"],
-    borderRadius: Radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+  dragHotspot: {
+    ...StyleSheet.absoluteFillObject,
   },
   deleteBtn: {
     position: 'absolute',
@@ -354,6 +408,29 @@ const styles = StyleSheet.create({
     width: Spacing.xl,
     height: Spacing.xl,
     borderRadius: Radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modalCard: {
+    marginHorizontal: 24,
+    marginTop: 'auto',
+    marginBottom: 32,
+    borderRadius: 16,
+    padding: 16,
+    gap: 8,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },

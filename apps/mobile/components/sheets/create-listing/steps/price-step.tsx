@@ -136,7 +136,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Negotiable toggle */}
-      <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
+      <View style={styles.toggleRow}>
         <View style={styles.toggleText}>
           <Text variant={SheetTypography.rowLabel} tone="secondary">Price Negotiable?</Text>
           <Text variant={SheetTypography.supporting} tone="muted">
@@ -197,9 +197,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.md,
+    paddingVertical: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   toggleText: {
     flex: 1,

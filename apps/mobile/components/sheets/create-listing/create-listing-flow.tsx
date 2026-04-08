@@ -10,7 +10,7 @@
 import { Text, useAlert, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect, useSegments } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react-native';
 
@@ -79,6 +79,7 @@ export type { StepContentProps } from './types';
 
 export interface CreateListingSheetContentProps {
   onClose: () => void;
+  onForceClose?: () => void;
   onSuccess?: (listingId: string) => void;
   initialData?: Partial<CreateListingData>;
   listingId?: string;
@@ -119,6 +120,7 @@ export function deleteCreateListingFlowSession(id: string): void {
 
 export function CreateListingSheetContent({
   onClose,
+  onForceClose,
   onSuccess,
   initialData,
   listingId,
@@ -185,28 +187,13 @@ export function CreateListingSheetContent({
 
   const handleClose = useCallback(() => {
     Keyboard.dismiss();
-    if (currentStepIndex === initialStepIndex) {
-      onClose();
-      return;
-    }
-
-    showAlert('Exit Listing?', 'Are you sure? You will lose all progress.', [
-      { text: 'Keep Editing', style: 'cancel' },
-      {
-        text: 'Exit',
-        style: 'destructive',
-        onPress: () => {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          onClose();
-        },
-      },
-    ]);
-  }, [currentStepIndex, initialStepIndex, onClose, showAlert]);
+    onClose();
+  }, [onClose]);
 
   const handleSuccess = useCallback(
     (createdListingId: string, approved: boolean, isDraft?: boolean) => {
       onSuccess?.(createdListingId);
-      onClose();
+      (onForceClose ?? onClose)();
 
       if (approved) {
         router.replace('/inventory');
@@ -216,7 +203,7 @@ export function CreateListingSheetContent({
         router.replace('/inventory?tab=in_review');
       }
     },
-    [onSuccess, onClose, router],
+    [onSuccess, onForceClose, onClose, router],
   );
 
   useFocusEffect(
@@ -255,13 +242,7 @@ export function CreateListingSheetContent({
                 <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
               </HapticPressable>
             ) : (
-              <HapticPressable
-                onPress={handleClose}
-                hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
-              >
-                <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
-              </HapticPressable>
+              <View style={styles.circlePlaceholder} />
             )}
           </View>
 
@@ -272,25 +253,27 @@ export function CreateListingSheetContent({
           </View>
 
           <View style={styles.headerRight}>
-            {!isReviewStep ? (
+            <HapticPressable
+              onPress={handleClose}
+              hitSlop={Spacing.md}
+              style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
+            >
+              <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
+            </HapticPressable>
+            {!isReviewStep && (
               <HapticPressable
                 onPress={isOptionalStep && stepError ? skipStep : goToNextStep}
                 disabled={!canProceed && !isOptionalStep}
-                style={[styles.circleButton, { backgroundColor: canProceed ? colors.primary : colors.surfaceSecondary }]}
+                style={[
+                  styles.circleButton,
+                  { backgroundColor: canProceed ? colors.primary : colors.surfaceSecondary },
+                ]}
               >
                 <ChevronRight
                   size={Sizes.iconSm}
                   color={canProceed ? colors.primaryForeground : colors.labelQuaternary}
                   strokeWidth={2}
                 />
-              </HapticPressable>
-            ) : (
-              <HapticPressable
-                onPress={handleClose}
-                hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.surfaceSecondary }]}
-              >
-                <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
               </HapticPressable>
             )}
           </View>
@@ -348,7 +331,9 @@ export function CreateListingFlow({
   isPublishedEdit = false,
 }: CreateListingFlowProps) {
   const router = useRouter();
+  const segments = useSegments();
   const [flowId, setFlowId] = useState<string | null>(null);
+  const isOnCreateListingSheet = segments[segments.length - 1] === 'create-listing-sheet';
 
   useEffect(() => {
     if (!visible) {
@@ -379,7 +364,21 @@ export function CreateListingFlow({
       listingId,
       isPublishedEdit,
     });
-  }, [visible, onClose, onSuccess, initialData, listingId, isPublishedEdit, flowId, router]);
+
+    if (!isOnCreateListingSheet) {
+      router.push({ pathname: '/create-listing-sheet', params: { flowId } });
+    }
+  }, [
+    visible,
+    onClose,
+    onSuccess,
+    initialData,
+    listingId,
+    isPublishedEdit,
+    flowId,
+    router,
+    isOnCreateListingSheet,
+  ]);
 
   useEffect(
     () => () => {
@@ -432,6 +431,8 @@ const styles = StyleSheet.create({
   headerRight: {
     minWidth: SheetChrome.headerPlaceholderWidth,
     alignItems: 'flex-end',
+    flexDirection: 'row',
+    gap: Spacing.sm,
   },
   circleButton: {
     width: Sizes.avatarSm,
@@ -439,6 +440,10 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.avatarSm / 2,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  circlePlaceholder: {
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
   },
   contentArea: {
     flex: 1,

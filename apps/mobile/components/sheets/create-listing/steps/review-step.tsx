@@ -10,7 +10,7 @@ import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Check, AlertCircle, Save } from 'lucide-react-native';
+import { Share, AlertCircle } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -144,7 +144,7 @@ export function ReviewStepContent({
         <View style={styles.heroInfo}>
           <Text variant={SheetTypography.rowLabelSelected} numberOfLines={2}>{vehicleTitle}</Text>
           {data.trim && <Text variant={SheetTypography.supporting} tone="muted">{data.trim}</Text>}
-            <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primary, marginTop: Spacing.xs }}>
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primary, marginTop: Spacing.xs }}>
             AED {priceNum.toLocaleString()}
           </Text>
         </View>
@@ -200,7 +200,7 @@ export function ReviewStepContent({
             <ActivityIndicator size="small" color={colors.background} />
           ) : (
             <>
-              <Check size={Sizes.iconSm} color={canPublish ? colors.background : colors.labelQuaternary} strokeWidth={2} />
+              <Share size={Sizes.iconSm} color={canPublish ? colors.background : colors.labelQuaternary} strokeWidth={2} />
               <Text variant={SheetTypography.rowLabelSelected} style={{ color: canPublish ? colors.background : colors.labelQuaternary, }}>
                 Publish
               </Text>
@@ -214,8 +214,7 @@ export function ReviewStepContent({
             disabled={submitting}
             style={[styles.draftBtn, { borderColor: colors.border }]}
           >
-            <Save size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
-            <Text variant={SheetTypography.rowLabel} tone="secondary">Draft</Text>
+            <Text variant={SheetTypography.rowLabel} tone="secondary">Save Draft</Text>
           </HapticPressable>
         )}
       </View>
@@ -227,18 +226,18 @@ export function ReviewStepContent({
 
 const styles = StyleSheet.create({
   heroCard: {
-    flexDirection: 'row',
     borderRadius: Radius.lg,
     overflow: 'hidden',
+    gap: Spacing.md,
+    padding: Spacing.md,
   },
   heroImage: {
-    width: Spacing["5xl"],
-    height: Spacing["5xl"] * 2 + Spacing.xs,
+    width: '100%',
+    height: Spacing["5xl"] * 4,
+    borderRadius: Radius.md,
   },
   heroInfo: {
-    flex: 1,
-    padding: Spacing.md,
-    justifyContent: 'center',
+    gap: Spacing.xs,
   },
   statsRow: {
     flexDirection: 'row',

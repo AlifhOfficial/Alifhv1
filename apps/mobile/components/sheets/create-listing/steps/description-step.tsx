@@ -12,7 +12,7 @@ import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, InputTypography, SheetTypography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, InputTypography, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
@@ -200,11 +200,14 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   textArea: {
-    minHeight: Spacing["5xl"],
+    marginTop: Spacing.md,
+    minHeight: Sizes.actionButtonLg * 12,
     borderRadius: Radius.xl,
-    padding: Spacing.md,
-    ...InputTypography,
-    lineHeight: InputTypography.lineHeight,
+    padding: Spacing.lg,
+    fontFamily: InputTypography.fontFamily,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '400',
     textAlignVertical: 'top',
   },
   charCount: {

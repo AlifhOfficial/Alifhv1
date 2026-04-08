@@ -34,7 +34,7 @@ export function SheetToggle({ enabled, onToggle, colors, disabled }: SheetToggle
       disabled={disabled}
       style={[
         styles.track,
-        { backgroundColor: enabled ? colors.label : colors.surfaceSecondary },
+        { backgroundColor: enabled ? colors.success : colors.surfaceSecondary },
         disabled && styles.disabled,
       ]}
     >
