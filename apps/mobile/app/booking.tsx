@@ -174,17 +174,17 @@ export default function BookingScreen() {
             <HapticPressable
               onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
               disabled={isPrevMonthDisabled}
-              style={[styles.navBtn, { opacity: isPrevMonthDisabled ? 0.25 : 1 }]}
+              style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary, opacity: isPrevMonthDisabled ? 0.25 : 1 }]}
             >
-              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+              <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
             </HapticPressable>
           }
           right={
             <HapticPressable
               onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
-              style={styles.navBtn}
+              style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <ChevronRight size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+              <ChevronRight size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
             </HapticPressable>
           }
         />
@@ -195,8 +195,8 @@ export default function BookingScreen() {
         <SheetHeader
           title={selectedDate ? formatDateLong(selectedDate) : 'Pick a Time'}
           left={
-            <HapticPressable onPress={() => setStep('date')} style={styles.navBtn}>
-              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+            <HapticPressable onPress={() => setStep('date')} style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}>
+              <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
             </HapticPressable>
           }
         />
@@ -207,8 +207,8 @@ export default function BookingScreen() {
         <SheetHeader
           title="Confirm Booking"
           left={
-            <HapticPressable onPress={() => setStep('time')} style={styles.navBtn}>
-              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+            <HapticPressable onPress={() => setStep('time')} style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}>
+              <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
             </HapticPressable>
           }
         />
@@ -270,26 +270,32 @@ export default function BookingScreen() {
                   onPress={() => isAvailable && setSelectedDate(date)}
                   disabled={!isAvailable}
                 >
-                  {isSelected ? (
-                    <View style={[styles.dayCircle, { backgroundColor: colors.primary }]} />
-                  ) : isToday && !isPast ? (
-                    <View style={[styles.dayCircle, { backgroundColor: colors.primaryMuted }]} />
-                  ) : null}
-                  <Text
-                    variant="subhead"
-                    style={{
-                      textAlign: 'center',
-                      color: isSelected
-                        ? colors.primaryForeground
+                  <View
+                    style={[
+                      styles.dayCircle,
+                      isSelected
+                        ? { backgroundColor: colors.primary }
                         : isToday && !isPast
-                        ? colors.primary
-                        : !isAvailable
-                        ? colors.labelQuaternary
-                        : colors.label,
-                    }}
+                        ? { backgroundColor: colors.primaryMuted }
+                        : undefined,
+                    ]}
                   >
-                    {date.getUTCDate()}
-                  </Text>
+                    <Text
+                      variant="subhead"
+                      style={{
+                        textAlign: 'center',
+                        color: isSelected
+                          ? colors.primaryForeground
+                          : isToday && !isPast
+                          ? colors.primary
+                          : !isAvailable
+                          ? colors.labelQuaternary
+                          : colors.label,
+                      }}
+                    >
+                      {date.getUTCDate()}
+                    </Text>
+                  </View>
                 </HapticPressable>
               );
             })}
@@ -491,12 +497,12 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['2xl'],
   },
   // Calendar
-  navBtn: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
+  circleBtn: {
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
+    borderRadius: Sizes.avatarSm / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.lg,
   },
   calendarRow: {
     flexDirection: 'row',
@@ -512,10 +518,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dayCircle: {
-    position: 'absolute',
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dayLabel: {
     textAlign: 'center',
