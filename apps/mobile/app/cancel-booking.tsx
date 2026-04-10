@@ -8,7 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { X as XIcon } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useBookings } from '@/hooks/use-booking-query';
 import { getAppThumbUrl } from '@/lib/config';
@@ -219,6 +219,7 @@ export default function CancelBookingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   loadingContainer: {
     flex: 1,

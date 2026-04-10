@@ -24,7 +24,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useBookings } from '@/hooks/use-booking-query';
 import { getAppThumbUrl } from '@/lib/config';
@@ -451,6 +451,7 @@ export default function BookingDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   loadingContainer: {
     minHeight: Sizes.iconLg * 3,

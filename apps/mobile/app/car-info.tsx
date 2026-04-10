@@ -5,7 +5,7 @@ import { AlertTriangle, Crosshair, Flame, Info, Lightbulb, User, Zap } from 'luc
 import { useQuery } from '@tanstack/react-query';
 
 import { SheetHeader, Text } from '@/components/ui';
-import { Colors, Radius, Sizes, Spacing, Typography, type ColorPalette } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing, Typography, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
 
@@ -241,6 +241,7 @@ export default function CarInfoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   scrollContent: {
     paddingHorizontal: Spacing.xl,

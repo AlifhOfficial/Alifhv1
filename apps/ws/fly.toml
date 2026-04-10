@@ -1,11 +1,11 @@
 # Fly.io configuration for WebSocket server
-# Deploy: fly deploy --config fly.ws.toml
+# Deploy from repo root: fly deploy --config apps/ws/fly.toml
 
 app = "revvup-ws"
 primary_region = "sin"
 
 [build]
-  dockerfile = "apps/ws/Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
   WS_PORT = "3001"
@@ -14,16 +14,20 @@ primary_region = "sin"
 [http_service]
   internal_port = 3001
   force_https = true
+  # Keep at least one machine always warm for messaging reliability.
   auto_stop_machines = false
   auto_start_machines = true
   min_machines_running = 1
 
   [http_service.concurrency]
     type = "connections"
-    hard_limit = 1000   # drop connections above this — protects the machine
-    soft_limit = 750    # start routing new connections to a 2nd machine at this point
+    # Let one machine carry more sockets before scaling a second machine.
+    hard_limit = 1400
+    soft_limit = 1000
 
 [[vm]]
-  memory = "1gb"
+  # 512MB is usually enough for a Bun WS server with in-memory presence maps.
+  # Move back to 1GB only if memory pressure appears in Fly metrics.
+  memory = "512mb"
   cpu_kind = "shared"
   cpus = 1

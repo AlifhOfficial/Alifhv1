@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Spacing } from '@/constants/theme';
 
 export default function PhoneActionsScreen() {
   const { phoneNumber } = useLocalSearchParams<{ phoneNumber?: string }>();
@@ -87,6 +87,7 @@ export default function PhoneActionsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
     paddingHorizontal: Spacing.lg,
   },
   header: {

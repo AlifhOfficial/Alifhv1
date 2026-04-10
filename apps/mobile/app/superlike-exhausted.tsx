@@ -5,7 +5,7 @@ import { Zap } from 'lucide-react-native';
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
-import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Layout, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 
 export default function SuperlikeExhaustedScreen() {
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
@@ -47,6 +47,7 @@ export default function SuperlikeExhaustedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
     paddingHorizontal: Spacing.lg,
   },
   header: {

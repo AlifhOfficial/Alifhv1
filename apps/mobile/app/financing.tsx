@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Spacing, Typography } from '@/constants/theme';
 import { calculateEMI, formatPrice } from '@/components/seller-contact/utils';
 import { emitFinancingApplied } from '@/lib/financing-events';
 
@@ -132,6 +132,7 @@ export default function FinancingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.lg,
   },

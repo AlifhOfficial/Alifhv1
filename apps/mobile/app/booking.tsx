@@ -1,15 +1,31 @@
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { Calendar1, CheckCircle2, Clock, Users, FileText } from 'lucide-react-native';
+import {
+  Calendar1,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  FileText,
+  Minus,
+  Plus,
+  Users,
+} from 'lucide-react-native';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing, Stroke } from '@/constants/theme';
 import { createBooking, getAvailableDates, getTimeSlots, type AvailableDate, type TimeSlot } from '@/lib/booking-api';
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
+const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 type BookingStep = 'date' | 'time' | 'confirm' | 'success';
 
@@ -21,8 +37,7 @@ function toUtcDateKey(date: Date): string {
 }
 
 function formatTime(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleTimeString('en-AE', {
+  return new Date(isoString).toLocaleTimeString('en-AE', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true,
@@ -30,10 +45,10 @@ function formatTime(isoString: string): string {
   });
 }
 
-function formatDateShort(date: Date): string {
+function formatDateLong(date: Date): string {
   return date.toLocaleDateString('en-AE', {
-    weekday: 'short',
-    month: 'short',
+    weekday: 'long',
+    month: 'long',
     day: 'numeric',
     timeZone: BOOKING_TIME_ZONE,
   });
@@ -53,8 +68,11 @@ export default function BookingScreen() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [notes, setNotes] = useState('');
   const [attendees, setAttendees] = useState(1);
+  const [confirmationToken, setConfirmationToken] = useState<string | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(() => new Date());
 
   const safeTitle = Array.isArray(listingTitle) ? listingTitle[0] : listingTitle;
+  const today = useMemo(() => new Date(), []);
 
   const loadDates = useCallback(async () => {
     if (!listingId) return;
@@ -95,7 +113,7 @@ export default function BookingScreen() {
     setIsLoading(true);
     setError(null);
     try {
-      await createBooking({
+      const result = await createBooking({
         listingId,
         scheduledDate: toUtcDateKey(selectedDate),
         scheduledStartTime: selectedSlot.startTime,
@@ -106,6 +124,7 @@ export default function BookingScreen() {
       if (process.env.EXPO_OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
+      setConfirmationToken(result.confirmationToken);
       setStep('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create booking');
@@ -114,13 +133,89 @@ export default function BookingScreen() {
     }
   }, [listingId, selectedDate, selectedSlot, notes, attendees]);
 
-  const selectableDates = useMemo(() => {
-    return availableDates.filter((d) => d.hasSlots).slice(0, 21).map((d) => new Date(`${d.date}T00:00:00.000Z`));
-  }, [availableDates]);
+  const calendarDays = useMemo((): (Date | null)[] => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(Date.UTC(year, month, 1));
+    const lastDay = new Date(Date.UTC(year, month + 1, 0));
+    const days: (Date | null)[] = [];
+    for (let i = 0; i < firstDay.getUTCDay(); i++) days.push(null);
+    for (let i = 1; i <= lastDay.getUTCDate(); i++) days.push(new Date(Date.UTC(year, month, i)));
+    return days;
+  }, [currentMonth]);
+
+  const isDateAvailable = useCallback(
+    (date: Date) => availableDates.find((d) => d.date === toUtcDateKey(date))?.hasSlots ?? false,
+    [availableDates],
+  );
+
+  const isDatePast = useCallback((date: Date) => {
+    const todayUtc = new Date();
+    todayUtc.setUTCHours(0, 0, 0, 0);
+    return date.getTime() < todayUtc.getTime();
+  }, []);
+
+  const isPrevMonthDisabled =
+    currentMonth.getFullYear() < today.getFullYear() ||
+    (currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() <= today.getMonth());
 
   if (availableDates.length === 0 && !isLoading && !error) {
     void loadDates();
   }
+
+  const monthLabel = `${MONTH_NAMES[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+
+  const stepHeader = (() => {
+    if (step === 'date') {
+      return (
+        <SheetHeader
+          title={monthLabel}
+          left={
+            <HapticPressable
+              onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+              disabled={isPrevMonthDisabled}
+              style={[styles.navBtn, { opacity: isPrevMonthDisabled ? 0.25 : 1 }]}
+            >
+              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          }
+          right={
+            <HapticPressable
+              onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+              style={styles.navBtn}
+            >
+              <ChevronRight size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          }
+        />
+      );
+    }
+    if (step === 'time') {
+      return (
+        <SheetHeader
+          title={selectedDate ? formatDateLong(selectedDate) : 'Pick a Time'}
+          left={
+            <HapticPressable onPress={() => setStep('date')} style={styles.navBtn}>
+              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          }
+        />
+      );
+    }
+    if (step === 'confirm') {
+      return (
+        <SheetHeader
+          title="Confirm Booking"
+          left={
+            <HapticPressable onPress={() => setStep('time')} style={styles.navBtn}>
+              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          }
+        />
+      );
+    }
+    return <SheetHeader title="Booking Requested" />;
+  })();
 
   return (
     <ScrollView
@@ -130,127 +225,237 @@ export default function BookingScreen() {
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <SheetHeader title="Book Test Drive" />
+      {stepHeader}
 
-      {safeTitle ? <Text variant="subhead" tone="secondary">{safeTitle}</Text> : null}
+      {safeTitle && step !== 'success' ? (
+        <Text variant="subhead" tone="secondary">{safeTitle}</Text>
+      ) : null}
 
       {error ? (
-        <View style={[styles.card, { borderColor: colors.warning, backgroundColor: colors.warningMuted }]}> 
-          <Text variant="subhead" style={{ color: colors.warning }}>{error}</Text>
+        <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
+          <Text variant="subhead" tone="error">{error}</Text>
         </View>
       ) : null}
 
       {isLoading ? (
-        <View style={styles.centered}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.primary} />
         </View>
       ) : null}
 
+      {/* ── Date Step ── */}
       {step === 'date' && !isLoading ? (
-        <View style={styles.stack}>
-          <Text variant="subheadEmphasized">Pick a date</Text>
-          <View style={styles.grid}>
-            {selectableDates.map((date) => {
-              const selected = selectedDate && toUtcDateKey(selectedDate) === toUtcDateKey(date);
+        <Animated.View entering={FadeIn.duration(200)} style={styles.stack}>
+          {/* Day-of-week headers */}
+          <View style={styles.calendarRow}>
+            {DAY_LABELS.map((label, i) => (
+              <View key={i} style={styles.calendarCell}>
+                <Text variant="caption2" tone="muted" style={styles.dayLabel}>{label}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Calendar grid */}
+          <View style={styles.calendarGrid}>
+            {calendarDays.map((date, index) => {
+              if (!date) return <View key={`e-${index}`} style={styles.calendarCell} />;
+              const isPast = isDatePast(date);
+              const isAvailable = !isPast && isDateAvailable(date);
+              const isSelected = selectedDate ? toUtcDateKey(selectedDate) === toUtcDateKey(date) : false;
+              const isToday = toUtcDateKey(date) === toUtcDateKey(today);
               return (
                 <HapticPressable
                   key={toUtcDateKey(date)}
-                  style={[styles.pill, { borderColor: selected ? colors.primary : colors.border, backgroundColor: selected ? colors.primaryMuted : colors.surfaceSecondary }]}
-                  onPress={() => setSelectedDate(date)}
+                  style={styles.calendarCell}
+                  onPress={() => isAvailable && setSelectedDate(date)}
+                  disabled={!isAvailable}
                 >
-                  <Calendar1 size={16} color={selected ? colors.primary : colors.labelSecondary} />
-                  <Text variant="subhead" style={{ color: selected ? colors.primary : colors.label }}>{formatDateShort(date)}</Text>
+                  {isSelected ? (
+                    <View style={[styles.dayCircle, { backgroundColor: colors.primary }]} />
+                  ) : isToday && !isPast ? (
+                    <View style={[styles.dayCircle, { backgroundColor: colors.primaryMuted }]} />
+                  ) : null}
+                  <Text
+                    variant="subhead"
+                    style={{
+                      textAlign: 'center',
+                      color: isSelected
+                        ? colors.primaryForeground
+                        : isToday && !isPast
+                        ? colors.primary
+                        : !isAvailable
+                        ? colors.labelQuaternary
+                        : colors.label,
+                    }}
+                  >
+                    {date.getUTCDate()}
+                  </Text>
                 </HapticPressable>
               );
             })}
           </View>
+
           <HapticPressable
             onPress={() => selectedDate && loadSlots(selectedDate)}
             style={[styles.primaryBtn, { backgroundColor: selectedDate ? colors.primary : colors.fill2 }]}
             disabled={!selectedDate}
           >
-            <Text variant="body" style={{ color: selectedDate ? colors.primaryForeground : colors.labelQuaternary }}>Continue</Text>
+            <Text variant="body" style={{ color: selectedDate ? colors.primaryForeground : colors.labelQuaternary }}>
+              Continue
+            </Text>
           </HapticPressable>
-        </View>
+        </Animated.View>
       ) : null}
 
+      {/* ── Time Step ── */}
       {step === 'time' && !isLoading ? (
-        <View style={styles.stack}>
-          <Text variant="subheadEmphasized">Pick a time slot</Text>
-          <View style={styles.grid}>
-            {timeSlots.filter((s) => s.isAvailable).map((slot) => {
-              const selected = selectedSlot?.id === slot.id;
-              return (
-                <HapticPressable
-                  key={slot.id}
-                  style={[styles.pill, { borderColor: selected ? colors.primary : colors.border, backgroundColor: selected ? colors.primaryMuted : colors.surfaceSecondary }]}
-                  onPress={() => setSelectedSlot(slot)}
-                >
-                  <Clock size={16} color={selected ? colors.primary : colors.labelSecondary} />
-                  <Text variant="subhead" style={{ color: selected ? colors.primary : colors.label }}>{formatTime(slot.startTime)}</Text>
-                </HapticPressable>
-              );
-            })}
-          </View>
+        <Animated.View entering={FadeIn.duration(200)} style={styles.stack}>
+          {timeSlots.filter((s) => s.isAvailable).length === 0 ? (
+            <Text variant="subhead" tone="muted" style={styles.emptySlots}>
+              No available times for this date
+            </Text>
+          ) : (
+            <View style={styles.timeGrid}>
+              {timeSlots.map((slot) => {
+                const selected = selectedSlot?.id === slot.id;
+                return (
+                  <HapticPressable
+                    key={slot.id}
+                    style={[
+                      styles.timeSlot,
+                      selected
+                        ? { backgroundColor: colors.primary, borderColor: colors.primary }
+                        : slot.isAvailable
+                        ? { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }
+                        : { backgroundColor: colors.fill3, borderColor: 'transparent', opacity: 0.4 },
+                    ]}
+                    onPress={() => slot.isAvailable && setSelectedSlot(slot)}
+                    disabled={!slot.isAvailable}
+                  >
+                    <Text
+                      variant="subheadEmphasized"
+                      style={{
+                        color: selected ? colors.primaryForeground : slot.isAvailable ? colors.label : colors.labelQuaternary,
+                        textAlign: 'center',
+                        textDecorationLine: !slot.isAvailable ? 'line-through' : 'none',
+                      }}
+                    >
+                      {formatTime(slot.startTime)}
+                    </Text>
+                  </HapticPressable>
+                );
+              })}
+            </View>
+          )}
+
           <HapticPressable
             onPress={() => setStep('confirm')}
             style={[styles.primaryBtn, { backgroundColor: selectedSlot ? colors.primary : colors.fill2 }]}
             disabled={!selectedSlot}
           >
-            <Text variant="body" style={{ color: selectedSlot ? colors.primaryForeground : colors.labelQuaternary }}>Continue</Text>
+            <Text variant="body" style={{ color: selectedSlot ? colors.primaryForeground : colors.labelQuaternary }}>
+              Continue
+            </Text>
           </HapticPressable>
-        </View>
+        </Animated.View>
       ) : null}
 
+      {/* ── Confirm Step ── */}
       {step === 'confirm' && !isLoading ? (
-        <View style={styles.stack}>
-          <Text variant="subheadEmphasized">Confirm booking</Text>
-          <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}> 
-            <View style={styles.row}><Calendar1 size={16} color={colors.labelSecondary} /><Text variant="subhead">{selectedDate ? formatDateShort(selectedDate) : '-'}</Text></View>
-            <View style={styles.row}><Clock size={16} color={colors.labelSecondary} /><Text variant="subhead">{selectedSlot ? formatTime(selectedSlot.startTime) : '-'}</Text></View>
+        <Animated.View entering={FadeIn.duration(200)} style={styles.stack}>
+
+          {/* Summary */}
+          <View style={[styles.summaryCard, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+            <View style={styles.row}>
+              <Calendar1 size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+              <Text variant="subhead">{selectedDate ? formatDateLong(selectedDate) : '—'}</Text>
+            </View>
+            <View style={styles.row}>
+              <Clock size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+              <Text variant="subhead">
+                {selectedSlot ? `${formatTime(selectedSlot.startTime)} – ${formatTime(selectedSlot.endTime)}` : '—'}
+              </Text>
+              {selectedSlot ? (
+                <Text variant="subhead" tone="muted">· {selectedSlot.duration} min</Text>
+              ) : null}
+            </View>
           </View>
 
-          <View style={[styles.inputWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}> 
-            <Users size={16} color={colors.labelSecondary} />
-            <TextInput
-              value={String(attendees)}
-              onChangeText={(v) => setAttendees(Math.min(6, Math.max(1, parseInt(v, 10) || 1)))}
-              keyboardType="number-pad"
-              style={[styles.input, { color: colors.label }]}
-              placeholder="1"
-              placeholderTextColor={colors.placeholder}
-            />
-            <Text variant="subhead" tone="secondary">attendees</Text>
+          {/* Attendees stepper */}
+          <View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+            <Users size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+            <Text variant="subhead" style={styles.inputRowLabel}>Attendees</Text>
+            <HapticPressable
+              onPress={() => setAttendees(Math.max(1, attendees - 1))}
+              style={[styles.stepper, { backgroundColor: colors.fill2 }]}
+            >
+              <Minus size={Sizes.iconXs} color={colors.label} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+            <Text variant="subheadEmphasized" style={styles.attendeeCount}>{attendees}</Text>
+            <HapticPressable
+              onPress={() => setAttendees(Math.min(6, attendees + 1))}
+              style={[styles.stepper, { backgroundColor: colors.fill2 }]}
+            >
+              <Plus size={Sizes.iconXs} color={colors.label} strokeWidth={Stroke.icon} />
+            </HapticPressable>
           </View>
 
-          <View style={[styles.inputWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}> 
-            <FileText size={16} color={colors.labelSecondary} />
+          {/* Notes */}
+          <View style={[styles.notesWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+            <View style={styles.row}>
+              <FileText size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+              <Text variant="subhead" tone="secondary">Notes (optional)</Text>
+            </View>
             <TextInput
               value={notes}
               onChangeText={setNotes}
-              style={[styles.input, { color: colors.label }]}
-              placeholder="Optional notes"
+              style={[styles.notesInput, { color: colors.label }]}
+              placeholder="Questions or requests..."
               placeholderTextColor={colors.placeholder}
+              multiline
+              numberOfLines={2}
             />
           </View>
 
-          <HapticPressable onPress={handleSubmit} style={[styles.primaryBtn, { backgroundColor: colors.primary }]}> 
+          <HapticPressable onPress={handleSubmit} style={[styles.primaryBtn, { backgroundColor: colors.primary }]}>
             <Text variant="body" style={{ color: colors.primaryForeground }}>Book now</Text>
           </HapticPressable>
-        </View>
+        </Animated.View>
       ) : null}
 
+      {/* ── Success Step ── */}
       {step === 'success' ? (
-        <View style={styles.centered}>
-          <CheckCircle2 size={28} color={colors.success} />
-          <Text variant="subheadEmphasized">Booking requested</Text>
-          <Text variant="subhead" tone="secondary" style={{ textAlign: 'center' }}>
+        <Animated.View entering={FadeIn.duration(300)} style={styles.successStack}>
+          <CheckCircle2 size={Sizes.iconXl} color={colors.success} strokeWidth={Stroke.icon} />
+          <Text variant="title3Emphasized">Booking Requested</Text>
+          {safeTitle ? <Text variant="subhead" tone="secondary">{safeTitle}</Text> : null}
+          {selectedDate && selectedSlot ? (
+            <Text variant="subhead" tone="muted" style={styles.centered}>
+              {formatDateLong(selectedDate)} · {formatTime(selectedSlot.startTime)}
+            </Text>
+          ) : null}
+          <Text variant="subhead" tone="secondary" style={styles.centered}>
             The seller will confirm your test drive shortly.
           </Text>
-          <HapticPressable onPress={() => router.back()} style={[styles.primaryBtn, { backgroundColor: colors.primary, marginTop: Spacing.md }]}> 
-            <Text variant="body" style={{ color: colors.primaryForeground }}>Done</Text>
+          {confirmationToken ? (
+            <Text
+              variant="subheadEmphasized"
+              selectable
+              style={{ letterSpacing: 1.5, color: colors.label, textAlign: 'center' }}
+            >
+              {confirmationToken}
+            </Text>
+          ) : null}
+          <HapticPressable
+            onPress={() => router.push('/bookings')}
+            style={[styles.primaryBtn, styles.fullWidth, { backgroundColor: colors.primary }]}
+          >
+            <Text variant="body" style={{ color: colors.primaryForeground }}>View Bookings</Text>
           </HapticPressable>
-        </View>
+          <HapticPressable onPress={() => router.back()} style={styles.ghostBtn}>
+            <Text variant="subhead" tone="secondary">Done</Text>
+          </HapticPressable>
+        </Animated.View>
       ) : null}
     </ScrollView>
   );
@@ -259,74 +464,141 @@ export default function BookingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   content: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing['3xl'],
     gap: Spacing.lg,
   },
-  header: {
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  errorBanner: {
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
   },
-  headerAction: {
-    minWidth: 48,
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: Spacing['2xl'],
   },
   centered: {
-    alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: Spacing['2xl'],
+    textAlign: 'center',
   },
   stack: {
     gap: Spacing.md,
   },
-  grid: {
+  successStack: {
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingVertical: Spacing['2xl'],
+  },
+  // Calendar
+  navBtn: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.lg,
+  },
+  calendarRow: {
+    flexDirection: 'row',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  calendarCell: {
+    width: '14.285714%',
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayCircle: {
+    position: 'absolute',
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Radius.full,
+  },
+  dayLabel: {
+    textAlign: 'center',
+  },
+  // Time slots
+  emptySlots: {
+    textAlign: 'center',
+    paddingVertical: Spacing.xl,
+  },
+  timeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
-  pill: {
+  timeSlot: {
+    width: '30.5%',
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.xl,
     borderWidth: 1,
-    borderRadius: Radius.full,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    borderCurve: 'continuous',
   },
-  card: {
+  // Confirm step
+  summaryCard: {
     borderWidth: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     padding: Spacing.md,
     gap: Spacing.sm,
+    borderCurve: 'continuous',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  inputWrap: {
-    borderWidth: 1,
-    borderRadius: Radius.lg,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+  inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: Radius.xl,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     gap: Spacing.sm,
+    borderCurve: 'continuous',
   },
-  input: {
+  inputRowLabel: {
     flex: 1,
-    padding: 0,
   },
+  stepper: {
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  attendeeCount: {
+    minWidth: 24,
+    textAlign: 'center',
+  },
+  notesWrap: {
+    borderWidth: 1,
+    borderRadius: Radius.xl,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+    borderCurve: 'continuous',
+  },
+  notesInput: {
+    padding: 0,
+    minHeight: 44,
+  },
+  // Shared
   primaryBtn: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
+    borderCurve: 'continuous',
+  },
+  fullWidth: {
+    alignSelf: 'stretch',
+  },
+  ghostBtn: {
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
   },
 });

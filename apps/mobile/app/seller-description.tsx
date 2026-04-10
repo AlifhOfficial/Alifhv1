@@ -8,7 +8,7 @@ import { Copy } from 'lucide-react-native';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 
 export default function SellerDescriptionScreen() {
   const { description, sellerName } = useLocalSearchParams<{ description?: string; sellerName?: string }>();
@@ -77,6 +77,7 @@ export default function SellerDescriptionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   content: {
     paddingHorizontal: Spacing.lg,

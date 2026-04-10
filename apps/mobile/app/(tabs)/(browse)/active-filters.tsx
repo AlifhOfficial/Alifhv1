@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 
 const GROUP_LABELS: Record<string, string> = {
   sort: 'Sort',
@@ -142,12 +142,8 @@ export default function ActiveFiltersScreen() {
           <HapticPressable
             onPress={clearAll}
             hitSlop={Spacing.sm}
-            style={[
-              styles.headerActionButton,
-              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-            ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.error} />
+            <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
           </HapticPressable>
         }
         right={
@@ -208,7 +204,8 @@ export default function ActiveFiltersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
+    paddingTop: SheetChrome.contentPaddingTop,
     paddingBottom: Spacing.lg,
   },
   header: {

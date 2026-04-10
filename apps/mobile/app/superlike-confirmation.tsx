@@ -7,7 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
-import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Layout, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 
 export default function SuperlikeConfirmationScreen() {
   const { listingId, listingTitle } = useLocalSearchParams<{ listingId: string; listingTitle?: string }>();
@@ -83,6 +83,7 @@ export default function SuperlikeConfirmationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
     paddingHorizontal: Spacing.lg,
   },
   header: {

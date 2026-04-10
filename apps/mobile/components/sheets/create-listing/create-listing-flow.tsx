@@ -95,6 +95,7 @@ export interface CreateListingFlowSession {
 }
 
 const flowSessions = new Map<string, CreateListingFlowSession>();
+let flowSessionCounter = 0;
 
 function newFlowSessionId(): string {
   const cryptoObj = (globalThis as {
@@ -120,7 +121,9 @@ function newFlowSessionId(): string {
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
   }
 
-  throw new Error('Secure random source unavailable for create listing flow session id');
+  // Session IDs are only used as in-memory map keys, so a non-crypto fallback is acceptable.
+  flowSessionCounter += 1;
+  return `flow-${Date.now().toString(36)}-${flowSessionCounter.toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function createCreateListingFlowSession(session: CreateListingFlowSession): string {

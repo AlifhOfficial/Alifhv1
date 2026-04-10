@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Copy } from 'lucide-react-native';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
-import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useListingDetail } from '@/hooks/use-listing-query';
 
@@ -78,6 +78,7 @@ export default function ListingDescriptionSheetScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   content: {
     paddingHorizontal: Spacing.lg,

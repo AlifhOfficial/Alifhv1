@@ -355,12 +355,8 @@ export default function BrowseMenuScreen() {
           <HapticPressable
             onPress={clearAll}
             hitSlop={Spacing.sm}
-            style={[
-              styles.headerActionButton,
-              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-            ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.error} />
+            <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
           </HapticPressable>
         }
         right={
@@ -594,6 +590,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   scrollView: {
     flex: 1,

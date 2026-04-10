@@ -41,13 +41,15 @@ export function BrowseTabBar({
   onViewModeChange,
 }: BrowseTabBarProps) {
   const { colorScheme } = useTheme();
-  const { getActiveFilterCount } = useSearch();
+  const { getActiveFilterCount, sortBy } = useSearch();
   const colors = Colors[colorScheme];
   const visibilityProgress = useSharedValue(visible ? 1 : 0);
   const bubbleBackgroundColor = colorScheme === 'dark' ? colors.surfaceSecondary : colors.background;
 
   const activeFilterCount = getActiveFilterCount();
-  const hasFilters = activeFilterCount > 0;
+  const isSortActive = sortBy !== 'relevance';
+  const nonSortFilterCount = Math.max(0, activeFilterCount - (isSortActive ? 1 : 0));
+  const hasFilters = nonSortFilterCount > 0;
 
   const handleSearchPress = useCallback(() => {
     if (process.env.EXPO_OS === 'ios') {
@@ -127,25 +129,11 @@ export function BrowseTabBar({
                 },
               ]}
             >
-              <Package2 size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
-              {hasFilters ? (
-                <View
-                  style={[
-                    styles.drawerBadge,
-                    {
-                      backgroundColor: colors.favorite,
-                      borderColor: colors.favorite,
-                    },
-                  ]}
-                >
-                  <Text
-                    variant="caption2Emphasized"
-                    style={{ color: colors.primaryForeground, fontVariant: ['tabular-nums'] }}
-                  >
-                    {activeFilterCount > 9 ? '9+' : activeFilterCount}
-                  </Text>
-                </View>
-              ) : null}
+              <Package2
+                size={Sizes.iconMd}
+                color={colors.label}
+                strokeWidth={2.5}
+              />
             </MotiPressable>
 
             <MotiPressable
@@ -191,7 +179,11 @@ export function BrowseTabBar({
                 },
               ]}
             >
-              <ArrowUpDown size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
+              <ArrowUpDown
+                size={Sizes.iconMd}
+                color={colors.label}
+                strokeWidth={2.5}
+              />
             </MotiPressable>
 
             {hasFilters ? (
@@ -216,7 +208,7 @@ export function BrowseTabBar({
                 ]}
               >
                 <Text variant="subheadEmphasized" tone="default" style={{ fontVariant: ['tabular-nums'] }}>
-                  {activeFilterCount > 9 ? '9+' : activeFilterCount}
+                  {nonSortFilterCount > 9 ? '9+' : nonSortFilterCount}
                 </Text>
               </MotiPressable>
             ) : null}
@@ -252,17 +244,6 @@ const styles = StyleSheet.create({
     width: Sizes.actionButtonLg,
     height: Sizes.actionButtonLg,
     borderRadius: Sizes.actionButtonLg / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: BorderWidths.thin,
-  },
-  drawerBadge: {
-    position: 'absolute',
-    top: -Spacing.xs,
-    right: -Spacing.xs,
-    width: Spacing.lg,
-    height: Spacing.lg,
-    borderRadius: Spacing.lg / 2,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: BorderWidths.thin,

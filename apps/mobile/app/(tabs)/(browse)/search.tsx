@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Keyboard, ScrollView, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -75,6 +75,7 @@ export default function SearchScreen() {
 
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const searchInputRef = useRef<TextInput>(null);
 
   const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
@@ -215,66 +216,60 @@ export default function SearchScreen() {
 
   const handleSuggestionSelect = useCallback((suggestion: Suggestion) => {
     triggerHaptic();
+    searchInputRef.current?.clear();
+    searchInputRef.current?.blur();
     Keyboard.dismiss();
+    setQuery('');
+    setDebouncedQuery('');
 
     if (suggestion.type === 'tag' && suggestion.tag) {
       setSelectedTags((prev) => (prev.includes(suggestion.tag!) ? prev : [...prev, suggestion.tag!]));
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'extra' && suggestion.extra) {
       setSelectedExtras((prev) => (prev.includes(suggestion.extra!) ? prev : [...prev, suggestion.extra!]));
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'bodyType' && suggestion.bodyType) {
       setSelectedBodyTypes((prev) => (prev.includes(suggestion.bodyType!) ? prev : [...prev, suggestion.bodyType!]));
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'fuelType' && suggestion.fuelType) {
       setSelectedFuelTypes((prev) => (prev.includes(suggestion.fuelType!) ? prev : [...prev, suggestion.fuelType!]));
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'transmission' && suggestion.transmission) {
       setSelectedTransmission((prev) => (prev.includes(suggestion.transmission!) ? prev : [...prev, suggestion.transmission!]));
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'specs' && suggestion.specs) {
       setSelectedSpecs((prev) => (prev.includes(suggestion.specs!) ? prev : [...prev, suggestion.specs!]));
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'condition' && suggestion.condition) {
       setSelectedCondition(suggestion.condition);
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'sellerType' && suggestion.sellerType) {
       setSelectedSellerType(suggestion.sellerType);
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'partner' && suggestion.partnerId) {
       setSelectedPartner({ id: suggestion.partnerId, name: suggestion.text });
-      setQuery('');
       return;
     }
 
     if (suggestion.type === 'make') {
       const makeValue = suggestion.make || suggestion.text;
       setSelectedMakes([makeValue]);
-      setQuery('');
       return;
     }
 
@@ -283,7 +278,6 @@ export default function SearchScreen() {
       if (suggestion.model) {
         setTimeout(() => setSelectedModels([suggestion.model!]), 100);
       }
-      setQuery('');
       return;
     }
 
@@ -295,7 +289,6 @@ export default function SearchScreen() {
       if (suggestion.trim) {
         setTimeout(() => setSelectedTrims([suggestion.trim!]), 200);
       }
-      setQuery('');
     }
   }, []);
 
@@ -375,6 +368,72 @@ export default function SearchScreen() {
   const canApply = !!(query.trim() || hasSelections);
   const makes = facets?.make ?? [];
 
+  const activeScopeLabel = useMemo(() => {
+    const scopeParts: string[] = [];
+
+    if (selectedPartner) scopeParts.push(selectedPartner.name);
+    if (selectedMakes.length > 0) {
+      scopeParts.push(selectedMakes.length === 1 ? selectedMakes[0] : `${selectedMakes.length} makes`);
+    }
+    if (selectedModels.length > 0) {
+      scopeParts.push(selectedModels.length === 1 ? selectedModels[0] : `${selectedModels.length} models`);
+    }
+
+    if (scopeParts.length === 0) return null;
+    return scopeParts.join(' > ');
+  }, [selectedPartner, selectedMakes, selectedModels]);
+
+  const searchPlaceholder = useMemo(() => {
+    if (selectedModels.length === 1) {
+      return `Search trims within ${selectedModels[0]}`;
+    }
+    if (selectedModels.length > 1) {
+      return 'Search trims within selected models';
+    }
+    if (selectedMakes.length === 1) {
+      return `Search models within ${selectedMakes[0]}`;
+    }
+    if (selectedMakes.length > 1) {
+      return 'Search models within selected makes';
+    }
+    if (selectedPartner) {
+      return `Search inventory at ${selectedPartner.name}`;
+    }
+    return 'Search make, model, dealer';
+  }, [selectedModels, selectedMakes, selectedPartner]);
+
+  const emptySuggestionMessage = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    if (!normalizedQuery || normalizedQuery.length < 2) return null;
+
+    const scopeValues = [
+      ...selectedMakes,
+      ...selectedModels,
+      ...(selectedPartner ? [selectedPartner.name] : []),
+    ].map((value) => value.trim().toLowerCase());
+
+    const isQueryAlreadySelected = scopeValues.some((value) => value === normalizedQuery);
+
+    if (isQueryAlreadySelected) {
+      if (selectedModels.length > 0) {
+        return 'Model selected. Try typing a trim, feature, or keyword.';
+      }
+      if (selectedMakes.length > 0) {
+        return 'Make selected. Try typing a model, trim, or feature.';
+      }
+      if (selectedPartner) {
+        return 'Dealer selected. Try typing a make, model, or feature.';
+      }
+    }
+
+    if (activeScopeLabel) {
+      return `No suggestions found in ${activeScopeLabel}. Try a different term or clear scope.`;
+    }
+
+    return 'No suggestions found';
+  }, [query, selectedMakes, selectedModels, selectedPartner, activeScopeLabel]);
+
   const selectionBreadcrumbs = useMemo(() => {
     const parts: string[] = [];
 
@@ -445,12 +504,11 @@ export default function SearchScreen() {
           <HapticPressable
             onPress={clearAllSelections}
             hitSlop={Spacing.sm}
-            style={[
-              styles.headerActionButton,
-              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-            ]}
+            style={styles.clearButton}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.error} />
+            <Text variant="subheadEmphasized" style={{ color: hasSelections || query.trim() ? colors.error : colors.labelTertiary }}>
+              Clear
+            </Text>
           </HapticPressable>
         }
       />
@@ -466,8 +524,9 @@ export default function SearchScreen() {
         >
           <Ionicons name="search" size={Sizes.iconSm} color={colors.labelTertiary} />
           <TextInput
+            ref={searchInputRef}
             style={[styles.searchInput, { color: colors.label }]}
-            placeholder="Search make, model, dealer"
+            placeholder={searchPlaceholder}
             placeholderTextColor={colors.placeholder}
             value={query}
             onChangeText={setQuery}
@@ -574,7 +633,7 @@ export default function SearchScreen() {
               </View>
             ) : query.trim().length >= 2 ? (
               <Text variant="subhead" tone="muted" style={styles.emptyText}>
-                No suggestions found
+                {emptySuggestionMessage}
               </Text>
             ) : null}
           </View>
@@ -699,10 +758,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
+    paddingTop: SheetChrome.contentPaddingTop,
   },
   controls: {
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingBottom: Spacing.md,
+    gap: Spacing.sm,
   },
   searchInputContainer: {
     flexDirection: 'row',
@@ -711,7 +772,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     borderCurve: 'continuous',
     borderWidth: 1,
-    paddingHorizontal: Spacing.xs,
+    paddingLeft: Spacing.md,
+    paddingRight: Spacing.xs,
     gap: Spacing.sm,
   },
   searchInput: {
@@ -817,13 +879,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerActionButton: {
-    width: Sizes.actionButtonSm,
-    height: Sizes.actionButtonSm,
-    borderRadius: Radius.full,
-    borderWidth: StyleSheet.hairlineWidth,
-    backgroundColor: 'transparent',
-    alignItems: 'center',
+  clearButton: {
+    marginLeft: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    minHeight: Sizes.actionButtonSm,
     justifyContent: 'center',
   },
 });
