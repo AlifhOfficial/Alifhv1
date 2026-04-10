@@ -4,6 +4,18 @@ import type { NextRequest } from "next/server";
 // Site password protection cookie name
 const SITE_ACCESS_COOKIE = "site-access-granted";
 
+function isAuthPublicRoute(pathname: string): boolean {
+  if (pathname === "/reset-password" || pathname === "/verify-email") {
+    return true;
+  }
+
+  if (pathname.startsWith("/auth/") || pathname.startsWith("/magic-link/")) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Check if site password protection is enabled and handle access
  * Returns NextResponse if access denied, or null if access granted/not required
@@ -38,8 +50,8 @@ function checkSitePassword(request: NextRequest): NextResponse | null {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // /staging-login is the page that grants site-password access — never gate it
-  if (pathname === "/staging-login") {
+  // Auth and staging access routes must never be blocked by site-password checks.
+  if (pathname === "/staging-login" || isAuthPublicRoute(pathname)) {
     return NextResponse.next();
   }
 
