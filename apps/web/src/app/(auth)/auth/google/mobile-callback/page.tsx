@@ -40,8 +40,28 @@ export default async function GoogleMobileCallbackPage({
     if (cookieHeader) requestHeaders.set("cookie", cookieHeader);
     if (authorizationHeader) requestHeaders.set("authorization", authorizationHeader);
 
-    // Get session from Better Auth
-    const session = await auth.api.getSession({ headers: requestHeaders });
+    // Get session from Better Auth (primary path)
+    let session = await auth.api.getSession({ headers: requestHeaders });
+
+    // Fallback: call the auth endpoint directly with the cookie header.
+    if (!session?.user || !session?.session) {
+      try {
+        const baseUrl = process.env.BETTER_AUTH_URL || "https://revvup.ae";
+        const res = await fetch(`${baseUrl}/api/auth/get-session`, {
+          method: "GET",
+          headers: requestHeaders,
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.user && data?.session) {
+            session = data;
+          }
+        }
+      } catch {
+        // Ignore fallback errors and return error below.
+      }
+    }
 
     if (!session?.user || !session?.session) {
       const errorCode = cookieHeader ? "session_not_found" : "missing_session_cookie";
