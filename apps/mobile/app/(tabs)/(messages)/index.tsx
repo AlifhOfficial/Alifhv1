@@ -24,8 +24,7 @@ import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
 import type { Conversation } from '@/lib/messaging-api';
-
-const FOCUS_REFRESH_STALE_TIME_MS = 30_000;
+import { MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS } from '@alifh/shared';
 
 // ── List Item Type - Always grouped ─────────────────────────────
 type ListItem = {
@@ -73,7 +72,10 @@ export default function MessagesScreen() {
       }
       if (isAuthenticated) {
         const now = Date.now();
-        if (now - lastFocusRefreshAtRef.current >= FOCUS_REFRESH_STALE_TIME_MS) {
+        if (
+          now - lastFocusRefreshAtRef.current >=
+          MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS
+        ) {
           lastFocusRefreshAtRef.current = now;
           void refresh();
         }

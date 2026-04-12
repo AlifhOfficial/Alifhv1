@@ -121,8 +121,10 @@ export function ChatWindow({
     : conversation?.otherParticipant?.avatarUrl;
   // Use live presence from useMessages (real-time via WS, initialized from DB)
   const isOnline = isOtherOnline ?? conversation?.otherParticipant?.isOnline ?? false;
-  // otherLastSeenAt is now initialized from DB in useMessages, WS updates override
-  const lastSeenAt = otherLastSeenAt;
+  // otherLastSeenAt is initialized from DB, WS updates override.
+  // Fall back to lastReadAt (web parity): if we have no seen time but a read receipt,
+  // that read time is still a valid "last active" indicator.
+  const lastSeenAt = otherLastSeenAt ?? otherLastReadAt;
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
@@ -327,6 +329,7 @@ export function ChatWindow({
   }, [isOtherTyping]);
 
   // Offline time text — null when online (green dot handles it)
+  // Matches web: falls back to 'Away' when no last-active time is known.
   const offlineTimeText = useMemo((): string | null => {
     if (isOnline) return null;
     if (lastSeenAt) {
@@ -343,7 +346,7 @@ export function ChatWindow({
         return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
       }
     }
-    return null;
+    return 'Away';
   }, [isOnline, lastSeenAt]);
 
   const { applySearch, clearSearch, clearFilterParams } = useSearch();

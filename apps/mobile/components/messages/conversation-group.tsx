@@ -3,7 +3,7 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import Animated, {
@@ -60,23 +60,51 @@ export function ConversationGroup({
 }: ConversationGroupProps) {
   const { colors } = useTheme();
 
-  const isMulti = conversations.length > 1;
-  const [isExpanded, setIsExpanded] = useState(
-    defaultExpanded || conversations.some((c) => c.id === activeConversationId)
+  const sortedConversations = useMemo(
+    () =>
+      [...conversations].sort(
+        (a, b) =>
+          new Date(String(b.lastMessageAt)).getTime() -
+          new Date(String(a.lastMessageAt)).getTime()
+      ),
+    [conversations]
   );
-  const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const isMulti = sortedConversations.length > 1;
+  const [isExpanded, setIsExpanded] = useState(
+    defaultExpanded || sortedConversations.some((c) => c.id === activeConversationId)
+  );
+  const totalUnread = sortedConversations.reduce((sum, c) => sum + c.unreadCount, 0);
   const hasUnread = totalUnread > 0;
-  const latest = conversations[0];
+  const latest = sortedConversations[0];
+  const hasActiveConversation = sortedConversations.some(
+    (conversation) => conversation.id === activeConversationId
+  );
+  const groupIsOnline =
+    isOnline || sortedConversations.some((conversation) => conversation.otherParticipant?.isOnline);
+
+  useEffect(() => {
+    if (hasActiveConversation) {
+      setIsExpanded(true);
+    }
+  }, [hasActiveConversation]);
 
   const toggleExpanded = useCallback(() => setIsExpanded((p) => !p), []);
 
   const handlePress = useCallback(() => {
+    if (!latest) {
+      return;
+    }
+
     if (isMulti) {
       toggleExpanded();
     } else {
-      onSelect(conversations[0]);
+      onSelect(latest);
     }
-  }, [isMulti, toggleExpanded, onSelect, conversations]);
+  }, [isMulti, latest, toggleExpanded, onSelect]);
+
+  if (!latest) {
+    return null;
+  }
 
   return (
     <View>
@@ -128,7 +156,7 @@ export function ConversationGroup({
                   </Text>
                 </View>
               )}
-              {isOnline && (
+              {groupIsOnline && (
                 <View
                   style={{
                     position: 'absolute',
@@ -216,7 +244,7 @@ export function ConversationGroup({
             borderLeftColor: colors.separator,
           }}
         >
-          {conversations.map((c, i) => {
+          {sortedConversations.map((c, i) => {
             const cUnread = c.unreadCount > 0;
             return (
               <Animated.View

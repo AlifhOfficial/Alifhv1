@@ -15,8 +15,21 @@ import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/confi
 import { useWebSocket } from '@/context/websocket-context';
 import { isConversationActive } from './active-conversations';
 import {
-  MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS,
-  MESSAGING_CACHE_GC_TIME_MS,
+  applyConversationMutation,
+  applyMessageActivityToConversations,
+  applyReadReceiptToConversations,
+  readConversationListCache,
+  resetWatchedUsers,
+  retainWatchedUser,
+  releaseWatchedUser,
+  requestConversationRefresh,
+  sortConversationsByLastMessage,
+  shouldProcessConversationWsEvent,
+  subscribeToConversationMutations,
+  subscribeToConversationRefresh,
+  writeConversationListCache,
+} from './messaging-sync';
+import {
   MESSAGING_CONVERSATIONS_PAGE_SIZE,
 } from '@alifh/shared';
 
@@ -38,44 +51,6 @@ interface UseConversationsReturn {
   pullToRefresh: () => Promise<void>;
 }
 
-type ConversationsCacheEntry = {
-  conversations: Conversation[];
-  updatedAt: number;
-};
-
-const conversationsCache = new Map<string, ConversationsCacheEntry>();
-
-// Deduplicate repeated WS events so counts don't inflate when duplicate
-// broadcasts occur in a short window.
-const processedWsEvents = new Map<string, number>();
-const WS_EVENT_DEDUPE_WINDOW_MS = 15_000;
-
-function shouldProcessWsEvent(eventKey: string): boolean {
-  const now = Date.now();
-
-  for (const [key, timestamp] of processedWsEvents) {
-    if (now - timestamp > WS_EVENT_DEDUPE_WINDOW_MS) {
-      processedWsEvents.delete(key);
-    }
-  }
-
-  if (processedWsEvents.has(eventKey)) {
-    return false;
-  }
-
-  processedWsEvents.set(eventKey, now);
-  return true;
-}
-
-function pruneConversationsCache() {
-  const now = Date.now();
-  for (const [key, entry] of conversationsCache) {
-    if (now - entry.updatedAt > MESSAGING_CACHE_GC_TIME_MS) {
-      conversationsCache.delete(key);
-    }
-  }
-}
-
 export function useConversations({
   isAuthenticated,
   userId,
@@ -90,6 +65,7 @@ export function useConversations({
   const watchedUsersRef = useRef<Set<string>>(new Set());
   const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
   const lastFetchedCacheKeyRef = useRef<string | null>(null);
+  const wasConnectedRef = useRef(false);
   const cacheKey = useMemo(
     () => `${scope ?? 'personal'}:${userId ?? 'anon'}`,
     [scope, userId]
@@ -107,24 +83,33 @@ export function useConversations({
     // Prevents open-time races writing transient empty state.
     if (lastFetchedCacheKeyRef.current !== cacheKey) return;
     if (!isAuthenticated || isLoading) return;
-    pruneConversationsCache();
-    conversationsCache.set(cacheKey, {
-      conversations,
-      updatedAt: Date.now(),
-    });
+    writeConversationListCache(cacheKey, conversations);
   }, [cacheKey, conversations, isAuthenticated, isLoading]);
+
+  useEffect(() => {
+    return subscribeToConversationMutations((updater) => {
+      setConversations((prev) => updater(prev));
+    });
+  }, []);
+
+  useEffect(() => {
+    return subscribeToConversationRefresh(() => {
+      void loadConversationsRef.current?.();
+    });
+  }, []);
 
   // Subscribe to real-time updates
   useEffect(() => {
     const unsubscribe = subscribe((msg) => {
       // Handle new messages - update lastMessagePreview, lastMessageAt, and unreadCount
       if (msg.type === 'new_message' && msg.conversationId) {
+        const conversationId = msg.conversationId;
         const newMsg = msg.message as Message | undefined;
         const eventKey = newMsg?.id
           ? `new_message:${newMsg.id}`
           : `new_message:${msg.conversationId}:${msg.userId ?? newMsg?.senderId ?? 'unknown'}:${newMsg?.createdAt ?? 'unknown'}`;
 
-        if (!shouldProcessWsEvent(eventKey)) {
+        if (!shouldProcessConversationWsEvent(eventKey)) {
           return;
         }
 
@@ -132,80 +117,63 @@ export function useConversations({
         // or newMsg.senderId (message content)
         const senderId = msg.userId || newMsg?.senderId;
         const isOwnMessage = senderId === userIdRef.current;
-        const isActiveOpenConversation = isConversationActive(msg.conversationId);
+        const isActiveOpenConversation = isConversationActive(conversationId);
 
-        setConversations(prev => {
-          const exists = prev.some(c => c.id === msg.conversationId);
-          if (!exists) {
-            // Conversation not in list — trigger a refresh to fetch it
-            loadConversationsRef.current?.();
-            return prev;
-          }
+        let found = false;
+        applyConversationMutation((prev) => {
+          const result = applyMessageActivityToConversations(prev, {
+            conversationId,
+            createdAt: newMsg?.createdAt || new Date().toISOString(),
+            preview:
+              (newMsg?.text?.trim() ? newMsg.text.substring(0, 100) : null) ||
+              (newMsg?.mediaType ? `Sent a ${newMsg.mediaType}` : null) ||
+              'New message',
+            isOwnMessage,
+            isActiveConversation: isActiveOpenConversation,
+          });
 
-          const createdAt = newMsg?.createdAt || new Date().toISOString();
-
-          return prev
-            .map(conv => {
-              if (conv.id !== msg.conversationId) return conv;
-              const preview =
-                (newMsg?.text?.trim() ? newMsg.text.substring(0, 100) : null) ||
-                (newMsg?.mediaType ? `Sent a ${newMsg.mediaType}` : null) ||
-                conv.lastMessagePreview ||
-                'New message';
-
-              return {
-                ...conv,
-                lastMessageAt: createdAt,
-                lastMessagePreview: preview,
-                messageCount: (conv.messageCount || 0) + 1,
-                unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (conv.unreadCount || 0) + 1,
-                myLastReadAt:
-                  !isOwnMessage && isActiveOpenConversation
-                    ? createdAt
-                    : conv.myLastReadAt,
-              };
-            })
-            // Re-sort by lastMessageAt (most recent first)
-            .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+          found = result.found;
+          return result.conversations;
         });
+
+        if (!found) {
+          requestConversationRefresh();
+        }
 
       }
 
       // Handle read receipts
       if (msg.type === 'read_receipt' && msg.conversationId) {
+        const conversationId = msg.conversationId;
         const eventKey = `read_receipt:${msg.conversationId}:${msg.userId ?? 'unknown'}:${msg.messageId ?? 'none'}:${msg.lastReadAt ?? 'none'}`;
-        if (!shouldProcessWsEvent(eventKey)) {
+        if (!shouldProcessConversationWsEvent(eventKey)) {
           return;
         }
 
         if (msg.userId === userIdRef.current) {
-          setConversations(prev => prev.map(conv => {
-            if (conv.id !== msg.conversationId) return conv;
-            return {
-              ...conv,
-              unreadCount: 0,
-              myLastReadAt: msg.lastReadAt || conv.myLastReadAt,
-            };
-          }));
+          applyConversationMutation((prev) =>
+            applyReadReceiptToConversations(prev, {
+              conversationId,
+              lastReadAt: msg.lastReadAt,
+              isSelfReceipt: true,
+            })
+          );
           return;
         }
 
-        setConversations(prev => prev.map(conv => {
-          if (conv.id !== msg.conversationId) return conv;
-          return {
-            ...conv,
-            otherParticipant: conv.otherParticipant ? {
-              ...conv.otherParticipant,
-              lastReadAt: msg.lastReadAt || conv.otherParticipant.lastReadAt,
-            } : null,
-          };
-        }));
+        applyConversationMutation((prev) =>
+          applyReadReceiptToConversations(prev, {
+            conversationId,
+            lastReadAt: msg.lastReadAt,
+            isSelfReceipt: false,
+          })
+        );
       }
 
       // Handle presence updates
       if (msg.type === 'presence' && msg.userId) {
-        setConversations(prev => {
-          return prev.map(conv => {
+        applyConversationMutation((prev) => {
+          return prev.map((conv) => {
             if (conv.otherParticipant?.id === msg.userId) {
               return {
                 ...conv,
@@ -225,16 +193,13 @@ export function useConversations({
     return unsubscribe;
   }, [subscribe]);
 
-  // Clear watched set when connection drops so all users get re-subscribed on reconnect.
-  // The WS server's per-connection subscription state is destroyed on close,
-  // so we must resend watch_user for every participant after reconnect.
-  const prevConnectedRef = useRef(false);
   useEffect(() => {
-    if (!isConnected && prevConnectedRef.current) {
-      // Just disconnected — clear so the watch effect re-subscribes on next connect
+    if (!isConnected && wasConnectedRef.current) {
+      resetWatchedUsers();
       watchedUsersRef.current.clear();
     }
-    prevConnectedRef.current = isConnected;
+
+    wasConnectedRef.current = isConnected;
   }, [isConnected]);
 
   // Watch presence for all unique other participants so the list shows live online/lastSeenAt
@@ -246,10 +211,10 @@ export function useConversations({
       if (c.otherParticipant?.id) currentOtherIds.add(c.otherParticipant.id);
     }
 
-    // Subscribe to new users (includes all users after a reconnect since watchedUsersRef was cleared)
+    // Subscribe to new users
     for (const uid of currentOtherIds) {
       if (!watchedUsersRef.current.has(uid)) {
-        send({ type: 'watch_user', targetUserId: uid });
+        retainWatchedUser(uid, send);
         watchedUsersRef.current.add(uid);
       }
     }
@@ -257,7 +222,7 @@ export function useConversations({
     // Unsubscribe from users no longer in the list
     for (const uid of watchedUsersRef.current) {
       if (!currentOtherIds.has(uid)) {
-        send({ type: 'unwatch_user', targetUserId: uid });
+        releaseWatchedUser(uid, send);
         watchedUsersRef.current.delete(uid);
       }
     }
@@ -266,7 +231,7 @@ export function useConversations({
   const cleanupWatchedUsers = useCallback(() => {
     const watchedUsers = Array.from(watchedUsersRef.current);
     for (const uid of watchedUsers) {
-      send({ type: 'unwatch_user', targetUserId: uid });
+      releaseWatchedUser(uid, send);
     }
     watchedUsersRef.current.clear();
   }, [send]);
@@ -316,34 +281,37 @@ export function useConversations({
           } : null,
         }));
       
-      // Merge: preserve live presence data (isOnline/lastSeenAt) from WS
-      setConversations(prev => {
-        const presenceMap = new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>();
-        prev.forEach(conv => {
+      setConversations((prev) => {
+        const previousPresenceMap = new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>();
+        prev.forEach((conv) => {
           if (conv.otherParticipant?.id) {
-            presenceMap.set(conv.otherParticipant.id, {
+            previousPresenceMap.set(conv.otherParticipant.id, {
               isOnline: conv.otherParticipant.isOnline,
               lastSeenAt: conv.otherParticipant.lastSeenAt,
             });
           }
         });
 
-        return filteredConversations.map(conv => {
-          const existing = conv.otherParticipant?.id
-            ? presenceMap.get(conv.otherParticipant.id)
-            : undefined;
-          if (existing && conv.otherParticipant) {
-            return {
-              ...conv,
-              otherParticipant: {
-                ...conv.otherParticipant,
-                isOnline: existing.isOnline ?? conv.otherParticipant.isOnline,
-                lastSeenAt: existing.lastSeenAt ?? conv.otherParticipant.lastSeenAt,
-              },
-            };
-          }
-          return conv;
-        });
+        return sortConversationsByLastMessage(
+          filteredConversations.map((conv) => {
+            const existing = conv.otherParticipant?.id
+              ? previousPresenceMap.get(conv.otherParticipant.id)
+              : undefined;
+
+            if (existing && conv.otherParticipant) {
+              return {
+                ...conv,
+                otherParticipant: {
+                  ...conv.otherParticipant,
+                  isOnline: existing.isOnline ?? conv.otherParticipant.isOnline,
+                  lastSeenAt: existing.lastSeenAt ?? conv.otherParticipant.lastSeenAt,
+                },
+              };
+            }
+
+            return conv;
+          })
+        );
       });
       const readyAt = consumeDataReady(`messaging:conversations:${scope ?? 'personal'}`) ?? performance.now();
       scheduleRenderPerf('messaging.conversations-list', readyAt, {
@@ -380,14 +348,12 @@ export function useConversations({
   // Initial load (web-like staleTime/gcTime behavior)
   useEffect(() => {
     if (isAuthenticated) {
-      pruneConversationsCache();
-      const cached = conversationsCache.get(cacheKey);
+      const cached = readConversationListCache(cacheKey);
       if (cached) {
         setConversations(cached.conversations);
         setIsLoading(false);
 
-        const isFresh = Date.now() - cached.updatedAt < MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS;
-        if (!isFresh) {
+        if (!cached.isFresh) {
           // Stale-while-revalidate: show cache now, refresh in background.
           void loadConversations();
         }

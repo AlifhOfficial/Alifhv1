@@ -13,6 +13,15 @@ import {
 } from '@/lib/messaging-api';
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
+import { isConversationActive } from './active-conversations';
+import {
+  applyConversationMutation,
+  applyMessageActivityToConversations,
+  requestConversationRefresh,
+  resetWatchedUsers,
+  retainWatchedUser,
+  releaseWatchedUser,
+} from './messaging-sync';
 import {
   MESSAGING_MESSAGES_CACHE_STALE_TIME_MS,
   MESSAGING_CACHE_GC_TIME_MS,
@@ -108,6 +117,8 @@ export function useMessages({
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastRefreshRef = useRef<number>(0);
   const lastFetchedCacheKeyRef = useRef<string | null>(null);
+  const loadMessagesRef = useRef<((cursor?: string) => Promise<void>) | null>(null);
+  const wasConnectedRef = useRef(false);
   
   // Track pending sends: tempId -> true (waiting for API) or realId (WS arrived first)
   // This prevents race conditions when WS and API responses arrive out of order
@@ -191,14 +202,23 @@ export function useMessages({
   useEffect(() => {
     if (!otherUserId || !isConnected || watchingRef.current) return;
     watchingRef.current = true;
-    send({ type: 'watch_user', targetUserId: otherUserId });
+    retainWatchedUser(otherUserId, send);
     return () => {
       if (watchingRef.current && otherUserId) {
-        send({ type: 'unwatch_user', targetUserId: otherUserId });
+        releaseWatchedUser(otherUserId, send);
         watchingRef.current = false;
       }
     };
   }, [isConnected, otherUserId, send]);
+
+  useEffect(() => {
+    if (!isConnected && wasConnectedRef.current) {
+      resetWatchedUsers();
+      watchingRef.current = false;
+    }
+
+    wasConnectedRef.current = isConnected;
+  }, [isConnected]);
 
   // Helper to deduplicate messages array by ID (keeps first occurrence)
   const dedupeMessages = useCallback((messages: Message[]): Message[] => {
@@ -214,8 +234,18 @@ export function useMessages({
   useEffect(() => {
     const unsubscribe = subscribe((msg) => {
       // Handle new messages — deduplicate by ID (allows multi-device sync)
-      if (msg.type === 'new_message' && msg.conversationId === conversationIdRef.current && msg.message) {
-        const newMessage = msg.message as Message;
+      if (msg.type === 'new_message' && msg.conversationId === conversationIdRef.current) {
+        const newMessage = msg.message as Partial<Message> | undefined;
+        const hasUsablePayload =
+          !!newMessage &&
+          typeof newMessage.id === 'string' &&
+          typeof newMessage.senderId === 'string' &&
+          typeof newMessage.createdAt === 'string';
+
+        if (!hasUsablePayload) {
+          void loadMessagesRef.current?.();
+          return;
+        }
 
         // Check if message already exists (avoid duplicates)
         setMessages(prev => {
@@ -226,10 +256,11 @@ export function useMessages({
           const messageWithAvatar = {
             ...newMessage,
             sender: {
-              ...newMessage.sender,
-              avatarUrl: getAvatarUrl(newMessage.sender.avatarUrl),
+              id: newMessage.sender?.id ?? newMessage.senderId,
+              name: newMessage.sender?.name ?? null,
+              avatarUrl: getAvatarUrl(newMessage.sender?.avatarUrl ?? null),
             },
-          };
+          } as Message;
 
           // If this is our own message echoed back via WS, find the matching
           // pending temp message using FIFO order (oldest pending = first sent)
@@ -242,8 +273,16 @@ export function useMessages({
             
             if (pendingTempIds.length > 0) {
               const oldestTempId = pendingTempIds[0];
+              if (!oldestTempId) {
+                return dedupeMessages([messageWithAvatar, ...prev]);
+              }
+              const messageId = newMessage.id;
+              if (!messageId) {
+                return dedupeMessages([messageWithAvatar, ...prev]);
+              }
+
               // Mark this temp as resolved with the real ID
-              pendingSendsRef.current.set(oldestTempId, newMessage.id);
+              pendingSendsRef.current.set(oldestTempId, messageId);
               
               // Replace the temp message with real one
               const updated = prev.map(m => 
@@ -400,6 +439,10 @@ export function useMessages({
     [cacheKey, conversationId, dedupeMessages, isAuthenticated, enabled]
   );
 
+  useEffect(() => {
+    loadMessagesRef.current = loadMessages;
+  }, [loadMessages]);
+
   // Check if thread is behind server state (unread messages or newer messages exist)
   const isThreadBehind = useCallback(() => {
     // If there are unread messages, we're behind
@@ -546,6 +589,24 @@ export function useMessages({
         
         // Clean up tracking
         pendingSendsRef.current.delete(tempId);
+
+        const resolvedPreview =
+          response.message.text?.trim()
+            ? response.message.text.substring(0, 100)
+            : response.message.mediaType
+              ? `Sent a ${response.message.mediaType}`
+              : 'New message';
+        const createdAt = response.message.createdAt || optimisticMessage.createdAt;
+
+        applyConversationMutation((prev) =>
+          applyMessageActivityToConversations(prev, {
+            conversationId,
+            createdAt,
+            preview: resolvedPreview,
+            isOwnMessage: true,
+            isActiveConversation: isConversationActive(conversationId),
+          }).conversations
+        );
       } catch (err) {
         console.error('[useMessages] Send error:', err);
         setError(err instanceof Error ? err.message : 'Failed to send message');
@@ -553,6 +614,7 @@ export function useMessages({
         // Remove optimistic message and tracking on error
         pendingSendsRef.current.delete(tempId);
         setMessages(prev => prev.filter(msg => msg.id !== tempId));
+        requestConversationRefresh();
       } finally {
         setIsSending(false);
       }
