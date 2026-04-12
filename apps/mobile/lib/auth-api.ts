@@ -1042,7 +1042,24 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
     // Check for errors
     const error = params.get('error');
     if (error) {
-      return { success: false, error: error === 'cancelled' ? 'Sign in was cancelled' : error };
+      if (error === 'cancelled') {
+        return { success: false, error: 'Sign in was cancelled' };
+      }
+      if (error === 'missing_session_cookie') {
+        return {
+          success: false,
+          error:
+            'Google sign in did not complete. Please close the browser window and try again.',
+        };
+      }
+      if (error === 'session_not_found') {
+        return {
+          success: false,
+          error:
+            'Google sign in completed, but no session was returned. Please try again.',
+        };
+      }
+      return { success: false, error };
     }
     
     // Check for success

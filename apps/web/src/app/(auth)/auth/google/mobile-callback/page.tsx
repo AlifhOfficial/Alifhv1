@@ -11,6 +11,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function GoogleMobileCallbackPage({
   searchParams,
 }: {
@@ -30,13 +33,19 @@ export default async function GoogleMobileCallbackPage({
   }
   
   try {
+    const headersList = await headers();
+    const cookieHeader = headersList.get("cookie");
+    const authorizationHeader = headersList.get("authorization");
+    const requestHeaders = new Headers();
+    if (cookieHeader) requestHeaders.set("cookie", cookieHeader);
+    if (authorizationHeader) requestHeaders.set("authorization", authorizationHeader);
+
     // Get session from Better Auth
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    
+    const session = await auth.api.getSession({ headers: requestHeaders });
+
     if (!session?.user || !session?.session) {
-      return redirect(`${baseRedirect}?error=${encodeURIComponent('No session found')}`);
+      const errorCode = cookieHeader ? "session_not_found" : "missing_session_cookie";
+      return redirect(`${baseRedirect}?error=${encodeURIComponent(errorCode)}`);
     }
     
     // Build redirect URL with session data
