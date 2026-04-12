@@ -6,6 +6,8 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { makeRedirectUri } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { Passkey as NativePasskey } from 'react-native-passkey';
 import { API_BASE, AUTH_ENDPOINTS } from './config';
 
@@ -969,10 +971,6 @@ export async function signInWithPasskey(): Promise<AuthResult> {
  */
 async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResult> {
   try {
-    // Import expo-web-browser dynamically to avoid issues if not installed
-    const WebBrowser = await import('expo-web-browser');
-    const { makeRedirectUri } = await import('expo-auth-session');
-    
     // Ensure browser redirect session is warmed up (improves UX on iOS)
     await WebBrowser.warmUpAsync();
     
@@ -1027,6 +1025,8 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
       return { success: false, error: `Google ${mode === 'signup' ? 'sign up' : 'sign in'} failed` };
     }
 
+    console.log('[Auth] Browser callback URL:', result.url);
+
     if (!result.url.startsWith(redirectUri)) {
       return {
         success: false,
@@ -1038,6 +1038,7 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
     // Parse the callback URL to get session data
     const url = new URL(result.url);
     const params = new URLSearchParams(url.search);
+    console.log('[Auth] Callback params:', params.toString());
     
     // Check for errors
     const error = params.get('error');
@@ -1057,6 +1058,13 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
           success: false,
           error:
             'Google sign in completed, but no session was returned. Please try again.',
+        };
+      }
+      if (error === 'Failed to get session') {
+        return {
+          success: false,
+          error:
+            'Google sign in completed, but the server failed to build the mobile session. Please try again.',
         };
       }
       return { success: false, error };

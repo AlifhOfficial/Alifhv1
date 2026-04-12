@@ -14,6 +14,20 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+function normalizeExpiresAt(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString();
+  }
+
+  const fallback = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  return fallback.toISOString();
+}
+
 export default async function GoogleMobileCallbackPage({
   searchParams,
 }: {
@@ -74,7 +88,7 @@ export default async function GoogleMobileCallbackPage({
     const callbackParams = new URLSearchParams({
       success: 'true',
       token: session.session.token,
-      expiresAt: session.session.expiresAt.toISOString(),
+      expiresAt: normalizeExpiresAt(session.session.expiresAt),
       userId: session.user.id,
       userName: session.user.name || '',
       userEmail: session.user.email,
