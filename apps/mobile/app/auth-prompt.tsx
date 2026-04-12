@@ -4,9 +4,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Calendar1, Heart, LogIn, MessageCircle, Package, User } from 'lucide-react-native';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
-import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sizes, Spacing, Stroke, SheetChrome, SheetTypography, scale } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
 
@@ -37,6 +38,18 @@ const CONTEXT_MESSAGES: Record<AuthSheetContext, { title: string; subtitle: stri
   },
 };
 
+const CONTEXT_ICONS: Record<AuthSheetContext, React.ComponentType<{ size: number; color: string; strokeWidth: number }>> = {
+  profile:  User,
+  saved:    Heart,
+  messages: MessageCircle,
+  listings: Package,
+  bookings: Calendar1,
+  default:  LogIn,
+};
+
+const ICON_SIZE = scale(36);
+const ICON_CONTAINER_SIZE = scale(80);
+
 export default function AuthPromptScreen() {
   const params = useLocalSearchParams<{ context?: string; title?: string; subtitle?: string }>();
   const { colorScheme } = useTheme();
@@ -52,6 +65,8 @@ export default function AuthPromptScreen() {
     params.context === 'listings'
       ? params.context
       : 'default';
+
+  const ContextIcon = CONTEXT_ICONS[context];
 
   const displayTitle = useMemo(() => {
     if (typeof params.title === 'string' && params.title.length > 0) {
@@ -106,10 +121,18 @@ export default function AuthPromptScreen() {
         <Text
           variant={SheetTypography.rowLabel}
           style={[styles.subtitle, { color: colors.sheetLabelMuted }]}
-          tone="secondary"
         >
           {displaySubtitle}
         </Text>
+
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: colors.fill3, borderColor: colors.border },
+          ]}
+        >
+          <ContextIcon size={ICON_SIZE} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
+        </View>
       </Animated.View>
 
       <Animated.View
@@ -164,12 +187,21 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: SheetChrome.contentPaddingTop,
-    gap: Spacing.lg,
   },
   content: {
-    flex: 1,
-    justifyContent: 'flex-start',
+    alignItems: 'center',
     gap: Spacing.sm,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing['2xl'],
+  },
+  iconContainer: {
+    width: ICON_CONTAINER_SIZE,
+    height: ICON_CONTAINER_SIZE,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing.md,
   },
   subtitle: {
     textAlign: 'center',

@@ -110,6 +110,8 @@ export default function ForgotPasswordSheetScreen() {
               {
                 backgroundColor: colors.primary,
                 opacity: pressed ? 0.82 : 1,
+                alignSelf: 'stretch',
+                marginTop: Spacing.lg,
               },
             ]}
           >
@@ -232,14 +234,14 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   form: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   inputWrap: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.xs,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
   },
   input: {
     fontSize: 16,
@@ -253,6 +255,7 @@ const styles = StyleSheet.create({
   },
   message: {
     textAlign: 'center',
+    marginBottom: Spacing.sm,
   },
   stateScreen: {
     justifyContent: 'flex-start',

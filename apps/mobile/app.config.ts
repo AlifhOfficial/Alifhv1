@@ -60,7 +60,6 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     android: {
       userInterfaceStyle: 'automatic',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
-      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         backgroundColor: '#000000',
         foregroundImage: './assets/images/android-icon-foreground.png',

@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { HapticPressable, SheetHeader, Text } from '@/components/ui';
+import { GoogleIcon, HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -263,7 +263,7 @@ export default function SignInSheetScreen() {
           ]}
         >
           <View style={styles.googleLabelRow}>
-            <Ionicons name="logo-google" size={16} color={colors.sheetLabel} />
+            <GoogleIcon size={18} />
             <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
               Continue with Google
             </Text>
@@ -304,14 +304,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   form: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   inputWrap: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: Radius.xl,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.xs,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
   },
   input: {
     fontSize: 16,

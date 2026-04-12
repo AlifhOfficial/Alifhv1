@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { usePreventRemove } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -48,6 +48,7 @@ export default function VerifyEmailSheetScreen() {
   const [resendCountdown, setResendCountdown] = useState(RESEND_COOLDOWN_SECONDS);
   const [attemptsRemaining, setAttemptsRemaining] = useState(VERIFY_MAX_ATTEMPTS);
   const [pendingAction, setPendingAction] = useState<any>(null);
+  const inputRef = useRef<TextInput>(null);
 
   usePreventRemove(pendingAction === null && !showSuccess, ({ data }) => {
     setPendingAction(data.action);
@@ -193,23 +194,49 @@ export default function VerifyEmailSheetScreen() {
       </Text>
 
       <View style={styles.form}>
-        <View style={[styles.inputWrap, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}> 
-          <Text variant="caption1" style={{ color: colors.sheetLabelMuted }}>
-            Verification code
-          </Text>
-          <TextInput
-            value={code}
-            onChangeText={(value) => setCode(normalizeCode(value))}
-            placeholder="123456"
-            placeholderTextColor={colors.sheetLabelMuted}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            editable={!isLoading}
-            returnKeyType="done"
-            onSubmitEditing={handleVerify}
-            style={[styles.input, { color: colors.sheetLabel }]}
-          />
-        </View>
+        {/* OTP boxes */}
+        <Pressable onPress={() => inputRef.current?.focus()} style={styles.otpRow}>
+          {Array.from({ length: 6 }).map((_, i) => {
+            const digit = code[i] ?? '';
+            const isFocused = !isLoading && code.length === i;
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.otpBox,
+                  {
+                    backgroundColor: colors.fill2,
+                    borderColor: isFocused ? colors.primary : digit ? colors.sheetBorder : colors.sheetBorder,
+                    borderWidth: isFocused ? 1.5 : StyleSheet.hairlineWidth,
+                  },
+                ]}
+              >
+                <Text
+                  variant="title2"
+                  style={{ color: colors.sheetLabel }}
+                >
+                  {digit}
+                </Text>
+                {isFocused && !digit ? (
+                  <View style={[styles.cursor, { backgroundColor: colors.primary }]} />
+                ) : null}
+              </View>
+            );
+          })}
+        </Pressable>
+        <TextInput
+          ref={inputRef}
+          value={code}
+          onChangeText={(value) => setCode(normalizeCode(value))}
+          keyboardType="number-pad"
+          textContentType="oneTimeCode"
+          autoComplete="one-time-code"
+          editable={!isLoading}
+          returnKeyType="done"
+          onSubmitEditing={handleVerify}
+          autoFocus
+          style={styles.hiddenInput}
+        />
 
         {error ? (
           <Text variant="footnote" style={{ color: colors.error }} selectable>
@@ -306,19 +333,32 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   form: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
-  inputWrap: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: Radius.xl,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.xs,
+  otpRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    justifyContent: 'center',
   },
-  input: {
-    fontSize: 22,
-    minHeight: Sizes.actionButtonSm,
-    letterSpacing: 6,
+  otpBox: {
+    flex: 1,
+    height: Sizes.actionButtonLg * 1.4,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cursor: {
+    position: 'absolute',
+    bottom: 10,
+    width: 18,
+    height: 2,
+    borderRadius: 1,
+  },
+  hiddenInput: {
+    position: 'absolute',
+    width: 0,
+    height: 0,
+    opacity: 0,
   },
   primaryAction: {
     height: Sizes.actionButtonLg,
@@ -334,6 +374,7 @@ const styles = StyleSheet.create({
   },
   message: {
     textAlign: 'center',
+    marginBottom: Spacing.sm,
   },
   stateScreen: {
     justifyContent: 'flex-start',

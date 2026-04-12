@@ -39,6 +39,9 @@ export {
 // Typography component (with font scaling disabled)
 export { Text, type TextProps } from './text';
 
+// Google brand icon (multicolor SVG)
+export { GoogleIcon } from './google-icon';
+
 // Error handling
 export { ErrorBoundary } from './error-boundary';
 
