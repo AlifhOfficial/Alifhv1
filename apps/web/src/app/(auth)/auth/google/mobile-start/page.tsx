@@ -1,25 +1,91 @@
 /**
  * Google OAuth Mobile Start Page
- * 
+ *
  * This page initiates the Google OAuth flow for mobile apps.
- * Server-side redirect to Better Auth's social sign-in endpoint.
- * Accepts a `redirect` param to pass through for the final app redirect.
+ * It must POST to Better Auth's social endpoint so the state cookie is set
+ * in the browser before redirecting to Google.
  */
 
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function GoogleMobileStartPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ redirect?: string }>;
-}) {
-  const params = await searchParams;
-  
-  // Build callback URL with the mobile redirect URI
-  const callbackURL = params.redirect 
-    ? `/auth/google/mobile-callback?redirect=${encodeURIComponent(params.redirect)}`
-    : `/auth/google/mobile-callback`;
-  
-  // Redirect to Better Auth's social sign-in endpoint
-  redirect(`/api/auth/signin/social?provider=google&callbackURL=${encodeURIComponent(callbackURL)}`);
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
+function GoogleMobileStartContent() {
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const startAuth = async () => {
+      try {
+        const redirectParam = searchParams.get("redirect");
+        const callbackURL = redirectParam
+          ? `/auth/google/mobile-callback?redirect=${encodeURIComponent(redirectParam)}`
+          : `/auth/google/mobile-callback`;
+
+        const response = await fetch("/api/auth/sign-in/social", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            provider: "google",
+            callbackURL,
+          }),
+        });
+
+        if (!response.ok) {
+          setError("Failed to start Google sign in");
+          return;
+        }
+
+        const result = (await response.json()) as { url?: string };
+        if (!result?.url) {
+          setError("Failed to start Google sign in");
+          return;
+        }
+
+        window.location.href = result.url;
+      } catch {
+        setError("Failed to start Google sign in");
+      }
+    };
+
+    startAuth();
+  }, [searchParams]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="text-center">
+          <p className="text-subhead text-destructive">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="text-center space-y-3">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mx-auto" />
+        <p className="text-subhead text-muted-foreground">Connecting to Google...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function GoogleMobileStartPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background px-4">
+          <div className="text-center space-y-3">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mx-auto" />
+            <p className="text-subhead text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <GoogleMobileStartContent />
+    </Suspense>
+  );
 }

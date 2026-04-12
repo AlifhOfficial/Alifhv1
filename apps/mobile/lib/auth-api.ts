@@ -990,8 +990,29 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
     console.log('[Auth] Auth URL:', authUrl);
     console.log('[Auth] Redirect URI:', redirectUri);
     
-    // Open the browser and wait for it to return
-    const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+    // Open the browser and wait for it to return, with a safety timeout.
+    const timeoutMs = 45000;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const result = await Promise.race([
+      WebBrowser.openAuthSessionAsync(authUrl, redirectUri),
+      new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          try {
+            WebBrowser.dismissAuthSession();
+          } catch {
+            try {
+              WebBrowser.dismissBrowser();
+            } catch {
+              // Ignore if dismissal isn't available.
+            }
+          }
+          reject(new Error('OAUTH_TIMEOUT'));
+        }, timeoutMs);
+      }),
+    ]);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
     
     // Clean up browser session
     await WebBrowser.coolDownAsync();
@@ -1004,6 +1025,14 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
     
     if (result.type !== 'success' || !result.url) {
       return { success: false, error: `Google ${mode === 'signup' ? 'sign up' : 'sign in'} failed` };
+    }
+
+    if (!result.url.startsWith(redirectUri)) {
+      return {
+        success: false,
+        error:
+          'Google sign in did not return to the app. Please close the browser window and try again.',
+      };
     }
     
     // Parse the callback URL to get session data
@@ -1055,6 +1084,13 @@ async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResu
     return { success: true, user, session };
   } catch (error: any) {
     console.error('[Auth] Google OAuth error:', mode, error);
+    if (error?.message === 'OAUTH_TIMEOUT') {
+      return {
+        success: false,
+        error:
+          'Google sign in is taking too long. Please close the browser window and try again.',
+      };
+    }
     return {
       success: false,
       error: error?.message || `Google ${mode === 'signup' ? 'sign up' : 'sign in'} failed. Please try again.`,
