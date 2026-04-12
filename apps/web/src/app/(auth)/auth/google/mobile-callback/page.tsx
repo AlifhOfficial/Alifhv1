@@ -10,6 +10,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -97,6 +98,9 @@ export default async function GoogleMobileCallbackPage({
     
     return redirect(`${baseRedirect}?${callbackParams.toString()}`);
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
     console.error('[GoogleMobileCallback] Error getting session:', error);
     return redirect(`${baseRedirect}?error=${encodeURIComponent('Failed to get session')}`);
   }
