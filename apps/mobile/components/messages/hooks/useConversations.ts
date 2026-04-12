@@ -225,6 +225,18 @@ export function useConversations({
     return unsubscribe;
   }, [subscribe]);
 
+  // Clear watched set when connection drops so all users get re-subscribed on reconnect.
+  // The WS server's per-connection subscription state is destroyed on close,
+  // so we must resend watch_user for every participant after reconnect.
+  const prevConnectedRef = useRef(false);
+  useEffect(() => {
+    if (!isConnected && prevConnectedRef.current) {
+      // Just disconnected — clear so the watch effect re-subscribes on next connect
+      watchedUsersRef.current.clear();
+    }
+    prevConnectedRef.current = isConnected;
+  }, [isConnected]);
+
   // Watch presence for all unique other participants so the list shows live online/lastSeenAt
   useEffect(() => {
     if (!isConnected || conversations.length === 0) return;
@@ -234,7 +246,7 @@ export function useConversations({
       if (c.otherParticipant?.id) currentOtherIds.add(c.otherParticipant.id);
     }
 
-    // Subscribe to new users
+    // Subscribe to new users (includes all users after a reconnect since watchedUsersRef was cleared)
     for (const uid of currentOtherIds) {
       if (!watchedUsersRef.current.has(uid)) {
         send({ type: 'watch_user', targetUserId: uid });
