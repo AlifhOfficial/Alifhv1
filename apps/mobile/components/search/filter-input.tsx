@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { TextInput } from '@/components/ui';
 import { Colors, Radius, Sizes, Spacing, InputTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 

@@ -3,9 +3,9 @@
  * Tap-to-edit field with native feel
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput, type TextInputRef } from '@/components/ui';
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Platform, KeyboardTypeOptions } from 'react-native';
+import { StyleSheet, View, Platform, KeyboardTypeOptions } from 'react-native';
 import Animated, {
   FadeIn,
   interpolateColor,
@@ -56,7 +56,7 @@ export function EditableField({
   keyboardType = 'default',
   maxLength,
 }: EditableFieldProps) {
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
   const bgOpacity = useSharedValue(0);
 
   useEffect(() => {

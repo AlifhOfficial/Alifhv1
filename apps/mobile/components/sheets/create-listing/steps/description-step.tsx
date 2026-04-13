@@ -6,9 +6,9 @@
  * @module components/sheets/create-listing/steps/description-step
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { usePreventRemove } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { HapticPressable, SheetHeader, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, TextInput, type TextInputRef } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -49,7 +49,7 @@ export default function VerifyEmailSheetScreen() {
   const [resendCountdown, setResendCountdown] = useState(RESEND_COOLDOWN_SECONDS);
   const [attemptsRemaining, setAttemptsRemaining] = useState(VERIFY_MAX_ATTEMPTS);
   const [pendingAction, setPendingAction] = useState<any>(null);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
 
   usePreventRemove(pendingAction === null && !showSuccess, ({ data }) => {
     setPendingAction(data.action);

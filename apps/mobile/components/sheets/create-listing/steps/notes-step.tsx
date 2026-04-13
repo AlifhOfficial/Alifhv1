@@ -7,9 +7,9 @@
  * @module components/sheets/create-listing/steps/notes-step
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Plus } from 'lucide-react-native';
 

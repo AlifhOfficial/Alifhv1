@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { usePreventRemove } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { GoogleIcon, HapticPressable, SheetHeader, Text } from '@/components/ui';
+import { GoogleIcon, HapticPressable, SheetHeader, Text, TextInput, type TextInputRef } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -24,9 +24,9 @@ export default function SignUpSheetScreen() {
 
   const navigation = useNavigation();
 
-  const nameRef = useRef<TextInput>(null);
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const nameRef = useRef<TextInputRef>(null);
+  const emailRef = useRef<TextInputRef>(null);
+  const passwordRef = useRef<TextInputRef>(null);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState(typeof params.email === 'string' ? params.email : '');

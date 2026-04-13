@@ -6,9 +6,9 @@
  * @module components/sheets/create-listing/steps/location-step
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput, type TextInputRef } from '@/components/ui';
 import React, { useCallback, useRef } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography} from '@/constants/theme';
@@ -23,7 +23,7 @@ import type { StepContentProps } from '../types';
 export function LocationStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const cityRef = useRef<TextInput>(null);
+  const cityRef = useRef<TextInputRef>(null);
   const selectedEmirate = UAE_EMIRATES.find((emirate) => emirate.value === data.emirate);
 
   const handleEmirateSelect = useCallback(

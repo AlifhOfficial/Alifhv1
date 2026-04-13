@@ -4,10 +4,9 @@
  * Inline component - parent handles keyboard avoidance
  */
 
-import { HapticPressable } from '@/components/ui';
+import { HapticPressable, TextInput, type TextInputRef } from '@/components/ui';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
-  TextInput,
   StyleSheet,
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
@@ -50,7 +49,7 @@ export function MessageInput({
 
   const [text, setText] = useState('');
   const [inputHeight, setInputHeight] = useState(MIN_HEIGHT);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isTypingRef = useRef(false);
 

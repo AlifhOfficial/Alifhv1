@@ -6,9 +6,9 @@
  * @module components/sheets/create-listing/steps/year-step
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput } from '@/components/ui';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TextInput } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';

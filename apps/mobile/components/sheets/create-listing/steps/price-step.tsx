@@ -6,9 +6,9 @@
  * @module components/sheets/create-listing/steps/price-step
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { InputTypography, Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/theme';

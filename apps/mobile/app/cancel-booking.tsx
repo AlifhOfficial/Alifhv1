@@ -1,7 +1,7 @@
-import { HapticPressable, SheetHeader, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, TextInput } from '@/components/ui';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Loader2, Trash2 } from 'lucide-react-native';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, SheetHeader, Text, useAlert } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, TextInput, useAlert } from '@/components/ui';
 import { Colors, InputTypography, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';

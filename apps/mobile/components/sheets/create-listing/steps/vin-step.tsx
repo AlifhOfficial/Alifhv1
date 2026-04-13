@@ -7,9 +7,9 @@
  * @module components/sheets/create-listing/steps/vin-step
  */
 
-import { Text } from "@/components/ui";
+import { Text, TextInput } from "@/components/ui";
 import React, { useState, useCallback, useRef } from "react";
-import { View, StyleSheet, ActivityIndicator, TextInput } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
 import { CheckCircle2, AlertCircle } from "lucide-react-native";
 

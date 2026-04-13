@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, SheetHeader, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, TextInput } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, SheetChrome, Spacing, Typography } from '@/constants/theme';
 import { calculateEMI, formatPrice } from '@/components/seller-contact/utils';

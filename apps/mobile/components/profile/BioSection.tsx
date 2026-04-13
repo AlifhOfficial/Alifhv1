@@ -3,9 +3,9 @@
  * Editable bio with character counter
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, TextInput, type TextInputRef } from '@/components/ui';
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -36,7 +36,7 @@ export function BioSection({
   onCancel,
   onChange,
 }: BioSectionProps) {
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
 
   useEffect(() => {
     if (isEditing) {

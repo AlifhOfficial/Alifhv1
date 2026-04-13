@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Keyboard, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Keyboard, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, SheetHeader, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, TextInput, type TextInputRef } from '@/components/ui';
 import { Colors, Typography, Spacing, Radius, Sizes, SheetChrome, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
@@ -78,7 +78,7 @@ export default function SearchScreen() {
 
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const searchInputRef = useRef<TextInput>(null);
+  const searchInputRef = useRef<TextInputRef>(null);
 
   const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);

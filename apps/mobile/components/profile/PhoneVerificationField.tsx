@@ -3,9 +3,9 @@
  * Handles phone number editing and OTP verification flow
  */
 
-import { Text, HapticPressable, useAlert } from '@/components/ui';
+import { Text, HapticPressable, TextInput, type TextInputRef, useAlert } from '@/components/ui';
 import React, { useState, useEffect, useRef } from 'react';
-import { ActivityIndicator, StyleSheet, View, TextInput, Platform } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -40,8 +40,8 @@ export function PhoneVerificationField({
   const [countdown, setCountdown] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [justVerified, setJustVerified] = useState(false);
-  const inputRef = useRef<TextInput>(null);
-  const otpInputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
+  const otpInputRef = useRef<TextInputRef>(null);
   const { showAlert } = useAlert();
 
   // Countdown timer
