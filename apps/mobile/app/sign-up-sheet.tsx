@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { usePreventRemove } from '@react-navigation/native';
@@ -19,7 +19,7 @@ export default function SignUpSheetScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
 
   const navigation = useNavigation();
 
@@ -34,11 +34,15 @@ export default function SignUpSheetScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [showSignInSuccess, setShowSignInSuccess] = useState(false);
   const [pendingAction, setPendingAction] = useState<any>(null);
 
   const hasProgress =
     !showSuccess &&
+    !showSignInSuccess &&
     !isLoading &&
+    !isAuthenticating &&
     (name.trim().length > 0 || email.trim().length > 0 || password.length > 0);
 
   // usePreventRemove fires when user swipes/taps to dismiss the sheet.
@@ -52,7 +56,21 @@ export default function SignUpSheetScreen() {
     name.trim().length >= 2 &&
     isValidEmail(email) &&
     password.length >= 8 &&
-    !isLoading;
+    !isLoading &&
+    !isAuthenticating;
+
+  useEffect(() => {
+    if (!isAuthenticated || (!isAuthenticating && !showSignInSuccess)) return;
+
+    setIsAuthenticating(false);
+    setShowSignInSuccess(true);
+
+    const timeout = setTimeout(() => {
+      router.back();
+    }, 320);
+
+    return () => clearTimeout(timeout);
+  }, [isAuthenticated, isAuthenticating, showSignInSuccess]);
 
   async function handleSubmit() {
     if (!canSubmit) return;
@@ -97,7 +115,7 @@ export default function SignUpSheetScreen() {
   }
 
   function handleSignIn() {
-    if (isLoading) return;
+    if (isLoading || isAuthenticating) return;
 
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -110,13 +128,15 @@ export default function SignUpSheetScreen() {
   }
 
   async function handleGoogleAuth() {
-    if (isLoading) return;
+    if (isLoading || isAuthenticating) return;
 
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
+    setIsAuthenticating(true);
     setIsLoading(true);
+    setShowSignInSuccess(false);
     setError(null);
 
     try {
@@ -124,6 +144,7 @@ export default function SignUpSheetScreen() {
 
       if (!result.success || !result.user) {
         setError(result.error || 'Google sign up failed. Please try again.');
+        setIsAuthenticating(false);
         return;
       }
 
@@ -132,32 +153,53 @@ export default function SignUpSheetScreen() {
       if (process.env.EXPO_OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-
-      setTimeout(() => {
-        router.back();
-      }, 220);
     } catch (err: any) {
       setError(err?.message || 'Google sign up failed. Please try again.');
+      setIsAuthenticating(false);
     } finally {
       setIsLoading(false);
     }
   }
 
-  if (showSuccess) {
+  if (showSuccess || isAuthenticating || showSignInSuccess) {
     return (
       <View style={[styles.container, styles.stateScreen, { backgroundColor: colors.sheet }]}> 
         <View style={styles.stateTopSpacer} />
         <View style={styles.stateContent}>
-          <Ionicons name="mail-open-outline" size={42} color={colors.primary} />
-          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
-            Account Created
-          </Text>
-          <Text
-            variant={SheetTypography.rowLabel}
-            style={[styles.stateMessage, { color: colors.sheetLabelMuted }]}
-          >
-            Finishing setup...
-          </Text>
+          {isAuthenticating ? (
+            <>
+              <Ionicons name="logo-google" size={42} color={colors.primary} />
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
+                Signing In
+              </Text>
+              <Text
+                variant={SheetTypography.rowLabel}
+                style={[styles.stateMessage, { color: colors.sheetLabelMuted }]}
+              >
+                Finishing Google sign in...
+              </Text>
+            </>
+          ) : showSignInSuccess ? (
+            <>
+              <Ionicons name="checkmark-circle" size={48} color={colors.success} />
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.success }}>
+                Signed In
+              </Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="mail-open-outline" size={42} color={colors.primary} />
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
+                Account Created
+              </Text>
+              <Text
+                variant={SheetTypography.rowLabel}
+                style={[styles.stateMessage, { color: colors.sheetLabelMuted }]}
+              >
+                Finishing setup...
+              </Text>
+            </>
+          )}
         </View>
         <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
       </View>
@@ -267,13 +309,13 @@ export default function SignUpSheetScreen() {
 
         <HapticPressable
           onPress={handleGoogleAuth}
-          disabled={isLoading}
+          disabled={isLoading || isAuthenticating}
           style={({ pressed }) => [
             styles.secondaryAction,
             {
               borderColor: colors.sheetBorder,
               backgroundColor: colors.fill2,
-              opacity: isLoading ? 0.55 : pressed ? 0.8 : 1,
+              opacity: isLoading || isAuthenticating ? 0.55 : pressed ? 0.8 : 1,
             },
           ]}
         >

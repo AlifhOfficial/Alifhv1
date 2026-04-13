@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -18,7 +18,7 @@ export default function SignInSheetScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
 
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
@@ -32,6 +32,19 @@ export default function SignInSheetScreen() {
   const [showSignInSuccess, setShowSignInSuccess] = useState(false);
 
   const canSubmit = isValidEmail(email) && password.length > 0 && !isLoading && !isAuthenticating;
+
+  useEffect(() => {
+    if (!isAuthenticated || (!isAuthenticating && !showSignInSuccess)) return;
+
+    setIsAuthenticating(false);
+    setShowSignInSuccess(true);
+
+    const timeout = setTimeout(() => {
+      router.back();
+    }, 320);
+
+    return () => clearTimeout(timeout);
+  }, [isAuthenticated, isAuthenticating, showSignInSuccess]);
 
   async function handleSubmit() {
     if (!canSubmit) return;
@@ -69,16 +82,10 @@ export default function SignInSheetScreen() {
       }
 
       signIn(result.user);
-      setIsAuthenticating(false);
-      setShowSignInSuccess(true);
 
       if (process.env.EXPO_OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-
-      setTimeout(() => {
-        router.back();
-      }, 320);
     } catch (err: any) {
       setError(err?.message || 'Sign in failed. Please try again.');
       setIsAuthenticating(false);
@@ -105,7 +112,9 @@ export default function SignInSheetScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
+    setIsAuthenticating(true);
     setIsLoading(true);
+    setShowSignInSuccess(false);
     setError(null);
 
     try {
@@ -113,6 +122,7 @@ export default function SignInSheetScreen() {
 
       if (!result.success || !result.user) {
         setError(result.error || 'Google sign in failed. Please try again.');
+        setIsAuthenticating(false);
         return;
       }
 
@@ -121,12 +131,9 @@ export default function SignInSheetScreen() {
       if (process.env.EXPO_OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-
-      setTimeout(() => {
-        router.back();
-      }, 220);
     } catch (err: any) {
       setError(err?.message || 'Google sign in failed. Please try again.');
+      setIsAuthenticating(false);
     } finally {
       setIsLoading(false);
     }
