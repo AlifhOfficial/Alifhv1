@@ -631,21 +631,16 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
               style={[
                 styles.fabButton,
                 {
-                  backgroundColor:
-                    activeTab !== "all"
-                      ? colors.primary
-                      : colors.surfaceSecondary,
-                  borderColor:
-                    activeTab !== "all" ? colors.primary : colors.border,
+                  backgroundColor: colors.surfaceSecondary,
+                  borderColor: colors.border,
+                  borderWidth: BorderWidths.thin,
                 },
               ]}
             >
               <Package2
                 size={Sizes.iconSm}
-                color={
-                  activeTab !== "all" ? colors.primaryForeground : colors.label
-                }
-                strokeWidth={2}
+                color={colors.label}
+                strokeWidth={2.8}
               />
             </HapticPressable>
 
@@ -656,10 +651,11 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
                 {
                   backgroundColor: colors.surfaceSecondary,
                   borderColor: colors.border,
+                  borderWidth: BorderWidths.thin,
                 },
               ]}
             >
-              <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+              <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2.8} />
             </HapticPressable>
           </View>
         </View>

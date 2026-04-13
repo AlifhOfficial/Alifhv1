@@ -8,13 +8,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { Package2, AlertCircle } from 'lucide-react-native';
+import { Heart, AlertCircle, Zap } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
 import { Colors, Shadows, Sizes, Spacing, Layout, ZIndex, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { Text } from '@/components/ui';
 import { SavedList } from '@/components/saved';
 import { CarCardListSkeleton } from '@/components/cards';
 import type { SavedTab } from '@/components/saved/types';
@@ -81,6 +82,22 @@ export default function SavedScreen() {
     setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
   }, []);
 
+  const fabBackground = colors.surfaceSecondary;
+  const fabForeground = colors.label;
+
+  const headerRight = useMemo(() => {
+    if (activeTab !== 'superlikes' || !quota) return null;
+
+    return (
+      <View style={[styles.superlikeQuota, { backgroundColor: colors.surfaceSecondary }]}> 
+        <Zap size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
+        <Text variant="subhead" style={{ color: colors.label }}>
+          {quota.remaining}/{quota.maxSuperlikesPerMonth}
+        </Text>
+      </View>
+    );
+  }, [activeTab, quota, colors.surfaceSecondary, colors.label]);
+
   useEffect(() => {
     if (!isAuthenticated || isLoading || currentListings.length === 0) return;
     const readyAt = consumeDataReady('saved:listings') ?? consumeDataReady('saved:status') ?? performance.now();
@@ -103,7 +120,7 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
+        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} right={headerRight} sideSlotWidth={activeTab === 'superlikes' && quota ? 120 : undefined} />
         <View style={[styles.skeletonContainer, { paddingTop: headerInset }]}>
           {Array.from({ length: 4 }).map((_, i) => (
             <CarCardListSkeleton key={i} />
@@ -118,7 +135,7 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
+        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} right={headerRight} sideSlotWidth={activeTab === 'superlikes' && quota ? 120 : undefined} />
         <View style={{ flex: 1, paddingTop: headerInset }}>
           <EmptyState
             icon={AlertCircle}
@@ -134,7 +151,7 @@ export default function SavedScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-      <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
+      <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} right={headerRight} sideSlotWidth={activeTab === 'superlikes' && quota ? 120 : undefined} />
 
       {/* List */}
       <SavedList
@@ -144,7 +161,6 @@ export default function SavedScreen() {
         isRefreshing={isLoading}
         onRefresh={refresh}
         onScroll={handleScroll}
-        quota={quota}
       />
 
       {/* ── Bottom Filter Bubble ─────────────────────────────────────── */}
@@ -158,16 +174,17 @@ export default function SavedScreen() {
             style={[
               styles.fabButton,
               {
-                backgroundColor: activeTab !== 'favorites' ? colors.primary : colors.surfaceSecondary,
-                borderColor: activeTab !== 'favorites' ? colors.primary : colors.border,
+                backgroundColor: fabBackground,
+                borderColor: colors.border,
+                borderWidth: BorderWidths.thin,
               },
             ]}
           >
-            <Package2
-              size={Sizes.iconSm}
-              color={activeTab !== 'favorites' ? colors.primaryForeground : colors.label}
-              strokeWidth={2}
-            />
+            {activeTab === 'superlikes' ? (
+              <Zap size={Sizes.iconSm} color={fabForeground} strokeWidth={2.8} />
+            ) : (
+              <Heart size={Sizes.iconSm} color={fabForeground} strokeWidth={2.8} />
+            )}
           </HapticPressable>
         </View>
       </View>
@@ -209,6 +226,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.lg,
     gap: Spacing.md,
+  },
+  superlikeQuota: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Sizes.actionButtonLg / 2,
+    borderWidth: 0,
   },
   emptyContainer: {
     flex: 1,

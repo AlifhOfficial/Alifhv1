@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Calendar1,
+  CalendarX2,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -73,6 +74,7 @@ export default function BookingScreen() {
   const [attendees, setAttendees] = useState(1);
   const [confirmationToken, setConfirmationToken] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
+  const [bookingsNotAvailable, setBookingsNotAvailable] = useState(false);
 
   const safeTitle = Array.isArray(listingTitle) ? listingTitle[0] : listingTitle;
   const today = useMemo(() => new Date(), []);
@@ -84,7 +86,7 @@ export default function BookingScreen() {
     try {
       const data = await getAvailableDates(listingId);
       if (!data.available) {
-        setError(data.reason || 'Bookings are not available for this listing');
+        setBookingsNotAvailable(true);
         return;
       }
       setAvailableDates(data.dates || []);
@@ -162,41 +164,20 @@ export default function BookingScreen() {
     currentMonth.getFullYear() < today.getFullYear() ||
     (currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() <= today.getMonth());
 
-  if (availableDates.length === 0 && !isLoading && !error) {
+  if (availableDates.length === 0 && !isLoading && !error && !bookingsNotAvailable) {
     void loadDates();
   }
 
   const monthLabel = `${MONTH_NAMES[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
 
   const stepHeader = (() => {
-    if (step === 'date') {
-      return (
-        <SheetHeader
-          title={monthLabel}
-          left={
-            <HapticPressable
-              onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
-              disabled={isPrevMonthDisabled}
-              style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary, opacity: isPrevMonthDisabled ? 0.25 : 1 }]}
-            >
-              <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
-            </HapticPressable>
-          }
-          right={
-            <HapticPressable
-              onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
-              style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}
-            >
-              <ChevronRight size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
-            </HapticPressable>
-          }
-        />
-      );
+    if (step === 'date' || bookingsNotAvailable) {
+      return <SheetHeader title="Booking" />;
     }
     if (step === 'time') {
       return (
         <SheetHeader
-          title={selectedDate ? formatDateLong(selectedDate) : 'Pick a Time'}
+          title="Booking"
           left={
             <HapticPressable onPress={() => setStep('date')} style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}>
               <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
@@ -246,9 +227,38 @@ export default function BookingScreen() {
         </View>
       ) : null}
 
+      {/* ── Not Available State ── */}
+      {bookingsNotAvailable && !isLoading ? (
+        <Animated.View entering={FadeIn.duration(200)} style={styles.unavailable}>
+          <CalendarX2 size={Sizes.iconXl} color={colors.labelQuaternary} strokeWidth={Stroke.icon} />
+          <Text variant="title3Emphasized" style={styles.centered}>Not Taking Bookings</Text>
+          <Text variant="subhead" tone="muted" style={styles.centered}>
+            The seller isn{"'"}t accepting test drive bookings right now.
+          </Text>
+        </Animated.View>
+      ) : null}
+
       {/* ── Date Step ── */}
-      {step === 'date' && !isLoading ? (
+      {step === 'date' && !isLoading && !bookingsNotAvailable ? (
         <Animated.View entering={FadeIn.duration(200)} style={styles.stack}>
+          {/* Month nav */}
+          <View style={styles.monthNav}>
+            <HapticPressable
+              onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+              disabled={isPrevMonthDisabled}
+              style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary, opacity: isPrevMonthDisabled ? 0.25 : 1 }]}
+            >
+              <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+            <Text variant="headline">{monthLabel}</Text>
+            <HapticPressable
+              onPress={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+              style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}
+            >
+              <ChevronRight size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          </View>
+
           {/* Day-of-week headers */}
           <View style={styles.calendarRow}>
             {DAY_LABELS.map((label, i) => (
@@ -498,6 +508,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.md,
     paddingVertical: Spacing['2xl'],
+  },
+  unavailable: {
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingVertical: Spacing['3xl'],
+  },
+  monthNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   // Calendar
   circleBtn: {

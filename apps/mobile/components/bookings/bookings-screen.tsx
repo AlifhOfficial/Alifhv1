@@ -21,7 +21,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Calendar1, Clock, Package2, MoreVertical } from 'lucide-react-native';
+import { Calendar1, Clock, MoreVertical } from 'lucide-react-native';
 
 import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -351,15 +351,16 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
             style={[
               styles.fabButton,
               {
-                backgroundColor: activeTab !== 'all' ? colors.primary : colors.surfaceSecondary,
-                borderColor: activeTab !== 'all' ? colors.primary : colors.border,
+                backgroundColor: colors.surfaceSecondary,
+                borderColor: colors.border,
+                borderWidth: BorderWidths.thin,
               },
             ]}
           >
-            <Package2
+            <Calendar1
               size={Sizes.iconSm}
-              color={activeTab !== 'all' ? colors.primaryForeground : colors.label}
-              strokeWidth={2}
+              color={colors.label}
+              strokeWidth={2.8}
             />
           </HapticPressable>
         </View>

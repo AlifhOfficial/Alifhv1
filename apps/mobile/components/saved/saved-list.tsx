@@ -2,16 +2,16 @@
  * Saved List - Displays saved listings (favorites or superlikes)
  */
 
-import { Text, HapticRefreshControl, EmptyState } from '@/components/ui';
+import { HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList , NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Heart, Zap } from 'lucide-react-native';
+import { Heart } from 'lucide-react-native';
 
-import { Sizes, Spacing, Radius } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
-import { CarCardList } from '@/components/cards/car-card-list';
+import { CarCardM } from '@/components/cards/car-card-m';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
 
@@ -22,10 +22,6 @@ interface SavedListProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  quota?: {
-    remaining: number;
-    maxSuperlikesPerMonth: number;
-  } | null;
 }
 
 // ============================================================================
@@ -39,7 +35,6 @@ export function SavedList({
   isRefreshing,
   onRefresh,
   onScroll,
-  quota,
 }: SavedListProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -71,7 +66,7 @@ export function SavedList({
       data={listings}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <CarCardList
+        <CarCardM
           id={item.id}
           make={item.make || ''}
           model={item.model || ''}
@@ -103,16 +98,6 @@ export function SavedList({
           onRefresh={onRefresh}
         />
       }
-      ListHeaderComponent={
-        activeTab === 'superlikes' && quota ? (
-          <View style={[styles.quotaBadge, { backgroundColor: colors.surface }]}>
-            <Zap size={Sizes.iconXs} color={colors.primary} strokeWidth={2} />
-            <Text variant="subhead" tone="secondary">
-              {quota.remaining}/{quota.maxSuperlikesPerMonth} remaining this month
-            </Text>
-          </View>
-        ) : null
-      }
     />
   );
 }
@@ -121,15 +106,5 @@ const styles = StyleSheet.create({
   // List
   listContent: {
     paddingHorizontal: Spacing.lg,
-  },
-  quotaBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.xl,
-    gap: Spacing.xs,
-    marginBottom: Spacing.md,
   },
 });
