@@ -575,18 +575,18 @@ function WebSocketWrapper({ children }: { children: React.ReactNode }) {
 
 // Auth sheet renderer - uses auth context
 function AuthSheetRenderer() {
-  const { authSheetVisible, authSheetContext } = useAuth();
+  const { authSheetVisible, authSheetContext, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!authSheetVisible) return;
+    if (isAuthLoading || isAuthenticated || !authSheetVisible) return;
     if (pathname === '/auth-prompt') return;
 
     expoRouter.push({
       pathname: '/auth-prompt',
       params: { context: authSheetContext },
     });
-  }, [authSheetContext, authSheetVisible, pathname]);
+  }, [authSheetContext, authSheetVisible, isAuthenticated, isAuthLoading, pathname]);
 
   return null;
 }

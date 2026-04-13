@@ -17,13 +17,14 @@ export function RequireAuthSheet({ context }: RequireAuthSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const { isAuthenticated, isLoading: isAuthLoading, authSheetVisible, showAuthSheet } = useAuth();
+  const shouldRequireAuth = !isAuthLoading && !isAuthenticated;
 
   useFocusEffect(
     useCallback(() => {
-      if (!isAuthLoading && !isAuthenticated && !authSheetVisible) {
+      if (shouldRequireAuth && !authSheetVisible) {
         showAuthSheet(context);
       }
-    }, [authSheetVisible, context, isAuthLoading, isAuthenticated, showAuthSheet])
+    }, [authSheetVisible, context, shouldRequireAuth, showAuthSheet])
   );
 
   const handleSignInPress = () => {
@@ -32,7 +33,7 @@ export function RequireAuthSheet({ context }: RequireAuthSheetProps) {
     }
   };
 
-  if (isAuthLoading || isAuthenticated) {
+  if (!shouldRequireAuth) {
     return null;
   }
 

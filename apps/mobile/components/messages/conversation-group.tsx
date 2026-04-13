@@ -1,5 +1,6 @@
 /**
  * Conversation Group - Native chat list row
+ *
  */
 
 import { Text, HapticPressable } from '@/components/ui';

@@ -95,6 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Set stored user immediately for quick UI
         setUser(storedUser);
         setIsAuthenticated(true);
+        setAuthSheetVisible(false);
         
         // Then refresh from server to get enriched data (avatarUrl, etc.)
         const result = await AuthAPI.refreshSession();
@@ -116,6 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (result.success && result.user) {
         setUser(result.user);
         setIsAuthenticated(true);
+        setAuthSheetVisible(false);
       } else {
         clearAuthenticatedCaches();
         setUser(null);
@@ -142,6 +144,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Set basic user data immediately for quick UI update
     setUser(userData);
     setIsAuthenticated(true);
+    setAuthSheetVisible(false);
     
     // Then refresh session to get enriched data (avatarUrl, etc.) from server
     try {

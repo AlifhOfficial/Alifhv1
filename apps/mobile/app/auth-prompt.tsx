@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
@@ -55,7 +55,7 @@ export default function AuthPromptScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { hideAuthSheet } = useAuth();
+  const { hideAuthSheet, isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const context: AuthSheetContext =
     params.context === 'profile' ||
@@ -68,25 +68,32 @@ export default function AuthPromptScreen() {
 
   const ContextIcon = CONTEXT_ICONS[context];
 
-  const displayTitle = useMemo(() => {
-    if (typeof params.title === 'string' && params.title.length > 0) {
-      return params.title;
-    }
-    return CONTEXT_MESSAGES[context].title;
-  }, [context, params.title]);
+  const displayTitle =
+    typeof params.title === 'string' && params.title.length > 0
+      ? params.title
+      : CONTEXT_MESSAGES[context].title;
 
-  const displaySubtitle = useMemo(() => {
-    if (typeof params.subtitle === 'string' && params.subtitle.length > 0) {
-      return params.subtitle;
-    }
-    return CONTEXT_MESSAGES[context].subtitle;
-  }, [context, params.subtitle]);
+  const displaySubtitle =
+    typeof params.subtitle === 'string' && params.subtitle.length > 0
+      ? params.subtitle
+      : CONTEXT_MESSAGES[context].subtitle;
+
+  useEffect(() => {
+    if (isAuthLoading || !isAuthenticated) return;
+
+    hideAuthSheet();
+    router.back();
+  }, [hideAuthSheet, isAuthenticated, isAuthLoading]);
 
   useEffect(() => {
     return () => {
       hideAuthSheet();
     };
   }, [hideAuthSheet]);
+
+  if (isAuthLoading || isAuthenticated) {
+    return null;
+  }
 
   const handleOpenSignUp = () => {
     if (process.env.EXPO_OS === 'ios') {
