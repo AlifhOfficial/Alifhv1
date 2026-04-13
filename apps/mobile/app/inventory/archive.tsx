@@ -11,6 +11,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constan
 import { useTheme } from '@/context/theme-context';
 import { toggleArchiveListing } from '@/lib/sell-car-user-api';
 import { getStringParam, parseBooleanParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function InventoryArchiveScreen() {
   const params = useLocalSearchParams() as InventorySheetRouteParams;
@@ -103,7 +104,7 @@ export default function InventoryArchiveScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

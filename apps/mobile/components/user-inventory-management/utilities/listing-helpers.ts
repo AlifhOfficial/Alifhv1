@@ -5,7 +5,12 @@
  * No API calls — these are used by sheets and future screens.
  */
 
-import type { ModerationStatus, LifecycleStatus } from '@/lib/sell-car-user-api';
+import type { CreateListingData } from "@/components/sheets/create-listing/types";
+import type {
+  ListingFormPayload,
+  ModerationStatus,
+  LifecycleStatus,
+} from "@/lib/sell-car-user-api";
 
 // ─── Status Display ──────────────────────────────────────────────────────────
 
@@ -19,23 +24,32 @@ export function formatListingStatus(
 ): string {
   // Rejected takes priority — rejected listings have lifecycleStatus 'archived'
   // but should always display as "Rejected"
-  if (moderation === 'rejected') return 'Rejected';
+  if (moderation === "rejected") return "Rejected";
 
   // Terminal lifecycle states
   switch (lifecycle) {
-    case 'sold':    return 'Sold';
-    case 'expired': return 'Expired';
-    case 'deleted': return 'Deleted';
-    case 'archived': return 'Archived';
+    case "sold":
+      return "Sold";
+    case "expired":
+      return "Expired";
+    case "deleted":
+      return "Deleted";
+    case "archived":
+      return "Archived";
   }
 
   // Active → show moderation status
   switch (moderation) {
-    case 'draft':          return 'Draft';
-    case 'submitted':      return 'In Review';
-    case 'pending_review':  return 'In Review';
-    case 'approved':       return 'Active';
-    default:               return 'Unknown';
+    case "draft":
+      return "Draft";
+    case "submitted":
+      return "In Review";
+    case "pending_review":
+      return "In Review";
+    case "approved":
+      return "Active";
+    default:
+      return "Unknown";
   }
 }
 
@@ -57,23 +71,32 @@ export function getStatusColor(
 ): string {
   // Rejected takes priority — rejected listings have lifecycleStatus 'archived'
   // but should always show error color
-  if (moderation === 'rejected') return colors.error;
+  if (moderation === "rejected") return colors.error;
 
   // Terminal lifecycle states
   switch (lifecycle) {
-    case 'sold':     return colors.success;
-    case 'expired':  return colors.warning;
-    case 'deleted':  return colors.error;
-    case 'archived': return colors.labelQuaternary;
+    case "sold":
+      return colors.success;
+    case "expired":
+      return colors.warning;
+    case "deleted":
+      return colors.error;
+    case "archived":
+      return colors.labelQuaternary;
   }
 
   // Active → moderation determines color
   switch (moderation) {
-    case 'draft':          return colors.labelSecondary;
-    case 'submitted':      return colors.warning;
-    case 'pending_review': return colors.warning;
-    case 'approved':       return colors.success;
-    default:               return colors.labelQuaternary;
+    case "draft":
+      return colors.labelSecondary;
+    case "submitted":
+      return colors.warning;
+    case "pending_review":
+      return colors.warning;
+    case "approved":
+      return colors.success;
+    default:
+      return colors.labelQuaternary;
   }
 }
 
@@ -85,7 +108,7 @@ export function canOpenPublicListing(
   moderation: ModerationStatus,
   lifecycle: LifecycleStatus,
 ): boolean {
-  return moderation === 'approved' && lifecycle === 'active';
+  return moderation === "approved" && lifecycle === "active";
 }
 
 // ─── Expiry Helpers ──────────────────────────────────────────────────────────
@@ -113,7 +136,10 @@ export function formatExpiryCountdown(expiresAt: string): ExpiryCountdown {
   if (daysLeft <= 0) {
     const daysAgo = Math.abs(daysLeft);
     return {
-      text: daysAgo === 0 ? 'Expired today' : `Expired ${daysAgo} day${daysAgo === 1 ? '' : 's'} ago`,
+      text:
+        daysAgo === 0
+          ? "Expired today"
+          : `Expired ${daysAgo} day${daysAgo === 1 ? "" : "s"} ago`,
       isUrgent: true,
       isExpired: true,
       daysLeft,
@@ -121,19 +147,39 @@ export function formatExpiryCountdown(expiresAt: string): ExpiryCountdown {
   }
 
   if (daysLeft === 1) {
-    return { text: 'Expires tomorrow', isUrgent: true, isExpired: false, daysLeft };
+    return {
+      text: "Expires tomorrow",
+      isUrgent: true,
+      isExpired: false,
+      daysLeft,
+    };
   }
 
   if (daysLeft <= 2) {
-    return { text: `Expires in ${daysLeft} days`, isUrgent: true, isExpired: false, daysLeft };
+    return {
+      text: `Expires in ${daysLeft} days`,
+      isUrgent: true,
+      isExpired: false,
+      daysLeft,
+    };
   }
 
   if (daysLeft <= 7) {
-    return { text: `Expires in ${daysLeft} days`, isUrgent: false, isExpired: false, daysLeft };
+    return {
+      text: `Expires in ${daysLeft} days`,
+      isUrgent: false,
+      isExpired: false,
+      daysLeft,
+    };
   }
 
   // More than a week
-  return { text: `Expires in ${daysLeft} days`, isUrgent: false, isExpired: false, daysLeft };
+  return {
+    text: `Expires in ${daysLeft} days`,
+    isUrgent: false,
+    isExpired: false,
+    daysLeft,
+  };
 }
 
 // ─── Listing Title ───────────────────────────────────────────────────────────
@@ -150,7 +196,7 @@ export function buildListingTitle(
 ): string {
   const parts = [String(year), make, model];
   if (trim) parts.push(trim);
-  return parts.join(' ');
+  return parts.join(" ");
 }
 
 // ─── Price Formatting ────────────────────────────────────────────────────────
@@ -159,9 +205,12 @@ export function buildListingTitle(
  * Format price with currency for display.
  * e.g. "AED 125,000" or "AED 1,250,000"
  */
-export function formatPrice(price: number | null | undefined, currency = 'AED'): string {
+export function formatPrice(
+  price: number | null | undefined,
+  currency = "AED",
+): string {
   if (price == null) return `${currency} —`;
-  const formatted = price.toLocaleString('en-US');
+  const formatted = price.toLocaleString("en-US");
   return `${currency} ${formatted}`;
 }
 
@@ -172,6 +221,51 @@ export function formatPrice(price: number | null | undefined, currency = 'AED'):
  * e.g. "15,000 km" or "0 km"
  */
 export function formatMileage(mileage: number | null | undefined): string {
-  if (mileage == null) return '— km';
-  return `${mileage.toLocaleString('en-US')} km`;
+  if (mileage == null) return "— km";
+  return `${mileage.toLocaleString("en-US")} km`;
+}
+
+// ─── Edit Flow Mapping ───────────────────────────────────────────────────────
+
+export function buildCreateListingInitialData(
+  listing: ListingFormPayload,
+): Partial<CreateListingData> {
+  return {
+    vin: listing.vin || "",
+    vinVerified: true,
+    vinVisibility: listing.vinVisibility || "public",
+    make: listing.make || "",
+    model: listing.model || "",
+    year: listing.year?.toString() || "",
+    trim: listing.trim || "",
+    mileage: listing.mileage?.toString() || "",
+    specs: listing.specs || "gcc",
+    steeringSide: listing.steeringSide || "left",
+    bodyType: listing.bodyType || "",
+    exteriorColor: listing.exteriorColor || "",
+    interiorColor: listing.interiorColor || "",
+    doors: listing.doors?.toString() || "",
+    seatingCapacity: listing.seatingCapacity?.toString() || "",
+    fuelType: listing.fuelType || "",
+    transmission: listing.transmission || "",
+    engineSize: listing.engineSize || "",
+    engineType: listing.engineType || "",
+    cylinders: listing.cylinders?.toString() || "",
+    powerRange: listing.powerRange || "",
+    fuelEconomy: listing.fuelEconomy || "",
+    torque: listing.torque || "",
+    warrantyType: listing.warrantyType || "",
+    exportStatus: listing.exportStatus || "local_only",
+    extras: listing.extras || [],
+    tags: listing.tags || [],
+    price: listing.price?.toString() || "",
+    isNegotiable: listing.isNegotiable ?? false,
+    emirate: listing.emirate || "",
+    city: listing.city || "",
+    images: listing.images || [],
+    description: listing.description || "",
+    specialNotes: Array.isArray(listing.specialNotes?.ownerRemarks)
+      ? listing.specialNotes.ownerRemarks
+      : [],
+  };
 }

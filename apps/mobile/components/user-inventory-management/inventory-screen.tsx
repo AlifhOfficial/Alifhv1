@@ -15,15 +15,34 @@
  * @module components/user-inventory-management/inventory-screen
  */
 
-import { Text, HapticPressable, Skeleton, HapticRefreshControl, EmptyState } from '@/components/ui';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import {
+  Text,
+  HapticPressable,
+  Skeleton,
+  HapticRefreshControl,
+  EmptyState,
+} from "@/components/ui";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from "react-native";
 
-import { Image } from 'expo-image';
-import { getAppThumbUrl } from '@/lib/config';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
+import { Image } from "expo-image";
+import { getAppThumbUrl } from "@/lib/config";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
 import {
   MoreVertical,
   Plus,
@@ -32,32 +51,44 @@ import {
   Package2,
   Image as ImageIcon,
   AlertCircle,
-} from 'lucide-react-native';
+} from "lucide-react-native";
 
-import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths, Stroke } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
-import { useAuth } from '@/context/auth-context';
+import {
+  Colors,
+  Shadows,
+  Spacing,
+  Radius,
+  Layout,
+  Sizes,
+  ZIndex,
+  AspectRatio,
+  BorderWidths,
+  Stroke,
+} from "@/constants/theme";
+import { useTheme } from "@/context/theme-context";
+import { useAuth } from "@/context/auth-context";
 import {
   getListingForEdit,
   type MyListingCard,
   type MyListingsFilter,
-} from '@/lib/sell-car-user-api';
+} from "@/lib/sell-car-user-api";
 import {
   formatListingStatus,
   getStatusColor,
   formatExpiryCountdown,
   formatPrice,
+  buildCreateListingInitialData,
   canOpenPublicListing,
-} from './utilities/listing-helpers';
-import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
-import type { CreateListingData } from '@/components/sheets/create-listing/types';
-import { useInventory } from '@/hooks/use-inventory-query';
-import { getMobileHeaderContentInset } from '@/components/layout';
+} from "./utilities/listing-helpers";
+import { CreateListingFlow } from "@/components/sheets/create-listing/create-listing-flow";
+import type { CreateListingData } from "@/components/sheets/create-listing/types";
+import { useInventory } from "@/hooks/use-inventory-query";
+import { getMobileHeaderContentInset } from "@/components/layout";
 import {
   buildInventorySheetParams,
   getStringParam,
   parseBooleanParam,
-} from '@/components/user-inventory-management/sub-operations/route-params';
+} from "@/components/user-inventory-management/sub-operations/route-params";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -65,16 +96,33 @@ import {
 const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
 
 const SPECS_SHORT: Record<string, string> = {
-  gcc: 'GCC', us: 'US', european: 'EU', japanese: 'JP',
-  korean: 'KR', chinese: 'CN', canadian: 'CA', american: 'US', other: '—',
+  gcc: "GCC",
+  us: "US",
+  european: "EU",
+  japanese: "JP",
+  korean: "KR",
+  chinese: "CN",
+  canadian: "CA",
+  american: "US",
+  other: "—",
 };
 
 const EMIRATE_SHORT: Record<string, string> = {
-  dubai: 'DXB', 'abu dhabi': 'AUH', abu_dhabi: 'AUH', abudhabi: 'AUH',
-  sharjah: 'SHJ', ajman: 'AJM', 'ras al khaimah': 'RAK', ras_al_khaimah: 'RAK',
-  'ras al-khaimah': 'RAK', rasalkhaimah: 'RAK', fujairah: 'FUJ',
-  'umm al quwain': 'UAQ', umm_al_quwain: 'UAQ', 'umm al-quwain': 'UAQ',
-  ummalquwain: 'UAQ',
+  dubai: "DXB",
+  "abu dhabi": "AUH",
+  abu_dhabi: "AUH",
+  abudhabi: "AUH",
+  sharjah: "SHJ",
+  ajman: "AJM",
+  "ras al khaimah": "RAK",
+  ras_al_khaimah: "RAK",
+  "ras al-khaimah": "RAK",
+  rasalkhaimah: "RAK",
+  fujairah: "FUJ",
+  "umm al quwain": "UAQ",
+  umm_al_quwain: "UAQ",
+  "umm al-quwain": "UAQ",
+  ummalquwain: "UAQ",
 };
 
 // ─── Tab Configuration ───────────────────────────────────────────────────────
@@ -85,12 +133,12 @@ interface StatusTab {
 }
 
 const STATUS_TABS: StatusTab[] = [
-  { key: 'all', label: 'All' },
-  { key: 'public', label: 'Public' },
-  { key: 'draft', label: 'Drafts' },
-  { key: 'in_review', label: 'In Review' },
-  { key: 'sold', label: 'Sold' },
-  { key: 'archived', label: 'Archived' },
+  { key: "all", label: "All" },
+  { key: "public", label: "Public" },
+  { key: "draft", label: "Drafts" },
+  { key: "in_review", label: "In Review" },
+  { key: "sold", label: "Sold" },
+  { key: "archived", label: "Archived" },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -106,29 +154,25 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
-  const {
-    tab,
-    editListingId,
-    editPublished,
-    editNonce,
-  } = useLocalSearchParams<{
-    tab?: string;
-    editListingId?: string;
-    editPublished?: string;
-    editNonce?: string;
-  }>();
+  const { tab, editListingId, editPublished, editNonce } =
+    useLocalSearchParams<{
+      tab?: string;
+      editListingId?: string;
+      editPublished?: string;
+      editNonce?: string;
+    }>();
 
   // Determine initial tab from URL param
   const initialTab = useMemo(() => {
-    if (tab && STATUS_TABS.some(t => t.key === tab)) {
+    if (tab && STATUS_TABS.some((t) => t.key === tab)) {
       return tab as MyListingsFilter;
     }
-    return 'all';
+    return "all";
   }, [tab]);
 
   // ── Data State (React Query) ─────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<MyListingsFilter>(initialTab);
-  
+
   // React Query hook for listings data
   const {
     listings,
@@ -150,15 +194,18 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
 
   // ── Create Flow State ────────────────────────────────────────────────────
   const [showEditFlow, setShowEditFlow] = useState(false);
-  const [editInitialData, setEditInitialData] = useState<Partial<CreateListingData> | undefined>(undefined);
+  const [editInitialData, setEditInitialData] = useState<
+    Partial<CreateListingData> | undefined
+  >(undefined);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
   const [isPublishedEdit, setIsPublishedEdit] = useState(false);
   const handledEditNonceRef = useRef<string | null>(null);
 
   const openFilterSheet = useCallback(() => {
-    if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (process.env.EXPO_OS === "ios")
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push({
-      pathname: '/inventory/filters',
+      pathname: "/inventory/filters",
       params: {
         activeTab,
         totalCount: String(stats?.total ?? 0),
@@ -197,48 +244,14 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
     async (listingId: string, publishedEdit: boolean) => {
       try {
         const listing = await getListingForEdit(listingId);
-        const initialData: Partial<CreateListingData> = {
-          vin: listing.vin || '',
-          vinVerified: true,
-          vinVisibility: listing.vinVisibility || 'public',
-          make: listing.make || '',
-          model: listing.model || '',
-          year: listing.year?.toString() || '',
-          trim: listing.trim || '',
-          mileage: listing.mileage?.toString() || '',
-          specs: listing.specs || 'gcc',
-          steeringSide: listing.steeringSide || 'left',
-          bodyType: listing.bodyType || '',
-          exteriorColor: listing.exteriorColor || '',
-          interiorColor: listing.interiorColor || '',
-          doors: listing.doors?.toString() || '',
-          seatingCapacity: listing.seatingCapacity?.toString() || '',
-          fuelType: listing.fuelType || '',
-          transmission: listing.transmission || '',
-          engineSize: listing.engineSize || '',
-          engineType: listing.engineType || '',
-          cylinders: listing.cylinders?.toString() || '',
-          powerRange: listing.powerRange || '',
-          fuelEconomy: listing.fuelEconomy || '',
-          torque: listing.torque || '',
-          warrantyType: listing.warrantyType || '',
-          exportStatus: listing.exportStatus || 'local_only',
-          extras: listing.extras || [],
-          tags: listing.tags || [],
-          price: listing.price?.toString() || '',
-          isNegotiable: listing.isNegotiable ?? false,
-          emirate: listing.emirate || '',
-          city: listing.city || '',
-          images: listing.images || [],
-          description: listing.description || '',
-          specialNotes: Array.isArray(listing.specialNotes) ? listing.specialNotes : [],
-        };
+        const initialData: Partial<CreateListingData> =
+          buildCreateListingInitialData(listing);
         setEditInitialData(initialData);
         setEditingListingId(listingId);
         setIsPublishedEdit(publishedEdit);
         setShowEditFlow(true);
       } catch (err) {
-        console.error('Failed to load listing for edit:', err);
+        console.error("Failed to load listing for edit:", err);
       }
     },
     [],
@@ -258,12 +271,12 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
 
   const openActions = useCallback(
     (listing: MyListingCard) => {
-      if (process.env.EXPO_OS === 'ios') {
+      if (process.env.EXPO_OS === "ios") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
 
       router.push({
-        pathname: '/inventory/actions',
+        pathname: "/inventory/actions",
         params: buildInventorySheetParams(listing, activeTab),
       });
     },
@@ -277,32 +290,56 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const renderCard = useCallback(
     ({ item }: { item: MyListingCard }) => {
       const title = `${item.make} ${item.model}`;
-      const statusLabel = formatListingStatus(item.moderationStatus, item.lifecycleStatus);
-      const statusColor = getStatusColor(item.moderationStatus, item.lifecycleStatus, colors);
+      const statusLabel = formatListingStatus(
+        item.moderationStatus,
+        item.lifecycleStatus,
+      );
+      const statusColor = getStatusColor(
+        item.moderationStatus,
+        item.lifecycleStatus,
+        colors,
+      );
       const price = formatPrice(item.price ?? 0, item.currency);
       const metaParts = [
         item.year,
         SPECS_SHORT[item.specs?.toLowerCase()] || item.specs || null,
         EMIRATE_SHORT[item.emirate?.toLowerCase()] || item.emirate || null,
       ].filter(Boolean);
-      const metaLine = metaParts.join(' · ');
+      const metaLine = metaParts.join(" · ");
 
       const expiry =
-        item.expiresAt && item.lifecycleStatus === 'active' && item.moderationStatus === 'approved'
+        item.expiresAt &&
+        item.lifecycleStatus === "active" &&
+        item.moderationStatus === "approved"
           ? formatExpiryCountdown(item.expiresAt)
           : null;
 
       const rawDisplayImage = item.thumbnail || item.images?.[0];
       const displayImage = getAppThumbUrl(rawDisplayImage);
-      const canViewPublicDetail = canOpenPublicListing(item.moderationStatus, item.lifecycleStatus);
+      const canViewPublicDetail = canOpenPublicListing(
+        item.moderationStatus,
+        item.lifecycleStatus,
+      );
 
       return (
         <HapticPressable
-          onPress={canViewPublicDetail ? () => router.push(`/listing/${item.id}`) : undefined}
-          style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          onPress={
+            canViewPublicDetail
+              ? () => router.push(`/listing/${item.id}`)
+              : undefined
+          }
+          style={[
+            styles.card,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
         >
           {/* ── Image + Status Overlay ──────────────────────────────────── */}
-          <View style={[styles.imageContainer, { backgroundColor: colors.surfaceSecondary }]}>
+          <View
+            style={[
+              styles.imageContainer,
+              { backgroundColor: colors.surfaceSecondary },
+            ]}
+          >
             {displayImage ? (
               <Image
                 source={{ uri: displayImage }}
@@ -311,13 +348,32 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
                 transition={150}
               />
             ) : (
-              <View style={[styles.image, styles.imagePlaceholder, { backgroundColor: colors.skeleton }]}>
-                <ImageIcon size={Sizes.iconXl} color={colors.labelQuaternary} strokeWidth={Stroke.icon} />
+              <View
+                style={[
+                  styles.image,
+                  styles.imagePlaceholder,
+                  { backgroundColor: colors.skeleton },
+                ]}
+              >
+                <ImageIcon
+                  size={Sizes.iconXl}
+                  color={colors.labelQuaternary}
+                  strokeWidth={Stroke.icon}
+                />
               </View>
             )}
             {/* Status badge */}
-            <View style={[styles.statusOverlay, { backgroundColor: statusColor + 'E6' }]}>
-              <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.primaryForeground }}>
+            <View
+              style={[
+                styles.statusOverlay,
+                { backgroundColor: statusColor + "E6" },
+              ]}
+            >
+              <Text
+                variant="caption1Emphasized"
+                uppercase={false}
+                style={{ color: colors.primaryForeground }}
+              >
                 {statusLabel}
               </Text>
             </View>
@@ -327,15 +383,29 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
           <View style={styles.content}>
             {/* Title + three-dot action */}
             <View style={styles.titleRow}>
-              <Text variant="subheadEmphasized" style={[styles.titleText, { color: colors.label }]} numberOfLines={1}>
+              <Text
+                variant="subheadEmphasized"
+                style={[styles.titleText, { color: colors.label }]}
+                numberOfLines={1}
+              >
                 {title}
               </Text>
               <HapticPressable
                 onPress={() => openActions(item)}
                 hitSlop={Layout.hitSlop}
-                style={[styles.actionBubble, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+                style={[
+                  styles.actionBubble,
+                  {
+                    backgroundColor: colors.surfaceSecondary,
+                    borderColor: colors.border,
+                  },
+                ]}
               >
-                <MoreVertical size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
+                <MoreVertical
+                  size={Sizes.iconXs}
+                  color={colors.label}
+                  strokeWidth={2}
+                />
               </HapticPressable>
             </View>
 
@@ -355,12 +425,22 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
                 <View style={styles.expiryRow}>
                   <Clock
                     size={Sizes.iconXs}
-                    color={expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.labelQuaternary}
+                    color={
+                      expiry.isExpired
+                        ? colors.error
+                        : expiry.isUrgent
+                          ? colors.warning
+                          : colors.labelQuaternary
+                    }
                   />
                   <Text
                     variant="footnote"
                     style={{
-                      color: expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.labelSecondary,
+                      color: expiry.isExpired
+                        ? colors.error
+                        : expiry.isUrgent
+                          ? colors.warning
+                          : colors.labelSecondary,
                     }}
                   >
                     {expiry.text}
@@ -381,21 +461,24 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
 
   const renderEmptyState = useCallback(() => {
     if (isLoading) return null;
-    const tabLabel = STATUS_TABS.find((t) => t.key === activeTab)?.label ?? 'All';
-    const isAll = activeTab === 'all';
+    const tabLabel =
+      STATUS_TABS.find((t) => t.key === activeTab)?.label ?? "All";
+    const isAll = activeTab === "all";
 
     return (
       <EmptyState
         icon={Package}
-        title={isAll ? 'No listings yet.' : `No ${tabLabel.toLowerCase()} listings.`}
+        title={
+          isAll ? "No listings yet." : `No ${tabLabel.toLowerCase()} listings.`
+        }
         subtitle={
           isAll
-            ? 'Create your first listing to start selling.'
+            ? "Create your first listing to start selling."
             : `Listings matching "${tabLabel}" will appear here.`
         }
         action={
           isAll
-            ? { label: 'Create Listing', onPress: openCreateFlow, icon: Plus }
+            ? { label: "Create Listing", onPress: openCreateFlow, icon: Plus }
             : undefined
         }
       />
@@ -403,9 +486,15 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   }, [isLoading, activeTab, openCreateFlow]);
 
   const renderFooter = useCallback(() => {
-    if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
+    if (!isLoadingMore)
+      return <View style={{ height: insets.bottom + Spacing["4xl"] }} />;
     return (
-      <View style={[styles.listFooter, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
+      <View
+        style={[
+          styles.listFooter,
+          { paddingBottom: insets.bottom + Spacing["4xl"] },
+        ]}
+      >
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -419,16 +508,28 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
 
   return (
     <View style={styles.container}>
-
       {/* ─────────────────────── Content ─────────────────────────────────── */}
       {isLoading && listings.length === 0 ? (
-        <View style={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
+        <View
+          style={[
+            styles.listContent,
+            { paddingTop: headerInset, paddingBottom: footerHeight },
+          ]}
+        >
           {Array.from({ length: 5 }).map((_, i) => (
             <View
               key={i}
-              style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[
+                styles.card,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
             >
-              <View style={[styles.imageContainer, { backgroundColor: colors.skeleton }]} />
+              <View
+                style={[
+                  styles.imageContainer,
+                  { backgroundColor: colors.skeleton },
+                ]}
+              />
               <View style={styles.content}>
                 <Skeleton width="75%" height={Spacing.md} />
                 <Skeleton width="50%" height={Spacing.md} />
@@ -438,16 +539,34 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
           ))}
         </View>
       ) : error && listings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
-          <AlertCircle size={Sizes.avatarLg} color={colors.error} strokeWidth={Stroke.icon} />
+        <View
+          style={[
+            styles.centerContainer,
+            { paddingTop: headerInset, paddingBottom: footerHeight },
+          ]}
+        >
+          <AlertCircle
+            size={Sizes.avatarLg}
+            color={colors.error}
+            strokeWidth={Stroke.icon}
+          />
           <Text
             variant="body"
-            style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
+            style={{
+              color: colors.error,
+              textAlign: "center",
+              marginTop: Spacing.md,
+            }}
           >
             {error}
           </Text>
-          <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
-            <Text variant="subhead" tone="primary">Tap to retry</Text>
+          <HapticPressable
+            onPress={handleRefresh}
+            style={{ marginTop: Spacing.lg }}
+          >
+            <Text variant="subhead" tone="primary">
+              Tap to retry
+            </Text>
           </HapticPressable>
         </View>
       ) : (
@@ -457,7 +576,11 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
           contentInsetAdjustmentBehavior="never"
-          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }, listings.length === 0 && { flexGrow: 1 }]}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingTop: headerInset, paddingBottom: footerHeight },
+            listings.length === 0 && { flexGrow: 1 },
+          ]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           onScroll={onScroll}
@@ -501,32 +624,44 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
         pointerEvents="box-none"
       >
         <View style={styles.bottomBarContent}>
-        {/* FAB row: filter + create */}
-        <View style={styles.fabRow}>
-          <HapticPressable
-            onPress={openFilterSheet}
-            style={[
-              styles.fabButton,
-              {
-                backgroundColor: activeTab !== 'all' ? colors.primary : colors.surfaceSecondary,
-                borderColor: activeTab !== 'all' ? colors.primary : colors.border,
-              },
-            ]}
-          >
-            <Package2
-              size={Sizes.iconSm}
-              color={activeTab !== 'all' ? colors.primaryForeground : colors.label}
-              strokeWidth={2}
-            />
-          </HapticPressable>
+          {/* FAB row: filter + create */}
+          <View style={styles.fabRow}>
+            <HapticPressable
+              onPress={openFilterSheet}
+              style={[
+                styles.fabButton,
+                {
+                  backgroundColor:
+                    activeTab !== "all"
+                      ? colors.primary
+                      : colors.surfaceSecondary,
+                  borderColor:
+                    activeTab !== "all" ? colors.primary : colors.border,
+                },
+              ]}
+            >
+              <Package2
+                size={Sizes.iconSm}
+                color={
+                  activeTab !== "all" ? colors.primaryForeground : colors.label
+                }
+                strokeWidth={2}
+              />
+            </HapticPressable>
 
-          <HapticPressable
-            onPress={openCreateFlow}
-            style={[styles.fabButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
-          >
-            <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-          </HapticPressable>
-        </View>
+            <HapticPressable
+              onPress={openCreateFlow}
+              style={[
+                styles.fabButton,
+                {
+                  backgroundColor: colors.surfaceSecondary,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+            </HapticPressable>
+          </View>
         </View>
       </View>
     </View>
@@ -542,18 +677,18 @@ const styles = StyleSheet.create({
 
   // ── Bottom action bar (centered like browse tab bar) ────────────────
   bottomBar: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     zIndex: ZIndex.overlay,
   },
   bottomBarContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: Layout.screenPadding,
   },
   fabRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Spacing.sm,
   },
   fabButton: {
@@ -561,8 +696,8 @@ const styles = StyleSheet.create({
     height: Sizes.actionButtonLg,
     borderRadius: Sizes.actionButtonLg / 2,
     borderWidth: BorderWidths.medium,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     ...Shadows.md,
   },
 
@@ -574,31 +709,31 @@ const styles = StyleSheet.create({
 
   // ── Card (CarCardM-style vertical) ────────────────────────────────────
   card: {
-    width: '100%',
-    borderRadius: Radius['2xl'],
-    borderCurve: 'continuous',
+    width: "100%",
+    borderRadius: Radius["2xl"],
+    borderCurve: "continuous",
     borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: Spacing.md,
   } as any,
   imageContainer: {
     marginHorizontal: Spacing.sm,
     marginTop: Spacing.sm,
     aspectRatio: AspectRatio.cardImage,
-    borderRadius: Radius['2xl'],
-    borderCurve: 'continuous',
-    overflow: 'hidden',
+    borderRadius: Radius["2xl"],
+    borderCurve: "continuous",
+    overflow: "hidden",
   } as any,
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   imagePlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   statusOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: Spacing.sm,
     left: Spacing.sm,
     paddingHorizontal: Sizes.badgePaddingH,
@@ -610,9 +745,9 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: Spacing.xs,
   },
   titleText: {
@@ -623,22 +758,22 @@ const styles = StyleSheet.create({
     height: Sizes.bubbleXs,
     borderRadius: Sizes.bubbleXs / 2,
     borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // ── Footer: price + expiry ────────────────────────────────────────────
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingTop: Spacing.xs,
   },
 
   // ── Expiry ─────────────────────────────────────────────────────────────
   expiryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: Spacing.xs,
   },
 
@@ -648,14 +783,14 @@ const styles = StyleSheet.create({
   // ── Loading / Error ────────────────────────────────────────────────────
   centerContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing['4xl'],
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: Spacing["4xl"],
   },
 
   // ── List Footer ───────────────────────────────────────────────────────────────
   listFooter: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: Spacing.lg,
   },
 });

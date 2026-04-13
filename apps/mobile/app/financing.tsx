@@ -2,12 +2,14 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, SheetChrome, Spacing, Typography } from '@/constants/theme';
 import { calculateEMI, formatPrice } from '@/components/seller-contact/utils';
 import { emitFinancingApplied } from '@/lib/financing-events';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function FinancingScreen() {
   const params = useLocalSearchParams<{
@@ -18,6 +20,7 @@ export default function FinancingScreen() {
   }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   const initialDownPayment = Number(params.initialDownPayment ?? 20);
   const initialTerm = Number(params.initialTerm ?? 48);
@@ -48,7 +51,12 @@ export default function FinancingScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.sheet, paddingBottom: getSheetBottomPadding(insets.bottom) },
+      ]}
+    > 
       <SheetHeader title="Custom Financing" />
 
       <View style={{ alignItems: 'flex-end', marginBottom: Spacing.md }}>

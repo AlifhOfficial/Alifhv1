@@ -28,6 +28,7 @@ import { Colors, Radius, SheetChrome, Sizes, Spacing, Typography } from '@/const
 import { useTheme } from '@/context/theme-context';
 import { useBookings } from '@/hooks/use-booking-query';
 import { getAppThumbUrl } from '@/lib/config';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 import type { UserBooking } from '@/lib/booking-api';
 import {
   formatBookingStatus,
@@ -169,7 +170,7 @@ export default function BookingDetailsScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={[styles.scrollView, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
+      contentContainerStyle={[styles.content, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
       showsVerticalScrollIndicator={false}
     >
       <SheetHeader title="Booking" />

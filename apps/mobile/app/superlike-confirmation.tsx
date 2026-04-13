@@ -3,16 +3,19 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Zap } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
 import { Colors, Layout, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function SuperlikeConfirmationScreen() {
   const { listingId, listingTitle } = useLocalSearchParams<{ listingId: string; listingTitle?: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const favoriteState = useListingFavorite(listingId ?? '');
 
   const remaining = favoriteState.quota?.remaining ?? 0;
@@ -34,7 +37,12 @@ export default function SuperlikeConfirmationScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.sheet, paddingBottom: getSheetBottomPadding(insets.bottom) },
+      ]}
+    > 
       <SheetHeader title="Superlike" />
 
       <View style={styles.content}>

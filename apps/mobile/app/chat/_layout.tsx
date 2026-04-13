@@ -2,6 +2,7 @@ import { Stack } from 'expo-router/stack';
 
 import { Colors, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { createFormSheetOptions } from '@/lib/form-sheet';
 
 export default function ChatLayout() {
   const { colorScheme } = useTheme();
@@ -20,13 +21,9 @@ export default function ChatLayout() {
       <Stack.Screen name="[conversationId]" options={{ title: 'Chat' }} />
       <Stack.Screen
         name="share-location"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.72],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
     </Stack>
   );

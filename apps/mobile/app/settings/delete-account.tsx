@@ -10,6 +10,7 @@ import { Colors, InputTypography, Radius, SheetChrome, SheetTypography, Sizes, S
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { requestAccountDeletion } from '@/lib/profile-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function DeleteAccountScreen() {
   const { colorScheme } = useTheme();
@@ -157,7 +158,7 @@ export default function DeleteAccountScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </ScrollView>
   );
 }

@@ -4,12 +4,14 @@ import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Typography, Spacing, Radius, Sizes, SheetChrome, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { queryKeys } from '@/lib/query-client';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 import {
   searchApi,
   type Suggestion,
@@ -71,6 +73,7 @@ function triggerHaptic() {
 export default function SearchScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const { applySearch, updateFilterParams } = useSearch();
 
   const [query, setQuery] = useState('');
@@ -550,7 +553,7 @@ export default function SearchScreen() {
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

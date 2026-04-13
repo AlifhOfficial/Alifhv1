@@ -11,6 +11,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constan
 import { useTheme } from '@/context/theme-context';
 import { deleteListing, hardDeleteListing } from '@/lib/sell-car-user-api';
 import { buildInventoryRouteParams, getStringParam, parseBooleanParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function InventoryDeleteScreen() {
   const params = useLocalSearchParams() as InventorySheetRouteParams;
@@ -114,7 +115,7 @@ export default function InventoryDeleteScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

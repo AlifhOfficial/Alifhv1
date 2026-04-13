@@ -10,6 +10,7 @@ import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, Sizes, Spacing, Stroke, SheetChrome, SheetTypography, scale } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const CONTEXT_MESSAGES: Record<AuthSheetContext, { title: string; subtitle: string }> = {
   profile: {
@@ -144,7 +145,12 @@ export default function AuthPromptScreen() {
 
       <Animated.View
         entering={FadeInUp.delay(60).duration(220)}
-        style={[styles.actions, { paddingBottom: insets.bottom + SheetChrome.bottomSafeAreaSpacing }]}
+        style={[
+          styles.actions,
+          {
+            paddingBottom: getSheetBottomPadding(insets.bottom, Spacing.sm),
+          },
+        ]}
       >
         <View style={styles.actionRow}>
           <HapticPressable
@@ -192,11 +198,14 @@ export default function AuthPromptScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'space-between',
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: SheetChrome.contentPaddingTop,
   },
   content: {
     alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
     gap: Spacing.sm,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing['2xl'],
@@ -215,6 +224,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: Spacing.sm,
+    paddingTop: Spacing.md,
   },
   actionRow: {
     flexDirection: 'row',

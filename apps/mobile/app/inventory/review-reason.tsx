@@ -7,6 +7,7 @@ import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getStringParam, parseAiModerationParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 function formatFlagLabel(flag: string | { code: string; severity?: string; message?: string } | null | undefined) {
   if (!flag) return '';
@@ -88,7 +89,7 @@ export default function InventoryReviewReasonScreen() {
         </Text>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </ScrollView>
   );
 }

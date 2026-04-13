@@ -8,6 +8,7 @@ import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getUserBookings, type BookingFilter, type BookingStatus } from '@/lib/booking-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const STATUS_OPTIONS: { value: BookingFilter; label: string }[] = [
   { value: 'all', label: 'All Bookings' },
@@ -119,7 +120,7 @@ export default function BookingsFiltersScreen() {
         })}
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

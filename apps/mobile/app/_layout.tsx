@@ -31,6 +31,7 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
 import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
+import { createFormSheetOptions } from '@/lib/form-sheet';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
 // Note: These warnings come from dependencies, not our code
@@ -273,221 +274,137 @@ function RootLayoutNav() {
           <Stack.Screen name="listing/[id]" options={{ title: 'Listing' }} />
           <Stack.Screen
             name="auth-prompt"
-            options={{
+            options={createFormSheetOptions(colors, {
               title: 'Sign In',
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
-              sheetAllowedDetents: [0.44],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+              sheetAllowedDetents: Platform.OS === 'android' ? [0.5] : [0.44],
+            })}
           />
           <Stack.Screen
             name="sign-in-sheet"
-            options={{
+            options={createFormSheetOptions(colors, {
               title: 'Sign In',
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
               sheetAllowedDetents: 'fitToContents',
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="sign-up-sheet"
-            options={{
+            options={createFormSheetOptions(colors, {
               title: 'Create Account',
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
               sheetAllowedDetents: 'fitToContents',
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="verify-email-sheet"
-            options={{
+            options={createFormSheetOptions(colors, {
               title: 'Verify Email',
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
               sheetAllowedDetents: 'fitToContents',
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="forgot-password-sheet"
-            options={{
+            options={createFormSheetOptions(colors, {
               title: 'Reset Password',
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
               sheetAllowedDetents: 'fitToContents',
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="create-listing-sheet"
-            options={{
+            options={createFormSheetOptions(colors, {
               title: 'Create Listing',
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
               sheetAllowedDetents: [0.62, 0.9],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="listing-description"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.82],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="listing-specs"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.86],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="listing-features"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.8],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="car-info"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.9],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="superlike-confirmation"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.52],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="superlike-exhausted"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.45],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="financing"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.86],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="phone-actions"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.42],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="seller-description"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.82],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="booking"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.9],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="booking-details"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.9],
-              headerShown: false,
               title: 'Booking',
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="cancel-booking"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.7],
-              headerShown: false,
               title: 'Cancel Booking',
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="bookings-filters"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.62],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="saved-filters"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.44],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen
             name="sign-out"
-            options={{
-              presentation: 'formSheet',
-              sheetGrabberVisible: true,
+            options={createFormSheetOptions(colors, {
               sheetAllowedDetents: [0.42],
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.sheet },
-            }}
+            })}
           />
           <Stack.Screen name="seller-contact/[listingId]" options={{ title: 'Contact Seller' }} />
           <Stack.Screen name="profile" options={{ title: 'Profile' }} />

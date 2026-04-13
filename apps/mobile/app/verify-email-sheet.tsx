@@ -11,6 +11,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import * as AuthAPI from '@/lib/auth-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const normalizeCode = (value: string): string => value.replace(/\D/g, '').slice(0, 6);
 const RESEND_COOLDOWN_SECONDS = 45;
@@ -180,7 +181,7 @@ export default function VerifyEmailSheetScreen() {
             Closing this sheet...
           </Text>
         </View>
-        <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+        <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
       </View>
     );
   }
@@ -313,7 +314,7 @@ export default function VerifyEmailSheetScreen() {
         </View>
       ) : null}
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

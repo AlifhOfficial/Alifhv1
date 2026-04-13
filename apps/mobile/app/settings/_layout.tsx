@@ -2,6 +2,7 @@ import { Stack } from 'expo-router/stack';
 
 import { Colors, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { createFormSheetOptions } from '@/lib/form-sheet';
 
 export default function SettingsLayout() {
   const { colorScheme } = useTheme();
@@ -20,23 +21,15 @@ export default function SettingsLayout() {
       <Stack.Screen name="index" options={{ title: 'Settings' }} />
       <Stack.Screen
         name="delete-account"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.86],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
       <Stack.Screen
         name="verify-identity"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.42],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
     </Stack>
   );

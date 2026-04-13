@@ -5,15 +5,18 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Copy } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function SellerDescriptionScreen() {
   const { description, sellerName } = useLocalSearchParams<{ description?: string; sellerName?: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const [copied, setCopied] = useState(false);
 
   const safeDescription = useMemo(() => {
@@ -40,7 +43,7 @@ export default function SellerDescriptionScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
       showsVerticalScrollIndicator={false}
     >
       <SheetHeader

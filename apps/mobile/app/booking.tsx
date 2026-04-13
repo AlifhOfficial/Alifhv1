@@ -3,6 +3,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, TextInput, View } from 'reac
 import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Calendar1,
   CheckCircle2,
@@ -19,6 +20,7 @@ import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, SheetChrome, Sizes, Spacing, Stroke } from '@/constants/theme';
 import { createBooking, getAvailableDates, getTimeSlots, type AvailableDate, type TimeSlot } from '@/lib/booking-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
 const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -58,6 +60,7 @@ export default function BookingScreen() {
   const { listingId, listingTitle } = useLocalSearchParams<{ listingId?: string; listingTitle?: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   const [step, setStep] = useState<BookingStep>('date');
   const [isLoading, setIsLoading] = useState(false);
@@ -221,7 +224,7 @@ export default function BookingScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >

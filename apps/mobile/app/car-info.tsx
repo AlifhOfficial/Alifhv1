@@ -3,11 +3,13 @@ import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { AlertTriangle, Crosshair, Flame, Info, Lightbulb, User, Zap } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, Sizes, Spacing, Typography, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const DEAL_RATING_CONFIG: Record<string, { label: string; colorKey: keyof ColorPalette }> = {
   steal: { label: 'STEAL', colorKey: 'success' },
@@ -28,6 +30,7 @@ export default function CarInfoScreen() {
   }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   const listingId = params.listingId ?? null;
   const make = params.make;
@@ -104,7 +107,7 @@ export default function CarInfoScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={[styles.scrollContent, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
       showsVerticalScrollIndicator={false}
     >
       <SheetHeader title="DarkWeave" />

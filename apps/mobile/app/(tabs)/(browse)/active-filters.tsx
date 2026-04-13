@@ -2,11 +2,13 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const GROUP_LABELS: Record<string, string> = {
   sort: 'Sort',
@@ -82,6 +84,7 @@ function getGroupLabel(key: string) {
 export default function ActiveFiltersScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const { getSearchChips, removeSearchParam, removeFilterParam, clearSearch, clearFilterParams, resetSort, sortBy } = useSearch();
 
   const chips = getSearchChips();
@@ -135,7 +138,12 @@ export default function ActiveFiltersScreen() {
   }, [chips]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.sheet, paddingBottom: getSheetBottomPadding(insets.bottom) },
+      ]}
+    > 
       <SheetHeader
         title="Active Filters"
         left={

@@ -8,6 +8,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/
 import { useTheme } from '@/context/theme-context';
 import { buildInventoryRouteParams, getStringParam, parseNumberParam } from '@/components/user-inventory-management/sub-operations/route-params';
 import type { MyListingsFilter } from '@/lib/sell-car-user-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const STATUS_OPTIONS: { value: MyListingsFilter; label: string; countKey: string }[] = [
   { value: 'all', label: 'All Listings', countKey: 'totalCount' },
@@ -94,7 +95,7 @@ export default function InventoryFiltersScreen() {
         })}
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

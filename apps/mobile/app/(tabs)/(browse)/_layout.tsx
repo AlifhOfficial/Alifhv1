@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router/stack';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius } from '@/constants/theme';
+import { createFormSheetOptions } from '@/lib/form-sheet';
 
 export default function BrowseLayout() {
   const { colorScheme } = useTheme();
@@ -24,45 +25,28 @@ export default function BrowseLayout() {
       />
       <Stack.Screen
         name="sort"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.75],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
       <Stack.Screen
         name="search"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.58, 0.92],
           sheetExpandsWhenScrolledToEdge: true,
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
       <Stack.Screen
         name="menu"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.9],
-          sheetExpandsWhenScrolledToEdge: false,
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
       <Stack.Screen
         name="active-filters"
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
+        options={createFormSheetOptions(colors, {
           sheetAllowedDetents: [0.9],
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.sheet },
-        }}
+        })}
       />
     </Stack>
   );

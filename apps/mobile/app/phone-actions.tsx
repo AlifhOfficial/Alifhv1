@@ -4,15 +4,18 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Phone, Copy } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, SheetChrome, Spacing } from '@/constants/theme';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function PhoneActionsScreen() {
   const { phoneNumber } = useLocalSearchParams<{ phoneNumber?: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const safePhone = phoneNumber ?? '';
 
   const handleCall = async () => {
@@ -55,7 +58,12 @@ export default function PhoneActionsScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.sheet, paddingBottom: getSheetBottomPadding(insets.bottom) },
+      ]}
+    > 
       <SheetHeader title={safePhone || 'Phone Number'} />
 
       <View style={styles.actions}>

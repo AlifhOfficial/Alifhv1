@@ -7,12 +7,12 @@
  * @module components/sheets/create-listing/step-container
  */
 
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React from "react";
+import { StyleSheet, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Colors, SheetChrome } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
+import { Colors, SheetChrome } from "@/constants/theme";
+import { useTheme } from "@/context/theme-context";
 
 interface StepContainerProps {
   children: React.ReactNode;
@@ -20,6 +20,8 @@ interface StepContainerProps {
   bottomPadding?: number;
   /** Disable horizontal padding (default: false) */
   noPadding?: boolean;
+  /** Allow child gesture surfaces to temporarily own scrolling */
+  scrollEnabled?: boolean;
 }
 
 /**
@@ -30,6 +32,7 @@ export function StepContainer({
   children,
   bottomPadding = SheetChrome.bottomSafeAreaSpacing,
   noPadding = false,
+  scrollEnabled = true,
 }: StepContainerProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -37,7 +40,13 @@ export function StepContainer({
 
   return (
     <ScrollView
-      style={[styles.scrollView, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}
+      style={[
+        styles.scrollView,
+        {
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: colors.border,
+        },
+      ]}
       contentContainerStyle={[
         styles.content,
         !noPadding && styles.withPadding,
@@ -46,6 +55,7 @@ export function StepContainer({
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       bounces
+      scrollEnabled={scrollEnabled}
       contentInsetAdjustmentBehavior="automatic"
     >
       {children}

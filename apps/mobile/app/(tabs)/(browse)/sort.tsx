@@ -8,6 +8,7 @@ import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import type { SearchSortOption } from '@/lib/search-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'relevance', label: 'Default' },
@@ -70,7 +71,7 @@ export default function SortScreen() {
         })}
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

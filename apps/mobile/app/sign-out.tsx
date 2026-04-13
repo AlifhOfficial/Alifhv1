@@ -9,6 +9,7 @@ import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function SignOutScreen() {
   const { colorScheme } = useTheme();
@@ -80,7 +81,7 @@ export default function SignOutScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

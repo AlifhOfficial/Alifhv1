@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function VerifyIdentityScreen() {
   const { colorScheme } = useTheme();
@@ -52,7 +53,7 @@ export default function VerifyIdentityScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

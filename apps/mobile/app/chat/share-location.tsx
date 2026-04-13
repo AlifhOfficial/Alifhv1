@@ -10,6 +10,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Shadows, Sizes, Spacing, 
 import { useTheme } from '@/context/theme-context';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 import { sendLocationMessage } from '@/lib/messaging-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 function getStaticMapUrl(lat: number, lng: number, zoom = 15) {
   const latRad = (lat * Math.PI) / 180;
@@ -169,7 +170,7 @@ export default function ShareLocationScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

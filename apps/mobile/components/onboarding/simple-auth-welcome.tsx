@@ -3,8 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, Text } from '@/components/ui';
-import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
+import { Radius, Sizes, Spacing } from '@/constants/theme';
 
 interface SimpleAuthWelcomeProps {
   onCreateAccount: () => void;
@@ -17,39 +16,36 @@ export function SimpleAuthWelcome({
   onSignIn,
   onContinueAsGuest,
 }: SimpleAuthWelcomeProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}> 
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <View
-        style={[
-          styles.content,
-          {
-            paddingTop: insets.top + Spacing['2xl'],
-            paddingBottom: Math.max(insets.bottom + Spacing.xl, Spacing['3xl']),
-          },
-        ]}
-      >
+    <View style={styles.screen}>
+      <StatusBar style="light" />
+
+      {/* Top panel — primitive surface with bottom rounded corners */}
+      <View style={styles.topPanel}>
         <Image
           source={require('@/assets/images/Revvup-wordmark-white.png')}
           style={styles.wordmark}
           resizeMode="contain"
         />
+      </View>
 
-        <View style={styles.hero}>
-          <Image
-            source={require('@/assets/images/revvupab.png')}
-            style={styles.heroArtwork}
-            resizeMode="contain"
-          />
-          <Text variant="title2Emphasized" style={[styles.title, { color: colors.label }]}>
-            Buy, sell, and connect without the old auth maze.
+      {/* Bottom content */}
+      <View
+        style={[
+          styles.bottom,
+          {
+            paddingBottom: Math.max(insets.bottom + Spacing.lg, Spacing['3xl']),
+          },
+        ]}
+      >
+        <View style={styles.copy}>
+          <Text variant="title1Emphasized" style={styles.title}>
+            Your next car{'\n'}starts here.
           </Text>
-          <Text variant="body" style={[styles.subtitle, { color: colors.labelSecondary }]}>
-            Start with a simple account sheet when you need it, or continue browsing first.
+          <Text variant="subhead" style={styles.subtitle}>
+            {"Free to list. No fees, no buried ads."}
           </Text>
         </View>
 
@@ -58,10 +54,10 @@ export function SimpleAuthWelcome({
             onPress={onCreateAccount}
             style={({ pressed }) => [
               styles.primaryButton,
-              { backgroundColor: colors.primary, opacity: pressed ? 0.84 : 1 },
+              { opacity: pressed ? 0.84 : 1 },
             ]}
           >
-            <Text variant="bodyEmphasized" style={{ color: colors.primaryForeground }}>
+            <Text variant="bodyEmphasized" style={styles.primaryButtonText}>
               Create Account
             </Text>
           </HapticPressable>
@@ -70,20 +66,16 @@ export function SimpleAuthWelcome({
             onPress={onSignIn}
             style={({ pressed }) => [
               styles.secondaryButton,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                opacity: pressed ? 0.72 : 1,
-              },
+              { opacity: pressed ? 0.72 : 1 },
             ]}
           >
-            <Text variant="bodyEmphasized" style={{ color: colors.label }}>
+            <Text variant="bodyEmphasized" style={styles.secondaryButtonText}>
               Sign In
             </Text>
           </HapticPressable>
 
           <HapticPressable onPress={onContinueAsGuest} style={styles.guestButton}>
-            <Text variant="subhead" style={{ color: colors.labelSecondary }}>
+            <Text variant="subhead" style={styles.guestText}>
               Continue as guest
             </Text>
           </HapticPressable>
@@ -96,53 +88,64 @@ export function SimpleAuthWelcome({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: '#000000',
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-    justifyContent: 'space-between',
+  topPanel: {
+    height: '42%',
+    backgroundColor: '#1A1A1A',
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   wordmark: {
-    width: 140,
-    height: 34,
-    alignSelf: 'center',
+    width: 180,
+    height: 44,
   },
-  hero: {
-    alignItems: 'center',
-    gap: Spacing.lg,
+  bottom: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing['2xl'],
+    justifyContent: 'flex-end',
   },
-  heroArtwork: {
-    width: '100%',
-    height: 280,
-    maxWidth: 360,
+  copy: {
+    gap: Spacing.sm,
   },
   title: {
-    textAlign: 'center',
-    maxWidth: 320,
+    color: '#FFFFFF',
   },
   subtitle: {
-    textAlign: 'center',
-    maxWidth: 320,
+    color: 'rgba(255,255,255,0.55)',
   },
   actions: {
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   primaryButton: {
     height: Sizes.actionButtonLg,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#0A84FF',
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
   },
   secondaryButton: {
     height: Sizes.actionButtonLg,
     borderRadius: Radius.full,
-    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#1A1A1A',
+  },
+  secondaryButtonText: {
+    color: '#FFFFFF',
   },
   guestButton: {
     minHeight: Sizes.actionButtonMd,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  guestText: {
+    color: 'rgba(255,255,255,0.45)',
   },
 });

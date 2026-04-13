@@ -8,6 +8,7 @@ import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getStringParam, parseNumberParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 function formatCount(value: number) {
   if (value >= 1_000_000) {
@@ -133,7 +134,7 @@ export default function InventoryStatsScreen() {
         })}
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

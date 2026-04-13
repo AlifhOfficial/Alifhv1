@@ -10,6 +10,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import * as AuthAPI from '@/lib/auth-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -97,7 +98,7 @@ export default function SignInSheetScreen() {
   async function handleForgotPassword() {
     if (isLoading || isAuthenticating) return;
 
-    router.push({
+    router.replace({
       pathname: '/forgot-password-sheet',
       params: email.trim().length > 0
         ? { email: email.toLowerCase().trim() }
@@ -171,7 +172,7 @@ export default function SignInSheetScreen() {
             </>
           )}
         </View>
-        <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+        <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
       </View>
     );
   }
@@ -292,7 +293,7 @@ export default function SignInSheetScreen() {
         </View>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

@@ -12,6 +12,7 @@ import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useBookings } from '@/hooks/use-booking-query';
 import { getAppThumbUrl } from '@/lib/config';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 import {
   cancelBooking,
   type CancellationReason,
@@ -116,7 +117,7 @@ export default function CancelBookingScreen() {
     <ScrollView
       style={[styles.scrollView, { backgroundColor: colors.sheet }]}
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.md }]}
+      contentContainerStyle={[styles.content, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
     > 
         <SheetHeader title="Cancel Booking" />
 

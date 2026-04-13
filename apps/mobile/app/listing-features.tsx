@@ -5,11 +5,13 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Copy } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useListingDetail } from '@/hooks/use-listing-query';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 function formatEnumValue(value: string): string {
   return value
@@ -21,6 +23,7 @@ export default function ListingFeaturesSheetScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const [copied, setCopied] = useState(false);
 
   const { listing, isLoading } = useListingDetail({
@@ -70,7 +73,7 @@ export default function ListingFeaturesSheetScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
       showsVerticalScrollIndicator={false}
     >
       <SheetHeader

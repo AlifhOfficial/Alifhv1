@@ -7,6 +7,7 @@ import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SavedTab } from '@/components/saved/types';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const SAVED_OPTIONS: { value: SavedTab; label: string; countKey: string }[] = [
   { value: 'favorites', label: 'Favorites', countKey: 'favoritesCount' },
@@ -106,7 +107,7 @@ export default function SavedFiltersScreen() {
         })}
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

@@ -10,6 +10,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/
 import { useTheme } from '@/context/theme-context';
 import { markListingSold } from '@/lib/sell-car-user-api';
 import { getStringParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 import React from 'react';
 
@@ -96,7 +97,7 @@ export default function InventoryMarkSoldScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

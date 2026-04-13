@@ -12,6 +12,7 @@ import Animated, {
 import { Check, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
@@ -39,6 +40,7 @@ import {
 } from '@/lib/filter-constants';
 import type { ExportStatus } from '@/lib/listing-constants';
 import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const PRICE_PRESETS = [
   { label: 'Under 50K', min: undefined, max: 50000 },
@@ -171,6 +173,7 @@ const sectionStyles = StyleSheet.create({
 export default function BrowseMenuScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const {
     filterParams,
@@ -372,7 +375,7 @@ export default function BrowseMenuScreen() {
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: getSheetBottomPadding(insets.bottom) }]}
         showsVerticalScrollIndicator={false}
       >
 

@@ -12,6 +12,7 @@ import { useTheme } from '@/context/theme-context';
 import { extendListing } from '@/lib/sell-car-user-api';
 import { formatExpiryCountdown } from '@/components/user-inventory-management/utilities/listing-helpers';
 import { getStringParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 export default function InventoryExtendScreen() {
   const params = useLocalSearchParams() as InventorySheetRouteParams;
@@ -136,7 +137,7 @@ export default function InventoryExtendScreen() {
         </HapticPressable>
       </View>
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

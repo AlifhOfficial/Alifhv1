@@ -10,6 +10,7 @@ import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import * as AuthAPI from '@/lib/auth-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -120,7 +121,7 @@ export default function ForgotPasswordSheetScreen() {
             </Text>
           </HapticPressable>
         </View>
-        <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+        <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
       </View>
     );
   }
@@ -214,7 +215,7 @@ export default function ForgotPasswordSheetScreen() {
         </View>
       ) : null}
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }

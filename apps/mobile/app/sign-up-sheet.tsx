@@ -11,6 +11,7 @@ import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import * as AuthAPI from '@/lib/auth-api';
+import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -201,7 +202,7 @@ export default function SignUpSheetScreen() {
             </>
           )}
         </View>
-        <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+        <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
       </View>
     );
   }
@@ -360,7 +361,7 @@ export default function SignUpSheetScreen() {
         </View>
       ) : null}
 
-      <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
+      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </View>
   );
 }
