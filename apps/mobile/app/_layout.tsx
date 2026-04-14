@@ -353,7 +353,8 @@ function RootLayoutNav() {
           <Stack.Screen
             name="financing"
             options={createFormSheetOptions(colors, {
-              sheetAllowedDetents: [0.86],
+              sheetAllowedDetents: 'fitToContents',
+              gestureEnabled: true,
             })}
           />
           <Stack.Screen

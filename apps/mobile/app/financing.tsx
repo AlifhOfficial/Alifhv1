@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -43,40 +43,37 @@ export default function FinancingScreen() {
     };
   }, [downPayment, term, price, interestRate]);
 
-  const handleApply = () => {
-    const dp = Math.min(90, Math.max(0, parseInt(downPayment, 10) || 0));
-    const t = Math.min(84, Math.max(12, parseInt(term, 10) || 48));
-    emitFinancingApplied({ downPayment: dp, term: t });
-    router.back();
-  };
+  const clampedDownPayment = Math.min(90, Math.max(0, parseInt(downPayment, 10) || 0));
+  const clampedTerm = Math.min(84, Math.max(12, parseInt(term, 10) || 48));
+
+  useEffect(() => {
+    // Keep parent state in sync without requiring an explicit apply action.
+    emitFinancingApplied({ downPayment: clampedDownPayment, term: clampedTerm });
+  }, [clampedDownPayment, clampedTerm]);
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.sheet, paddingBottom: getSheetBottomPadding(insets.bottom) },
+        { backgroundColor: colors.sheet, paddingBottom: getSheetBottomPadding(insets.bottom, -Spacing.md) },
       ]}
     > 
-      <SheetHeader title="Custom Financing" />
+      <SheetHeader
+        title="Custom Financing"
+        right={
+          <HapticPressable
+            onPress={() => router.back()}
+            hitSlop={Spacing.sm}
+            style={[styles.headerActionButton, { backgroundColor: colors.primary }]}
+          >
+            <Ionicons name="checkmark" size={16} color={colors.primaryForeground} />
+          </HapticPressable>
+        }
+      />
 
-      <View style={{ alignItems: 'flex-end', marginBottom: Spacing.md }}>
-        <HapticPressable
-          onPress={handleApply}
-          hitSlop={Spacing.md}
-          style={{
-            backgroundColor: colors.primary,
-            borderRadius: Radius.full,
-            paddingHorizontal: Spacing.md,
-            paddingVertical: Spacing.sm,
-          }}
-        >
-          <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>Apply</Text>
-        </HapticPressable>
-      </View>
-
-      <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}> 
-        <Text variant="footnoteEmphasized" tone="muted" uppercase>ESTIMATED MONTHLY PAYMENT</Text>
-        <Text variant="headline" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
+      <View style={styles.outputContainer}> 
+        <Text variant="footnote" tone="muted">Estimated monthly payment</Text>
+        <Text variant="largeTitleEmphasized" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
         <View style={[styles.outputDetails, { borderTopColor: colors.border }]}> 
           <View style={styles.outputItem}>
             <Text variant="subhead" tone="muted">Down Payment</Text>
@@ -95,8 +92,8 @@ export default function FinancingScreen() {
 
       <View style={styles.inputsContainer}>
         <View style={styles.inputRow}>
-          <Text variant="body" style={styles.inputLabel} tone="muted">Down Payment</Text>
-          <View style={[styles.inputWrapper, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
+          <Text variant="subhead" style={styles.inputLabel} tone="muted">Down Payment</Text>
+          <View style={[styles.inputWrapper, { backgroundColor: colors.fill2 }]}> 
             <TextInput
               style={[styles.input, { color: colors.label }]}
               value={downPayment}
@@ -110,9 +107,11 @@ export default function FinancingScreen() {
           </View>
         </View>
 
+        <View style={[styles.rowDivider, { backgroundColor: colors.border }]} />
+
         <View style={styles.inputRow}>
-          <Text variant="body" style={styles.inputLabel} tone="muted">Loan Term</Text>
-          <View style={[styles.inputWrapper, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}> 
+          <Text variant="subhead" style={styles.inputLabel} tone="muted">Loan Term</Text>
+          <View style={[styles.inputWrapper, { backgroundColor: colors.fill2 }]}> 
             <TextInput
               style={[styles.input, { color: colors.label }]}
               value={term}
@@ -127,9 +126,9 @@ export default function FinancingScreen() {
         </View>
       </View>
 
-      <View style={[styles.disclaimer, { backgroundColor: colors.fill2 }]}> 
+      <View style={styles.disclaimer}> 
         <Ionicons name="information-circle-outline" size={18} color={colors.labelSecondary} />
-        <Text variant="subhead" style={styles.disclaimerText} tone="secondary">
+        <Text variant="footnote" style={styles.disclaimerText} tone="secondary">
           This is an estimate only. Actual rates and terms may vary by bank, credit profile, and other factors.
         </Text>
       </View>
@@ -144,53 +143,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.lg,
   },
-  header: {
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerAction: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
-  },
   outputContainer: {
-    padding: Spacing.lg,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.xl,
-    marginBottom: Spacing.xl,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  headerActionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   outputDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.md,
+    flexDirection: 'column',
+    gap: Spacing.sm,
+    marginTop: Spacing.lg,
     paddingTop: Spacing.md,
     borderTopWidth: 1,
   },
   outputItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    justifyContent: 'space-between',
   },
   inputsContainer: {
-    gap: Spacing.lg,
-    marginBottom: Spacing.xl,
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   inputRow: {
-    gap: Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
   },
   inputLabel: {
-    marginLeft: Spacing.xs,
+    width: 108,
+  },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.lg,
-    borderWidth: 1,
     gap: Spacing.sm,
   },
   input: {
@@ -202,8 +200,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.xs,
   },
   disclaimerText: {
     flex: 1,

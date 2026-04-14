@@ -3,21 +3,20 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { HapticPressable, EmptyState, RequireAuthSheet } from '@/components/ui';
+import { HapticPressable, EmptyState, RequireAuthSheet, Text, Skeleton } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, View, NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Heart, AlertCircle, Zap } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
+import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 
 import { Colors, Shadows, Sizes, Spacing, Layout, ZIndex, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Text } from '@/components/ui';
 import { SavedList } from '@/components/saved';
-import { CarCardListSkeleton } from '@/components/cards';
+import { CarCardMSkeleton } from '@/components/cards';
 import type { SavedTab } from '@/components/saved/types';
 import { useSaved } from '@/hooks/use-saved';
 import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
@@ -32,6 +31,7 @@ export default function SavedScreen() {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const bottomInset = getTabBarContentInset(insets.bottom);
   const router = useRouter();
   const { tab } = useLocalSearchParams<{ tab?: string }>();
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
@@ -121,11 +121,19 @@ export default function SavedScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
         <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} right={headerRight} sideSlotWidth={activeTab === 'superlikes' && quota ? 120 : undefined} />
-        <View style={[styles.skeletonContainer, { paddingTop: headerInset }]}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <CarCardListSkeleton key={i} />
+        <ScrollView
+          contentContainerStyle={[styles.skeletonContainer, { paddingTop: headerInset, paddingBottom: bottomInset }]}
+          contentInsetAdjustmentBehavior="never"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.skeletonTabsRow}>
+            <Skeleton width={108} height={36} borderRadius={18} />
+            <Skeleton width={108} height={36} borderRadius={18} />
+          </View>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <CarCardMSkeleton key={i} />
           ))}
-        </View>
+        </ScrollView>
       </View>
     );
   }
@@ -223,9 +231,14 @@ const styles = StyleSheet.create({
   } as any,
 
   skeletonContainer: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: Spacing.lg,
-    gap: Spacing.md,
+    gap: Spacing.sm,
+  },
+  skeletonTabsRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    paddingBottom: Spacing.sm,
   },
   superlikeQuota: {
     flexDirection: 'row',

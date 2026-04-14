@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList , NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Heart } from 'lucide-react-native';
+import { Heart, Zap } from 'lucide-react-native';
 
 import { Spacing } from '@/constants/theme';
 import { getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';

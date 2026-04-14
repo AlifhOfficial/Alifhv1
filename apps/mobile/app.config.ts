@@ -45,6 +45,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       associatedDomains,
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        NSCalendarsUsageDescription: 'Allow Revvup to add your booked test drives to Apple Calendar.',
       },
       splash: {
         backgroundColor: '#000000',
@@ -60,6 +61,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     android: {
       userInterfaceStyle: 'automatic',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
+      permissions: ['android.permission.READ_CALENDAR', 'android.permission.WRITE_CALENDAR'],
       adaptiveIcon: {
         backgroundColor: '#000000',
         foregroundImage: './assets/images/android-icon-foreground.png',
@@ -112,6 +114,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       'expo-audio',
       'expo-asset',
       'expo-image',
+      'expo-calendar',
       'expo-apple-authentication',
       [
         'expo-font',

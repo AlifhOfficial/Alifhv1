@@ -1,14 +1,15 @@
 import { HapticPressable, SheetHeader, Text, TextInput } from '@/components/ui';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { X as XIcon } from 'lucide-react-native';
+import { CircleX } from 'lucide-react-native';
+import { Image } from 'expo-image';
 
-import { Colors, Radius, SheetChrome, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useBookings } from '@/hooks/use-booking-query';
 import { getAppThumbUrl } from '@/lib/config';
@@ -121,23 +122,37 @@ export default function CancelBookingScreen() {
     > 
         <SheetHeader title="Cancel Booking" />
 
-        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}> 
+        <View style={[styles.warningCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
+          <View style={[styles.warningIconWrap, { backgroundColor: colors.errorMuted }]}> 
+            <CircleX size={Sizes.iconSm} color={colors.error} />
+          </View>
+          <View style={styles.warningCopy}>
+            <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>Cancel this booking?</Text>
+            <Text variant={SheetTypography.supporting} style={{ color: colors.sheetLabelMuted }}>
+              This will notify the seller and remove the booking from your active schedule.
+            </Text>
+          </View>
+        </View>
+
+        <View style={[styles.previewCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
           {booking.listingThumbnail ? (
-            <Image source={{ uri: getAppThumbUrl(booking.listingThumbnail)! }} style={styles.thumbnail} />
+            <Image source={{ uri: getAppThumbUrl(booking.listingThumbnail)! }} style={styles.thumbnail} contentFit="cover" transition={150} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}> 
               <Ionicons name="car-outline" size={Sizes.iconLg} color={colors.labelQuaternary} />
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="subheadEmphasized" numberOfLines={1}>{booking.listingTitle}</Text>
-            <Text variant="caption1Emphasized" tone="muted" uppercase>{booking.partnerName}</Text>
+            <Text variant={SheetTypography.rowLabelSelected} numberOfLines={1} style={{ color: colors.sheetLabel }}>
+              {booking.listingTitle}
+            </Text>
+            <Text variant="caption1" tone="muted">{booking.partnerName}</Text>
             <Text variant="subhead" tone="secondary">{formattedDate}</Text>
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text variant="subhead" tone="secondary" style={{ marginBottom: Spacing.sm }}>Why are you cancelling?</Text>
+        <View style={[styles.sectionCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>Why are you cancelling?</Text>
           <View style={styles.reasonList}>
             {CANCELLATION_REASONS.map((reason) => {
               const isSelected = selectedReason === reason.value;
@@ -148,23 +163,24 @@ export default function CancelBookingScreen() {
                   style={[
                     styles.reasonItem,
                     {
-                      backgroundColor: isSelected ? colors.primaryMuted : colors.surfaceSecondary,
-                      borderColor: isSelected ? colors.primary : colors.border,
+                      backgroundColor: isSelected ? colors.errorMuted : colors.fill2,
+                      borderColor: isSelected ? colors.error : colors.sheetBorder,
                     },
                   ]}
                 >
-                  <View style={[styles.radioOuter, { borderColor: isSelected ? colors.primary : colors.labelQuaternary }]}> 
-                    {isSelected ? <View style={[styles.radioInner, { backgroundColor: colors.primary }]} /> : null}
+                  <View style={[styles.radioOuter, { borderColor: isSelected ? colors.error : colors.labelQuaternary }]}> 
+                    {isSelected ? <View style={[styles.radioInner, { backgroundColor: colors.error }]} /> : null}
                   </View>
-                  <Text variant="subhead">{reason.label}</Text>
+                  <Text variant="subhead" style={{ color: colors.label }}>{reason.label}</Text>
                 </HapticPressable>
               );
             })}
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text variant="subhead" tone="secondary" style={{ marginBottom: Spacing.xs }}>Additional notes (optional)</Text>
+        <View style={[styles.sectionCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>Additional notes</Text>
+          <Text variant="footnote" tone="secondary">Optional</Text>
           <TextInput
             value={notes}
             onChangeText={setNotes}
@@ -175,9 +191,9 @@ export default function CancelBookingScreen() {
             style={[
               styles.textInput,
               {
-                backgroundColor: colors.surfaceSecondary,
+                backgroundColor: colors.fill2,
                 color: colors.label,
-                borderColor: colors.border,
+                borderColor: colors.sheetBorder,
               },
             ]}
           />
@@ -193,9 +209,9 @@ export default function CancelBookingScreen() {
           <HapticPressable
             onPress={() => router.back()}
             disabled={loading}
-            style={[styles.secondaryBtn, { backgroundColor: 'transparent', borderColor: colors.border }]}
+            style={[styles.secondaryBtn, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}
           >
-            <Text variant="body" tone="secondary">Go Back</Text>
+            <Text variant="subheadEmphasized" style={{ color: colors.label }}>Go Back</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -207,8 +223,8 @@ export default function CancelBookingScreen() {
               <ActivityIndicator size="small" color={colors.primaryForeground} />
             ) : (
               <>
-                <XIcon size={Sizes.iconSm} color={colors.primaryForeground} />
-                <Text variant="body" style={{ color: colors.primaryForeground }}>Cancel Booking</Text>
+                <CircleX size={Sizes.iconSm} color={colors.primaryForeground} />
+                <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>Cancel Booking</Text>
               </>
             )}
           </HapticPressable>
@@ -246,16 +262,40 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
+    paddingHorizontal: SheetChrome.contentPaddingHorizontal,
+    paddingTop: SheetChrome.contentPaddingTop,
     gap: Spacing.md,
+  },
+  warningCard: {
+    borderRadius: Radius.xl,
+    paddingHorizontal: SheetChrome.rowPaddingHorizontal,
+    paddingVertical: SheetChrome.rowPaddingVertical,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.md,
+    borderWidth: 1,
+    borderCurve: 'continuous',
+  },
+  warningIconWrap: {
+    width: Sizes.avatarMd,
+    height: Sizes.avatarMd,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  warningCopy: {
+    flex: 1,
+    gap: Spacing.xs,
   },
   previewCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
+    paddingHorizontal: SheetChrome.rowPaddingHorizontal,
+    paddingVertical: SheetChrome.rowPaddingVertical,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderCurve: 'continuous',
   },
   thumbnail: {
     width: Spacing['5xl'] + Spacing.sm,
@@ -268,8 +308,13 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: Spacing.xs,
   },
-  section: {
-    gap: Spacing.xs,
+  sectionCard: {
+    gap: Spacing.sm,
+    paddingHorizontal: SheetChrome.rowPaddingHorizontal,
+    paddingVertical: SheetChrome.rowPaddingVertical,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderCurve: 'continuous',
   },
   reasonList: {
     gap: Spacing.xs,
@@ -282,6 +327,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: Radius.md,
     borderWidth: 1,
+    borderCurve: 'continuous',
   },
   radioOuter: {
     width: Spacing.xl,
@@ -303,6 +349,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     minHeight: Spacing['5xl'] + Spacing.md,
     textAlignVertical: 'top',
+    borderCurve: 'continuous',
   },
   errorBanner: {
     paddingHorizontal: Spacing.md,
@@ -321,6 +368,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
+    borderCurve: 'continuous',
   },
   primaryBtn: {
     flex: 1,
@@ -330,5 +378,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
+    borderCurve: 'continuous',
   },
 });

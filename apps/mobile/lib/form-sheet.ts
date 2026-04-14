@@ -1,14 +1,14 @@
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { Platform } from 'react-native';
 
-import { Layout, Radius, Spacing, type ColorPalette } from '@/constants/theme';
+import { Radius, Spacing, type ColorPalette } from '@/constants/theme';
 
 function getAndroidDetachedSheetContentStyle(
   colors: ColorPalette,
 ): NonNullable<NativeStackNavigationOptions['contentStyle']> {
   return {
     backgroundColor: colors.sheet,
-    marginHorizontal: Layout.screenPadding - Spacing.xs,
+    marginHorizontal: 0,
     marginTop: Spacing.sm,
     marginBottom: Spacing.lg,
     borderRadius: Radius['3xl'],

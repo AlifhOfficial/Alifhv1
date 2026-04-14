@@ -17,10 +17,11 @@ import {
   Users,
 } from 'lucide-react-native';
 
-import { HapticPressable, SheetHeader, Text, TextInput } from '@/components/ui';
+import { EmptyState, HapticPressable, SheetHeader, Text, TextInput } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, SheetChrome, Sizes, Spacing, Stroke } from '@/constants/theme';
-import { createBooking, getAvailableDates, getTimeSlots, type AvailableDate, type TimeSlot } from '@/lib/booking-api';
+import { createBooking, getAvailableDates, getTimeSlots, type AvailableDate, type BookingStatus, type TimeSlot } from '@/lib/booking-api';
+import { formatBookingStatus, getBookingStatusColor } from '@/components/bookings/utilities';
 import { getSheetBottomPadding } from '@/lib/sheet-layout';
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
@@ -75,6 +76,7 @@ export default function BookingScreen() {
   const [confirmationToken, setConfirmationToken] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [bookingsNotAvailable, setBookingsNotAvailable] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const safeTitle = Array.isArray(listingTitle) ? listingTitle[0] : listingTitle;
   const today = useMemo(() => new Date(), []);
@@ -115,7 +117,7 @@ export default function BookingScreen() {
 
   const handleSubmit = useCallback(async () => {
     if (!listingId || !selectedDate || !selectedSlot) return;
-    setIsLoading(true);
+    setIsSubmitting(true);
     setError(null);
     try {
       const result = await createBooking({
@@ -134,7 +136,7 @@ export default function BookingScreen() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create booking');
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   }, [listingId, selectedDate, selectedSlot, notes, attendees]);
 
@@ -169,6 +171,9 @@ export default function BookingScreen() {
   }
 
   const monthLabel = `${MONTH_NAMES[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+  const createdBookingStatus: BookingStatus = 'pending';
+  const createdBookingStatusLabel = formatBookingStatus(createdBookingStatus);
+  const createdBookingStatusColor = getBookingStatusColor(createdBookingStatus, colors);
 
   const stepHeader = (() => {
     if (step === 'date' || bookingsNotAvailable) {
@@ -201,6 +206,24 @@ export default function BookingScreen() {
     return <SheetHeader title="Booking Requested" />;
   })();
 
+  if (isLoading || isSubmitting) {
+    return (
+      <View style={[styles.container, styles.fullScreen, { backgroundColor: colors.sheet }]}>
+        {stepHeader}
+        {safeTitle && step !== 'success' ? (
+          <Text variant="subhead" tone="secondary">{safeTitle}</Text>
+        ) : null}
+        <View style={styles.stateContent}>
+          <ActivityIndicator size="large" color={colors.labelSecondary} />
+          <Text variant="subhead" tone="secondary">
+            {isSubmitting ? 'Requesting booking…' : availableDates.length === 0 ? 'Checking availability…' : 'Loading times…'}
+          </Text>
+        </View>
+        <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -221,21 +244,14 @@ export default function BookingScreen() {
         </View>
       ) : null}
 
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
-        </View>
-      ) : null}
-
       {/* ── Not Available State ── */}
       {bookingsNotAvailable && !isLoading ? (
-        <Animated.View entering={FadeIn.duration(200)} style={styles.unavailable}>
-          <CalendarX2 size={Sizes.iconXl} color={colors.labelQuaternary} strokeWidth={Stroke.icon} />
-          <Text variant="title3Emphasized" style={styles.centered}>Not Taking Bookings</Text>
-          <Text variant="subhead" tone="muted" style={styles.centered}>
-            The seller isn{"'"}t accepting test drive bookings right now.
-          </Text>
-        </Animated.View>
+        <EmptyState
+          icon={CalendarX2}
+          title="Not taking bookings."
+          subtitle="Check back later."
+          style={styles.unavailableState}
+        />
       ) : null}
 
       {/* ── Date Step ── */}
@@ -329,42 +345,56 @@ export default function BookingScreen() {
       {/* ── Time Step ── */}
       {step === 'time' && !isLoading ? (
         <Animated.View entering={FadeIn.duration(200)} style={styles.stack}>
+          {selectedDate ? (
+            <Text variant="headline">{formatDateLong(selectedDate)}</Text>
+          ) : null}
+
           {timeSlots.filter((s) => s.isAvailable).length === 0 ? (
             <Text variant="subhead" tone="muted" style={styles.emptySlots}>
               No available times for this date
             </Text>
           ) : (
-            <View style={styles.timeGrid}>
-              {timeSlots.map((slot) => {
-                const selected = selectedSlot?.id === slot.id;
-                return (
-                  <HapticPressable
-                    key={slot.id}
-                    style={[
-                      styles.timeSlot,
-                      selected
-                        ? { backgroundColor: colors.primary, borderColor: colors.primary }
-                        : slot.isAvailable
-                        ? { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }
-                        : { backgroundColor: colors.fill3, borderColor: 'transparent', opacity: 0.4 },
-                    ]}
-                    onPress={() => slot.isAvailable && setSelectedSlot(slot)}
-                    disabled={!slot.isAvailable}
-                  >
-                    <Text
-                      variant="subheadEmphasized"
-                      style={{
-                        color: selected ? colors.primaryForeground : slot.isAvailable ? colors.label : colors.labelQuaternary,
-                        textAlign: 'center',
-                        textDecorationLine: !slot.isAvailable ? 'line-through' : 'none',
-                      }}
+            <>
+              <View style={styles.slotsHeader}>
+                <Text variant="subheadEmphasized">Available Slots</Text>
+                <View style={[styles.slotsBadge, { backgroundColor: colors.primaryMuted }]}>
+                  <Text variant="caption1" style={{ color: colors.primary }}>
+                    {timeSlots.filter((s) => s.isAvailable).length}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.timeGrid}>
+                {timeSlots.map((slot) => {
+                  const selected = selectedSlot?.id === slot.id;
+                  return (
+                    <HapticPressable
+                      key={slot.id}
+                      style={[
+                        styles.timeSlot,
+                        selected
+                          ? { backgroundColor: colors.primary, borderColor: colors.primary }
+                          : slot.isAvailable
+                          ? { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }
+                          : { backgroundColor: colors.fill3, borderColor: 'transparent', opacity: 0.4 },
+                      ]}
+                      onPress={() => slot.isAvailable && setSelectedSlot(slot)}
+                      disabled={!slot.isAvailable}
                     >
-                      {formatTime(slot.startTime)}
-                    </Text>
-                  </HapticPressable>
-                );
-              })}
-            </View>
+                      <Text
+                        variant="subheadEmphasized"
+                        style={{
+                          color: selected ? colors.primaryForeground : slot.isAvailable ? colors.label : colors.labelQuaternary,
+                          textAlign: 'center',
+                          textDecorationLine: !slot.isAvailable ? 'line-through' : 'none',
+                        }}
+                      >
+                        {formatTime(slot.startTime)}
+                      </Text>
+                    </HapticPressable>
+                  );
+                })}
+              </View>
+            </>
           )}
 
           <HapticPressable
@@ -446,34 +476,75 @@ export default function BookingScreen() {
       {step === 'success' ? (
         <Animated.View entering={FadeIn.duration(300)} style={styles.successStack}>
           <CheckCircle2 size={Sizes.iconXl} color={colors.success} strokeWidth={Stroke.icon} />
-          <Text variant="title3Emphasized">Booking Requested</Text>
-          {safeTitle ? <Text variant="subhead" tone="secondary">{safeTitle}</Text> : null}
-          {selectedDate && selectedSlot ? (
-            <Text variant="subhead" tone="muted" style={styles.centered}>
-              {formatDateLong(selectedDate)} · {formatTime(selectedSlot.startTime)}
+          {safeTitle ? <Text variant="title3Emphasized" style={styles.centered}>{safeTitle}</Text> : null}
+          <View style={[styles.statusBadge, { backgroundColor: createdBookingStatusColor + '1A' }]}>
+            <Text variant="caption1" style={{ color: createdBookingStatusColor }}>
+              {createdBookingStatusLabel}
             </Text>
-          ) : null}
+          </View>
           <Text variant="subhead" tone="secondary" style={styles.centered}>
             The seller will confirm your test drive shortly.
           </Text>
-          {confirmationToken ? (
-            <Text
-              variant="subheadEmphasized"
-              selectable
-              style={{ letterSpacing: 1.5, color: colors.label, textAlign: 'center' }}
-            >
-              {confirmationToken}
-            </Text>
+
+          {(selectedDate || selectedSlot || confirmationToken) ? (
+            <View style={[styles.successCard, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+              {selectedDate && selectedSlot ? (
+                <View style={styles.row}>
+                  <Calendar1 size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
+                  <Text variant="subhead">
+                    {formatDateLong(selectedDate)} · {formatTime(selectedSlot.startTime)}
+                  </Text>
+                </View>
+              ) : null}
+              {selectedDate && selectedSlot ? (
+                <View style={[styles.hairline, { backgroundColor: colors.border }]} />
+              ) : null}
+              <View style={styles.successMetaRow}>
+                <View style={styles.successMetaBlock}>
+                  <Text variant="caption1" tone="muted">Status</Text>
+                  <Text variant="subheadEmphasized" style={{ color: colors.label }}>
+                    {createdBookingStatusLabel}
+                  </Text>
+                </View>
+                <View style={styles.successMetaBlock}>
+                  <Text variant="caption1" tone="muted">Reference</Text>
+                  <Text variant="subheadEmphasized" style={{ color: colors.labelSecondary }}>
+                    Issued
+                  </Text>
+                </View>
+              </View>
+              {confirmationToken ? (
+                <>
+                  <View style={[styles.hairline, { backgroundColor: colors.border }]} />
+                  <View style={styles.successRefRow}>
+                    <Text variant="caption1" tone="muted">Ref No.</Text>
+                    <Text
+                      variant="subheadEmphasized"
+                      selectable
+                      style={styles.successRefValue}
+                    >
+                      {confirmationToken}
+                    </Text>
+                  </View>
+                </>
+              ) : null}
+            </View>
           ) : null}
-          <HapticPressable
-            onPress={() => router.push('/bookings')}
-            style={[styles.primaryBtn, styles.fullWidth, { backgroundColor: colors.primary }]}
-          >
-            <Text variant="body" style={{ color: colors.primaryForeground }}>View Bookings</Text>
-          </HapticPressable>
-          <HapticPressable onPress={() => router.back()} style={styles.ghostBtn}>
-            <Text variant="subhead" tone="secondary">Done</Text>
-          </HapticPressable>
+
+          <View style={styles.successActionsRow}>
+            <HapticPressable
+              onPress={() => router.dismissTo('/bookings')}
+              style={[styles.successPrimaryAction, { backgroundColor: colors.primary }]}
+            >
+              <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>View Bookings</Text>
+            </HapticPressable>
+            <HapticPressable
+              onPress={() => router.back()}
+              style={[styles.successSecondaryAction, { backgroundColor: colors.fill2, borderColor: colors.border }]}
+            >
+              <Text variant="subheadEmphasized" style={{ color: colors.label }}>Done</Text>
+            </HapticPressable>
+          </View>
         </Animated.View>
       ) : null}
     </ScrollView>
@@ -509,10 +580,88 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     paddingVertical: Spacing['2xl'],
   },
-  unavailable: {
+  successCard: {
+    alignSelf: 'stretch',
+    borderWidth: 1,
+    borderRadius: Radius.xl,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+    borderCurve: 'continuous',
+  },
+  hairline: {
+    height: StyleSheet.hairlineWidth,
+  },
+  statusBadge: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    borderRadius: Radius.full,
+  },
+  successMetaRow: {
+    flexDirection: 'row',
+    gap: Spacing.lg,
+  },
+  successMetaBlock: {
+    flex: 1,
+    gap: 4,
+  },
+  successRefRow: {
+    gap: 4,
+  },
+  successRefValue: {
+    letterSpacing: 1.2,
+  },
+  successActionsRow: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  successPrimaryAction: {
+    flex: 1,
     alignItems: 'center',
-    gap: Spacing.md,
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.full,
+    borderCurve: 'continuous',
+  },
+  successSecondaryAction: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    borderCurve: 'continuous',
+  },
+  // State screens
+  fullScreen: {
+    paddingHorizontal: Spacing.lg,
+  },
+  stateContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingBottom: Spacing['3xl'],
+  },
+  // Slots header
+  slotsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  slotsBadge: {
+    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    minWidth: 22,
+    alignItems: 'center',
+  },
+  unavailableState: {
+    flex: 0,
+    paddingHorizontal: Spacing['2xl'],
     paddingVertical: Spacing['3xl'],
+    gap: Spacing.xl,
   },
   monthNav: {
     flexDirection: 'row',
@@ -626,9 +775,5 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     alignSelf: 'stretch',
-  },
-  ghostBtn: {
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
   },
 });

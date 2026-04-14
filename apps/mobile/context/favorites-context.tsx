@@ -116,6 +116,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus(user?.id) });
 
       const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus(user?.id));
+      const wasFavoriteActive = previousStatus?.favoriteIds.includes(listingId) ?? false;
       const previousFavoriteListings = queryClient.getQueriesData<SavedListingCard[]>({
         queryKey: ['saved', 'listings', 'favorites'],
       });
@@ -131,10 +132,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         };
       });
 
-      queryClient.setQueriesData<SavedListingCard[]>(
-        { queryKey: ['saved', 'listings', 'favorites'] },
-        (current) => current?.filter((listing) => listing.id !== listingId) ?? current
-      );
+      if (wasFavoriteActive) {
+        queryClient.setQueriesData<SavedListingCard[]>(
+          { queryKey: ['saved', 'listings', 'favorites'] },
+          (current) => current?.filter((listing) => listing.id !== listingId) ?? current
+        );
+      }
 
       return { previousStatus, previousFavoriteListings };
     },
@@ -151,7 +154,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus(user?.id) });
+      await refetchStatus();
+      await queryClient.invalidateQueries({ queryKey: ['saved', 'listings'] });
     },
   });
 
@@ -161,6 +165,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus(user?.id) });
 
       const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus(user?.id));
+      const wasSuperlikedActive = previousStatus?.superlikeIds.includes(listingId) ?? false;
       const previousSuperlikeListings = queryClient.getQueriesData<SavedListingCard[]>({
         queryKey: ['saved', 'listings', 'superlikes'],
       });
@@ -183,10 +188,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         };
       });
 
-      queryClient.setQueriesData<SavedListingCard[]>(
-        { queryKey: ['saved', 'listings', 'superlikes'] },
-        (current) => current?.filter((listing) => listing.id !== listingId) ?? current
-      );
+      if (wasSuperlikedActive) {
+        queryClient.setQueriesData<SavedListingCard[]>(
+          { queryKey: ['saved', 'listings', 'superlikes'] },
+          (current) => current?.filter((listing) => listing.id !== listingId) ?? current
+        );
+      }
 
       return { previousStatus, previousSuperlikeListings };
     },
@@ -217,7 +224,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus(user?.id) });
+      await refetchStatus();
+      await queryClient.invalidateQueries({ queryKey: ['saved', 'listings'] });
     },
   });
 
