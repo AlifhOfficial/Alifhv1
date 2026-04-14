@@ -312,6 +312,8 @@ function RootLayoutNav() {
             options={createFormSheetOptions(colors, {
               title: 'Create Listing',
               sheetAllowedDetents: [0.62, 0.9],
+              headerBackButtonMenuEnabled: false,
+              gestureEnabled: false,
             })}
           />
           <Stack.Screen

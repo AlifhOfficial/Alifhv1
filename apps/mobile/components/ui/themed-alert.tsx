@@ -5,7 +5,7 @@
 
 import { Text } from './text';
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Modal, View, StyleSheet, Pressable, Platform } from 'react-native';
+import { Alert, type AlertButton as NativeAlertButton, Modal, View, StyleSheet, Pressable, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Shadows, Spacing, Radius, Sizes } from '@/constants/theme';
@@ -60,6 +60,21 @@ export function AlertProvider({ children }: AlertProviderProps) {
   const [config, setConfig] = useState<AlertConfig | null>(null);
 
   const showAlert = useCallback((title: string, message?: string, buttons?: AlertButton[]) => {
+    if (Platform.OS === 'ios') {
+      const nativeButtons: NativeAlertButton[] | undefined = buttons?.map((button) => ({
+        text: button.text,
+        style: button.style,
+        onPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          button.onPress?.();
+        },
+      }));
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      Alert.alert(title, message, nativeButtons);
+      return;
+    }
+
     setConfig({
       title,
       message,
@@ -118,13 +133,13 @@ export function AlertProvider({ children }: AlertProviderProps) {
             onPress={(e) => e.stopPropagation()}
           >
             {/* Title */}
-            <Text variant="headline" style={styles.title}>
+            <Text variant="subheadEmphasized" style={styles.title}>
               {config?.title}
             </Text>
 
             {/* Message */}
             {config?.message && (
-              <Text variant="body" style={[styles.message, { color: colors.labelSecondary }]}>
+              <Text variant="footnote" style={[styles.message, { color: colors.labelSecondary }]}> 
                 {config.message}
               </Text>
             )}
@@ -143,22 +158,27 @@ export function AlertProvider({ children }: AlertProviderProps) {
                       styles.button,
                       {
                         backgroundColor: isDestructive
+                          ? colors.errorMuted
+                          : isCancel
+                            ? colors.surfaceSecondary
+                            : colors.fill2,
+                        borderColor: isDestructive
                           ? colors.error
                           : isCancel
-                            ? colors.fill2
-                            : colors.primary,
+                            ? colors.border
+                            : colors.border,
                         opacity: pressed ? 0.8 : 1,
                       },
                     ]}
                   >
                     <Text
-                      variant="body"
+                      variant="subhead"
                       style={{
                         color: isDestructive
-                          ? colors.white
+                          ? colors.error
                           : isCancel
-                            ? colors.label
-                            : colors.primaryForeground,
+                            ? colors.labelSecondary
+                            : colors.label,
                       }}
                     >
                       {button.text}
@@ -186,30 +206,33 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing['2xl'],
+    paddingHorizontal: Spacing['3xl'],
   },
   alertBox: {
     width: '100%',
-    maxWidth: 360,
+    maxWidth: 340,
     borderRadius: Radius['2xl'],
     borderWidth: 1,
-    padding: Spacing.xl,
-    ...Shadows.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
+    ...Shadows.md,
   },
   title: {
     textAlign: 'center',
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
   },
   message: {
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   buttonContainer: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   button: {
-    height: Sizes.actionButtonMd,
+    height: Sizes.actionButtonSm,
     borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
