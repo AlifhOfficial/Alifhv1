@@ -6,6 +6,7 @@ import {
   BarChart3,
   CalendarPlus,
   CheckCircle2,
+  ExternalLink,
   HelpCircle,
   Pencil,
   Trash2,
@@ -20,6 +21,7 @@ export type EditStatusAction =
   | 'edit'
   | 'view_stats'
   | 'view_review_reason'
+  | 'visit_listing'
   | 'mark_sold'
   | 'extend'
   | 'archive'
@@ -65,6 +67,14 @@ export const INVENTORY_ACTION_ROWS: InventoryActionRow[] = [
     icon: BarChart3,
     color: (colors) => colors.label,
     visible: ({ moderationStatus }) => moderationStatus === 'approved',
+  },
+  {
+    key: 'visit_listing',
+    label: 'Visit Listing',
+    icon: ExternalLink,
+    color: (colors) => colors.label,
+    visible: ({ moderationStatus, lifecycleStatus }) =>
+      moderationStatus === 'approved' && lifecycleStatus === 'active',
   },
   {
     key: 'view_review_reason',

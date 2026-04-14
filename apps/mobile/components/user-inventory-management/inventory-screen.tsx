@@ -78,7 +78,6 @@ import {
   formatExpiryCountdown,
   formatPrice,
   buildCreateListingInitialData,
-  canOpenPublicListing,
 } from "./utilities/listing-helpers";
 import { CreateListingFlow } from "@/components/sheets/create-listing/create-listing-flow";
 import type { CreateListingData } from "@/components/sheets/create-listing/types";
@@ -316,18 +315,9 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
 
       const rawDisplayImage = item.thumbnail || item.images?.[0];
       const displayImage = getAppThumbUrl(rawDisplayImage);
-      const canViewPublicDetail = canOpenPublicListing(
-        item.moderationStatus,
-        item.lifecycleStatus,
-      );
-
       return (
         <HapticPressable
-          onPress={
-            canViewPublicDetail
-              ? () => router.push(`/listing/${item.id}`)
-              : undefined
-          }
+          onPress={() => openActions(item)}
           style={[
             styles.card,
             { backgroundColor: colors.surface, borderColor: colors.border },
@@ -452,7 +442,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
         </HapticPressable>
       );
     },
-    [colors, router, openActions],
+    [colors, openActions],
   );
 
   // ════════════════════════════════════════════════════════════════════════

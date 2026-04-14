@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React, { useCallback, useState } from "react";
@@ -15,6 +16,7 @@ import {
   Spacing,
 } from "@/constants/theme";
 import { useTheme } from "@/context/theme-context";
+import { getAppThumbUrl } from "@/lib/config";
 import {
   isLifecycleStatus,
   isModerationStatus,
@@ -107,6 +109,10 @@ export default function InventoryActionsScreen() {
           params: routeParams,
         });
         return;
+      case "visit_listing":
+        router.dismiss();
+        router.push(`/listing/${listingId}`);
+        return;
       case "mark_sold":
         router.replace({
           pathname: "/inventory/mark-sold",
@@ -150,10 +156,11 @@ export default function InventoryActionsScreen() {
       >
         <View style={[styles.thumbnail, { backgroundColor: colors.fill2 }]}>
           {listingThumbnail ? (
-            <Ionicons
-              name="image"
-              size={Sizes.iconSm}
-              color={colors.sheetLabelMuted}
+            <Image
+              source={{ uri: getAppThumbUrl(listingThumbnail) ?? listingThumbnail }}
+              style={styles.thumbnailImage}
+              contentFit="cover"
+              transition={150}
             />
           ) : (
             <Ionicons
@@ -267,6 +274,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  thumbnailImage: {
+    width: "100%",
+    height: "100%",
   },
   previewCopy: {
     flex: 1,
