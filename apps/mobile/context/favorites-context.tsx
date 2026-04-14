@@ -40,8 +40,9 @@ const SAVED_STATUS_STALE_TIME = 5 * 60 * 1000;
 
 function mapSavedStatus(status: FavoritesStatusData): SavedStatusCache {
   return {
-    favoriteIds: status.favorites,
-    superlikeIds: status.superlikes,
+    // Dedupe and stable-sort so the same logical set always produces the same cache key
+    favoriteIds: [...new Set(status.favorites)].sort(),
+    superlikeIds: [...new Set(status.superlikes)].sort(),
     quota: status.quota,
   };
 }
@@ -55,6 +56,10 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const pendingSuperlikesRef = useRef<Set<string>>(new Set());
   const lastToggleTimeRef = useRef<Map<string, number>>(new Map());
   const prevUserIdRef = useRef<string | undefined>(undefined);
+  // When a toggle fires while a mutation is in flight, record the intent so we can
+  // replay it once the current mutation settles (prevents silent drops on rapid taps).
+  const retoggleFavoritesRef = useRef<Set<string>>(new Set());
+  const retoggleSuperlikesRef = useRef<Set<string>>(new Set());
 
   const isStatusEnabled = isAuthenticated && !!user?.id && !isAuthLoading;
 
@@ -239,7 +244,15 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     if (lastToggle && now - lastToggle < DEBOUNCE_MS) {
       return;
     }
+
     if (pendingFavoritesRef.current.has(listingId)) {
+      // Mutation in flight — queue a retoggle instead of dropping the tap.
+      // A second tap while queued cancels the queue (double-tap = no-op).
+      if (retoggleFavoritesRef.current.has(listingId)) {
+        retoggleFavoritesRef.current.delete(listingId);
+      } else {
+        retoggleFavoritesRef.current.add(listingId);
+      }
       return;
     }
 
@@ -250,6 +263,19 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       await favoriteMutation.mutateAsync(listingId);
     } finally {
       pendingFavoritesRef.current.delete(listingId);
+      // Clear debounce window so the very next tap (after settle) is never blocked.
+      lastToggleTimeRef.current.delete(`fav:${listingId}`);
+
+      if (retoggleFavoritesRef.current.has(listingId)) {
+        retoggleFavoritesRef.current.delete(listingId);
+        pendingFavoritesRef.current.add(listingId);
+        lastToggleTimeRef.current.set(`fav:${listingId}`, Date.now());
+        favoriteMutation.mutateAsync(listingId).finally(() => {
+          pendingFavoritesRef.current.delete(listingId);
+          lastToggleTimeRef.current.delete(`fav:${listingId}`);
+          retoggleFavoritesRef.current.delete(listingId);
+        });
+      }
     }
   }, [favoriteMutation, isAuthenticated]);
 
@@ -263,7 +289,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     if (lastToggle && now - lastToggle < DEBOUNCE_MS) {
       return;
     }
+
     if (pendingSuperlikesRef.current.has(listingId)) {
+      if (retoggleSuperlikesRef.current.has(listingId)) {
+        retoggleSuperlikesRef.current.delete(listingId);
+      } else {
+        retoggleSuperlikesRef.current.add(listingId);
+      }
       return;
     }
 
@@ -274,6 +306,18 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       await superlikeMutation.mutateAsync(listingId);
     } finally {
       pendingSuperlikesRef.current.delete(listingId);
+      lastToggleTimeRef.current.delete(`superlike:${listingId}`);
+
+      if (retoggleSuperlikesRef.current.has(listingId)) {
+        retoggleSuperlikesRef.current.delete(listingId);
+        pendingSuperlikesRef.current.add(listingId);
+        lastToggleTimeRef.current.set(`superlike:${listingId}`, Date.now());
+        superlikeMutation.mutateAsync(listingId).finally(() => {
+          pendingSuperlikesRef.current.delete(listingId);
+          lastToggleTimeRef.current.delete(`superlike:${listingId}`);
+          retoggleSuperlikesRef.current.delete(listingId);
+        });
+      }
     }
   }, [isAuthenticated, superlikeMutation]);
 

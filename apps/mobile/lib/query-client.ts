@@ -81,7 +81,7 @@ export const queryKeys = {
   settings: () => ['settings'] as const,
   savedStatus: (userId?: string) => ['saved', userId ?? 'anonymous', 'status'] as const,
   savedListings: (type: 'favorites' | 'superlikes', ids: readonly string[] = []) =>
-    ['saved', 'listings', type, ids.join(',')] as const,
+    ['saved', 'listings', type, [...ids].sort().join(',')] as const,
   
   // Inventory
   inventory: (userId?: string, filter?: string) => ['inventory', userId ?? 'anonymous', filter ?? 'all'] as const,

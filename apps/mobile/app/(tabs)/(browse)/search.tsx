@@ -112,7 +112,7 @@ export default function SearchScreen() {
   });
 
   const { data: modelFacets = [] } = useQuery<FacetBucket[]>({
-    queryKey: queryKeys.facets({ surface: 'search-sheet-models', makes: selectedMakes.join(',') }),
+    queryKey: queryKeys.facets({ surface: 'search-sheet-models', makes: [...selectedMakes].sort().join(',') }),
     queryFn: () => searchApi.getModelsForMakes(selectedMakes),
     enabled: selectedMakes.length > 0,
     staleTime: 60 * 60 * 1000,
@@ -122,8 +122,8 @@ export default function SearchScreen() {
   const { data: trimFacets = [] } = useQuery<FacetBucket[]>({
     queryKey: queryKeys.facets({
       surface: 'search-sheet-trims',
-      makes: selectedMakes.join(','),
-      models: selectedModels.join(','),
+      makes: [...selectedMakes].sort().join(','),
+      models: [...selectedModels].sort().join(','),
     }),
     queryFn: () => searchApi.getTrimsForModels(selectedMakes, selectedModels),
     enabled: selectedMakes.length > 0 && selectedModels.length > 0,
@@ -132,7 +132,7 @@ export default function SearchScreen() {
   });
 
   const { data: suggestionResponse, isLoading: isLoadingSuggestions } = useQuery<{ suggestions: Suggestion[] }>({
-    queryKey: ['search', 'suggest', debouncedQuery, selectedMakes.join(','), selectedModels.join(',')],
+    queryKey: ['search', 'suggest', debouncedQuery, [...selectedMakes].sort().join(','), [...selectedModels].sort().join(',')],
     queryFn: () => searchApi.suggest(debouncedQuery, {
       make: selectedMakes.length > 0 ? selectedMakes : undefined,
       model: selectedModels.length > 0 ? selectedModels : undefined,

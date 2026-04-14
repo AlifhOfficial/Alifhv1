@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { HapticPressable, EmptyState, RequireAuthSheet, Text, Skeleton } from '@/components/ui';
+import { HapticPressable, EmptyState, RequireAuthSheet, Text } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, NativeScrollEvent, NativeSyntheticEvent, ScrollView } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -126,10 +126,6 @@ export default function SavedScreen() {
           contentInsetAdjustmentBehavior="never"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.skeletonTabsRow}>
-            <Skeleton width={108} height={36} borderRadius={18} />
-            <Skeleton width={108} height={36} borderRadius={18} />
-          </View>
           {Array.from({ length: 3 }).map((_, i) => (
             <CarCardMSkeleton key={i} />
           ))}
@@ -235,11 +231,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     gap: Spacing.sm,
   },
-  skeletonTabsRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    paddingBottom: Spacing.sm,
-  },
   superlikeQuota: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -248,11 +239,5 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     borderRadius: Sizes.actionButtonLg / 2,
     borderWidth: 0,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.sm,
   },
 });
