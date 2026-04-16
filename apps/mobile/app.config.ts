@@ -50,11 +50,9 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       splash: {
         backgroundColor: '#000000',
         resizeMode: 'contain',
-        image: './assets/images/Revvup-wordmark-white.png',
         dark: {
           backgroundColor: '#000000',
           resizeMode: 'contain',
-          image: './assets/images/Revvup-wordmark-white.png',
         },
       },
     },
@@ -75,11 +73,9 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       splash: {
         backgroundColor: '#000000',
         resizeMode: 'contain',
-        image: './assets/images/Revvup-wordmark-white.png',
         dark: {
           backgroundColor: '#000000',
           resizeMode: 'contain',
-          image: './assets/images/Revvup-wordmark-white.png',
         },
       },
     },
@@ -92,13 +88,9 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
         'expo-splash-screen',
         {
           backgroundColor: '#000000',
-          image: './assets/images/Revvup-wordmark-white.png',
-          imageWidth: 250,
           resizeMode: 'contain',
           dark: {
             backgroundColor: '#000000',
-            image: './assets/images/Revvup-wordmark-white.png',
-            imageWidth: 250,
             resizeMode: 'contain',
           },
         },

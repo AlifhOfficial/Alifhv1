@@ -13,6 +13,7 @@ import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect, useSegments } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Spacing, Sizes, SheetChrome, SheetTypography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -154,6 +155,7 @@ export function CreateListingSheetContent({
 }: CreateListingSheetContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showAlert } = useAlert();
 
@@ -343,7 +345,7 @@ export function CreateListingSheetContent({
         )}
       </View>
 
-      <View style={styles.footerProgressSection}>
+      <View style={styles.bottomProgressArea}>
         <View style={styles.progressDotsRow}>
           {SHEET_STEPS.map((step, index) => {
             const isActive = index === currentStepIndex;
@@ -368,6 +370,7 @@ export function CreateListingSheetContent({
             );
           })}
         </View>
+        <View style={{ height: Math.max(insets.bottom, Spacing.sm) }} />
       </View>
     </View>
   );
@@ -563,10 +566,10 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
   },
-  footerProgressSection: {
+  bottomProgressArea: {
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     alignItems: 'center',
-    paddingBottom: Spacing.sm,
+    paddingTop: Spacing.xs,
   },
   progressDotsRow: {
     flexDirection: 'row',

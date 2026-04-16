@@ -30,6 +30,7 @@ import { NetworkProvider } from '@/context/network-context';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
+import { CustomBootupScreen } from '@/components/ui/custom-bootup-screen';
 import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 import { createFormSheetOptions } from '@/lib/form-sheet';
 
@@ -435,13 +436,16 @@ export default function RootLayout() {
     [AppFontFamilies.bold]: require('../assets/fonts/Inter/Inter_700Bold.ttf'),
     [AppFontFamilies.extraBold]: require('../assets/fonts/Inter/Inter_800ExtraBold.ttf'),
   });
+  const [bootupVisible, setBootupVisible] = useState(true);
 
   useEffect(() => {
     if (!fontsLoaded && !fontError) {
       return;
     }
 
+    // Hide bootup screen then native splash after a brief frame delay for smooth fade
     requestAnimationFrame(() => {
+      setBootupVisible(false);
       SplashScreen.hideAsync().catch(() => {});
     });
   }, [fontError, fontsLoaded]);
@@ -475,6 +479,8 @@ export default function RootLayout() {
                   </NetworkProvider>
                 </KeyboardProvider>
               </AlertProvider>
+        {/* Custom bootup screen overlay */}
+        <CustomBootupScreen isVisible={bootupVisible} />
             </ThemeProvider>
           </QueryClientProvider>
         </SafeAreaProvider>
