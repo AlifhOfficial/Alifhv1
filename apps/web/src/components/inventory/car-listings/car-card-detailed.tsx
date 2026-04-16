@@ -78,6 +78,8 @@ const formatEnumValue = (value: string | null): string => {
     .replace(/\b\w/g, c => c.toUpperCase());
 };
 
+const DESCRIPTION_COLLAPSE_THRESHOLD = 320;
+
 // ============================================================================
 // Sub-Components
 // ============================================================================
@@ -281,6 +283,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
 export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTierPartner, className }: CarCardDetailedProps) {
   const { isSignedIn } = useUser();
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   
   // Show BLK badge if listing is Black OR partner is Black tier
   const showBlkBadge = listing.isBlkListing || isBlackTierPartner;
@@ -318,6 +321,21 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
     if (listing.specialNotes?.underWarranty) highlights.push('Under Warranty');
     return highlights;
   }, [listing.tags, listing.specialNotes]);
+
+  const shouldCollapseDescription = useMemo(
+    () => Boolean(listing.description && listing.description.length > DESCRIPTION_COLLAPSE_THRESHOLD),
+    [listing.description]
+  );
+
+  const displayedDescription = useMemo(() => {
+    if (!listing.description) return '';
+    if (!shouldCollapseDescription || isDescriptionExpanded) return listing.description;
+    return `${listing.description.slice(0, DESCRIPTION_COLLAPSE_THRESHOLD).trimEnd()}...`;
+  }, [listing.description, shouldCollapseDescription, isDescriptionExpanded]);
+
+  useEffect(() => {
+    setIsDescriptionExpanded(false);
+  }, [listing.id]);
 
   // Handlers with useCallback to prevent recreation on every render
   const handleShare = useCallback(async () => {
@@ -504,8 +522,17 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
             Description
           </p>
           <p className="text-subhead text-muted-foreground leading-relaxed whitespace-pre-line">
-            {listing.description}
+            {displayedDescription}
           </p>
+          {shouldCollapseDescription && (
+            <button
+              type="button"
+              onClick={() => setIsDescriptionExpanded((prev) => !prev)}
+              className="text-subhead font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              {isDescriptionExpanded ? 'Show less' : 'Show more'}
+            </button>
+          )}
         </div>
       )}
 

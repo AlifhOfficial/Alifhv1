@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Clock, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { ListingForm } from '@/components/listings/listing-form';
 import type { ListingFormData } from '@/components/listings/listing-form/types';
 
@@ -170,9 +171,15 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
       // Check AI moderation result
       if (moderation?.approved) {
         // AI approved - listing is live
+        toast.success('Listing published', {
+          description: 'It may take 5 to 10 minutes for changes to reflect everywhere.',
+        });
         setShowSuccessModal(true);
       } else {
         // Flagged for manual review
+        toast('Listing submitted for review', {
+          description: 'After approval, it may take 5 to 10 minutes for changes to reflect.',
+        });
         setShowPendingModal(true);
       }
     } catch (err) {

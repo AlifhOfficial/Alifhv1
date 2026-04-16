@@ -6,6 +6,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { ListingForm } from '@/components/listings/listing-form';
 import type { ListingFormData } from '@/components/listings/listing-form/types';
 import type { CarDetailedData } from '@alifh/database';
@@ -108,6 +109,10 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to update listing');
       }
+
+      toast.success('Listing updated', {
+        description: 'It may take 5 to 10 minutes for changes to reflect everywhere.',
+      });
 
       // Redirect back to my listings page
       router.push(backToUrl);

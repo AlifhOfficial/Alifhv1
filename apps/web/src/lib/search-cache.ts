@@ -6,12 +6,10 @@
  *   - Each unique filter combo gets its own cache entry.
  *   - Shared between web SSR and mobile API hits.
  *
- * Search results: cached 2 minutes via Vercel Data Cache.
+ * Search results: cached 5 minutes via Vercel Data Cache.
  *   - Web SSR: ISR (revalidate=300) on the page already caches the HTML for 5 min,
- *     so this only benefits the mobile API route (/api/listings/search).
- *   - 2 min chosen so price changes and new listings appear quickly.
- *   - Sold/expired listings may show stale for up to 2 min (acceptable — detail page
- *     always shows true state, and the expire cron runs every 10 min anyway).
+ *     so this mainly benefits the mobile API route (/api/listings/search).
+ *   - 5 min aligns with listing detail cache freshness.
  *
  * Quick search (autocomplete): cached 10 minutes.
  *   - Called frequently during typing but make/model/trim names don't change often.
@@ -54,7 +52,7 @@ const _getCachedSearchResults = unstable_cache(
     return searchListings(params, { fast: true });
   },
   ['search-results'],
-  { revalidate: 120 }
+  { revalidate: 300 }
 );
 
 const _getCachedQuickSearch = unstable_cache(
