@@ -4,9 +4,10 @@
  */
 
 import { Text } from './text';
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { Alert, type AlertButton as NativeAlertButton, Modal, View, StyleSheet, Pressable, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
+import * as NavigationBar from 'expo-navigation-bar';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Shadows, Spacing, Radius, Sizes } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
@@ -59,6 +60,29 @@ export function AlertProvider({ children }: AlertProviderProps) {
   const [visible, setVisible] = useState(false);
   const [config, setConfig] = useState<AlertConfig | null>(null);
 
+  const syncAndroidNavBarForAlert = useCallback((isAlertVisible: boolean) => {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+
+    try {
+      // Android nav bar background expects a solid color; translucent/overlay colors can be ignored.
+      const alertNavColor = colorScheme === 'dark' ? Colors.dark.black : Colors.light.background;
+      NavigationBar.setBackgroundColorAsync(isAlertVisible ? alertNavColor : colors.background);
+      NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+    } catch {
+      // Ignore failures when activity is not ready.
+    }
+  }, [colorScheme, colors.background]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    syncAndroidNavBarForAlert(true);
+  }, [visible, syncAndroidNavBarForAlert]);
+
   const showAlert = useCallback((title: string, message?: string, buttons?: AlertButton[]) => {
     if (Platform.OS === 'ios') {
       const nativeButtons: NativeAlertButton[] | undefined = buttons?.map((button) => ({
@@ -81,17 +105,19 @@ export function AlertProvider({ children }: AlertProviderProps) {
       buttons: buttons || [{ text: 'OK', style: 'default' }],
     });
     setVisible(true);
+    syncAndroidNavBarForAlert(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-  }, []);
+  }, [syncAndroidNavBarForAlert]);
 
   const handleButtonPress = useCallback((button: AlertButton) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setVisible(false);
+    syncAndroidNavBarForAlert(false);
     // Delay callback to allow modal to close smoothly
     setTimeout(() => {
       button.onPress?.();
     }, 100);
-  }, []);
+  }, [syncAndroidNavBarForAlert]);
 
   const handleBackdropPress = useCallback(() => {
     // Find cancel button or dismiss
@@ -100,8 +126,9 @@ export function AlertProvider({ children }: AlertProviderProps) {
       handleButtonPress(cancelButton);
     } else {
       setVisible(false);
+      syncAndroidNavBarForAlert(false);
     }
-  }, [config, handleButtonPress]);
+  }, [config, handleButtonPress, syncAndroidNavBarForAlert]);
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
@@ -111,6 +138,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
         transparent
         animationType="fade"
         statusBarTranslucent
+        navigationBarTranslucent
         onRequestClose={handleBackdropPress}
       >
         <Pressable style={styles.backdrop} onPress={handleBackdropPress}>

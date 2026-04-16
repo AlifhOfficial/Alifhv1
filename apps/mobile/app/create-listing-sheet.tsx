@@ -18,7 +18,15 @@ export default function CreateListingSheetScreen() {
   const colors = Colors[colorScheme];
   const { showAlert } = useAlert();
 
-  const flowId = typeof params.flowId === 'string' ? params.flowId : '';
+  const flowIdParam = params.flowId;
+  const flowIdCandidates = Array.isArray(flowIdParam)
+    ? flowIdParam
+    : typeof flowIdParam === 'string'
+      ? [flowIdParam]
+      : [];
+  const flowId =
+    [...flowIdCandidates].reverse().find((candidate) => !!getCreateListingFlowSession(candidate)) ??
+    (flowIdCandidates[flowIdCandidates.length - 1] ?? '');
   const session = flowId ? getCreateListingFlowSession(flowId) : undefined;
   const didCloseRef = useRef(false);
   const isConfirmOpenRef = useRef(false);

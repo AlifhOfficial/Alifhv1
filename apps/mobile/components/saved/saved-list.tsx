@@ -4,7 +4,7 @@
 
 import { HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { StyleSheet, View, FlatList , NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { StyleSheet, FlatList, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Heart, Zap } from 'lucide-react-native';

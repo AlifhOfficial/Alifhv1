@@ -85,8 +85,6 @@ import { useInventory } from "@/hooks/use-inventory-query";
 import { getMobileHeaderContentInset } from "@/components/layout";
 import {
   buildInventorySheetParams,
-  getStringParam,
-  parseBooleanParam,
 } from "@/components/user-inventory-management/sub-operations/route-params";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -283,15 +281,51 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   );
 
   useEffect(() => {
-    const listingId = getStringParam(editListingId);
-    const nonce = getStringParam(editNonce);
+    const listingIds = Array.isArray(editListingId)
+      ? editListingId
+      : editListingId
+        ? [editListingId]
+        : [];
+    const nonces = Array.isArray(editNonce)
+      ? editNonce
+      : editNonce
+        ? [editNonce]
+        : [];
+    const publishedValues = Array.isArray(editPublished)
+      ? editPublished
+      : editPublished
+        ? [editPublished]
+        : [];
 
-    if (!listingId || !nonce || handledEditNonceRef.current === nonce) {
+    if (listingIds.length === 0 || nonces.length === 0) {
       return;
     }
 
-    handledEditNonceRef.current = nonce;
-    void launchEditFlow(listingId, parseBooleanParam(editPublished));
+    const pairCount = Math.max(listingIds.length, nonces.length);
+    let selectedListingId: string | null = null;
+    let selectedNonce: string | null = null;
+    let selectedPublishedRaw: string | undefined;
+
+    for (let i = pairCount - 1; i >= 0; i -= 1) {
+      const nonce = nonces[i] ?? nonces[nonces.length - 1];
+      const listingId = listingIds[i] ?? listingIds[listingIds.length - 1];
+
+      if (!nonce || !listingId || handledEditNonceRef.current === nonce) {
+        continue;
+      }
+
+      selectedNonce = nonce;
+      selectedListingId = listingId;
+      selectedPublishedRaw = publishedValues[i] ?? publishedValues[publishedValues.length - 1];
+      break;
+    }
+
+    if (!selectedListingId || !selectedNonce) {
+      return;
+    }
+
+    handledEditNonceRef.current = selectedNonce;
+    void launchEditFlow(selectedListingId, selectedPublishedRaw === "true");
   }, [editListingId, editNonce, editPublished, launchEditFlow]);
 
   const openActions = useCallback(

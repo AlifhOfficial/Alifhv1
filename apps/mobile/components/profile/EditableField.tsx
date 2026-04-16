@@ -57,13 +57,25 @@ export function EditableField({
   maxLength,
 }: EditableFieldProps) {
   const inputRef = useRef<TextInputRef>(null);
+  const focusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bgOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (isEditing) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      // Ensure pressed highlight is reset when entering edit mode.
+      bgOpacity.value = 0;
+      focusTimeoutRef.current = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => {
+        if (focusTimeoutRef.current) {
+          clearTimeout(focusTimeoutRef.current);
+          focusTimeoutRef.current = null;
+        }
+      };
     }
-  }, [isEditing]);
+    // Reset stale press state when leaving edit mode (e.g. cancel without typing).
+    bgOpacity.value = withTiming(0, { duration: 120 });
+    return undefined;
+  }, [bgOpacity, isEditing]);
 
   const handlePress = () => {
     if (disabled) return;

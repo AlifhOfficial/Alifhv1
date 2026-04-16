@@ -59,7 +59,7 @@ export default function SellerContactScreen() {
   const sellerType = listing?.sellerData?.type;
   
   // Fetch other listings from this seller
-  const { listings: otherListings, total: otherListingsTotal } = useSellerListings({
+  const { listings: otherListings } = useSellerListings({
     sellerId,
     sellerType,
     excludeListingId: listingId,

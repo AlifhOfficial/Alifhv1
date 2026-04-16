@@ -218,18 +218,31 @@ export function CreateListingSheetContent({
 
   const handleSuccess = useCallback(
     (createdListingId: string, approved: boolean, isDraft?: boolean) => {
-      onSuccess?.(createdListingId);
-      (onForceClose ?? onClose)();
+      const finalizeFlow = () => {
+        onSuccess?.(createdListingId);
+        (onForceClose ?? onClose)();
 
-      if (approved) {
-        router.replace('/inventory');
-      } else if (isDraft) {
-        router.replace('/inventory?tab=draft');
-      } else {
-        router.replace('/inventory?tab=in_review');
+        if (approved) {
+          router.replace('/inventory');
+        } else if (isDraft) {
+          router.replace('/inventory?tab=draft');
+        } else {
+          router.replace('/inventory?tab=in_review');
+        }
+      };
+
+      if (isDraft) {
+        finalizeFlow();
+        return;
       }
+
+      showAlert(
+        'Listing update submitted',
+        'Your listing was published successfully. Some changes can take 5-10 minutes to fully reflect across the app. Thanks for your patience.',
+        [{ text: 'Got it', onPress: finalizeFlow }],
+      );
     },
-    [onSuccess, onForceClose, onClose, router],
+    [onSuccess, onForceClose, onClose, router, showAlert],
   );
 
   useFocusEffect(
@@ -361,6 +374,7 @@ export function CreateListingFlow({
   const [flowId, setFlowId] = useState<string | null>(null);
   const isOnCreateListingSheet = segments[segments.length - 1] === 'create-listing-sheet';
   const reopenRetryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reopenRetryAttemptsRef = useRef(0);
 
   const pushFlowRoute = useCallback(
     (id: string) => {
@@ -433,27 +447,43 @@ export function CreateListingFlow({
   useEffect(() => {
     if (!visible || !flowId || isOnCreateListingSheet) {
       clearReopenRetryTimeout();
+      reopenRetryAttemptsRef.current = 0;
       return;
     }
 
-    // Global nav lock can swallow rapid consecutive pushes. Retry once after lock window.
-    reopenRetryTimeoutRef.current = setTimeout(() => {
-      if (!getCreateListingFlowSession(flowId)) {
-        setFlowId(null);
+    // Global nav lock can swallow rapid consecutive pushes. Retry a few times with backoff.
+    const scheduleRetry = () => {
+      const nextAttempt = reopenRetryAttemptsRef.current + 1;
+      if (nextAttempt > 5) {
         return;
       }
 
-      if (!isOnCreateListingSheet) {
-        pushFlowRoute(flowId);
-      }
-    }, 700);
+      reopenRetryAttemptsRef.current = nextAttempt;
+      const delayMs = Math.min(500 + nextAttempt * 250, 1500);
 
-    return clearReopenRetryTimeout;
+      reopenRetryTimeoutRef.current = setTimeout(() => {
+        if (!getCreateListingFlowSession(flowId)) {
+          setFlowId(null);
+          return;
+        }
+
+        pushFlowRoute(flowId);
+        scheduleRetry();
+      }, delayMs);
+    };
+
+    scheduleRetry();
+
+    return () => {
+      clearReopenRetryTimeout();
+      reopenRetryAttemptsRef.current = 0;
+    };
   }, [visible, flowId, isOnCreateListingSheet, pushFlowRoute, clearReopenRetryTimeout]);
 
   useEffect(
     () => () => {
       clearReopenRetryTimeout();
+      reopenRetryAttemptsRef.current = 0;
       if (flowId) {
         deleteCreateListingFlowSession(flowId);
       }

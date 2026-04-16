@@ -23,7 +23,6 @@ import {
   useInventoryActionMenu,
 } from "@/components/user-inventory-management/sub-operations/action-config";
 import {
-  buildInventoryEditTriggerParams,
   getStringParam,
   parseBooleanParam,
   toRouteInputParams,
@@ -49,7 +48,6 @@ export default function InventoryActionsScreen() {
   const lifecycleStatus = getStringParam(params.lifecycleStatus);
   const isArchived = parseBooleanParam(params.isArchived);
   const expiresAt = getStringParam(params.expiresAt);
-  const activeTab = getStringParam(params.activeTab);
 
   const visibleActions = useInventoryActionMenu({
     moderationStatus,
@@ -74,20 +72,19 @@ export default function InventoryActionsScreen() {
     setPendingAction("edit");
 
     try {
-      router.dismissTo({
-        pathname: "/inventory",
-        params: buildInventoryEditTriggerParams({
+      router.replace({
+        pathname: '/inventory/edit',
+        params: {
           listingId,
-          activeTab,
-          isPublishedEdit: moderationStatus !== "draft",
-        }),
+          isPublishedEdit: moderationStatus === 'draft' ? 'false' : 'true',
+        },
       });
     } catch (error) {
       console.error("Failed to open edit listing flow:", error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setPendingAction(null);
     }
-  }, [activeTab, listingId, moderationStatus, pendingAction]);
+  }, [listingId, moderationStatus, pendingAction]);
 
   function handlePress(action: (typeof visibleActions)[number]["key"]) {
     if (pendingAction) return;

@@ -72,6 +72,15 @@ export default function InventoryLayout() {
           sheetAllowedDetents: [0.72],
         })}
       />
+      <Stack.Screen
+        name="edit"
+        options={createFormSheetOptions(colors, {
+          title: 'Edit Listing',
+          sheetAllowedDetents: [0.62, 0.9],
+          headerBackButtonMenuEnabled: false,
+          gestureEnabled: false,
+        })}
+      />
     </Stack>
   );
 }
