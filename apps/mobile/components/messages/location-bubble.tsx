@@ -6,7 +6,8 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { View, StyleSheet, Linking, Platform, Image } from 'react-native';
+import { View, StyleSheet, Linking, Platform } from 'react-native';
+import { Image } from 'expo-image';
 import { MapPin, ExternalLink } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Shadows, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
@@ -72,7 +73,7 @@ export function LocationBubble({
         <Image
           source={{ uri: mapPreviewUrl }}
           style={styles.mapImage}
-          resizeMode="cover"
+          contentFit="cover"
         />
         {/* Pin overlay */}
         <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}>

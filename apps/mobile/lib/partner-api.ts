@@ -5,7 +5,7 @@
  * Used for displaying partner directories and profiles.
  */
 
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 
 // ============================================================================
 // TYPES
@@ -50,9 +50,7 @@ export interface PartnersListResponse {
 
 /** Convert relative path to absolute CDN URL */
 function toAbsoluteUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  return `${CDN_BASE}/${path}`;
+  return getAppImageUrl(path);
 }
 
 /**

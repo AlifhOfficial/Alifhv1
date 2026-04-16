@@ -11,9 +11,10 @@
 
 import { Text } from './text';
 import React, { useState, useMemo } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Sizes, Spacing, Typography, Fonts } from '@/constants/theme';
+import { Colors, Sizes, Spacing, Typography, Fonts, Timing } from '@/constants/theme';
 import { getAppImageUrl } from '@/lib/config';
 import { getAvatarInitials } from './avatar-utils';
 
@@ -99,7 +100,8 @@ export function UserAvatar({
           source={{ uri: resolvedSrc }}
           style={[styles.image, { borderRadius: pixelSize / 2 }]}
           onError={() => setFailedSrc(resolvedSrc)}
-          resizeMode="cover"
+          contentFit="cover"
+          transition={Timing.avatarTransition}
         />
       )}
       {!showImage && (

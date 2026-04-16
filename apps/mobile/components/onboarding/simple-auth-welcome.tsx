@@ -1,4 +1,5 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -27,7 +28,7 @@ export function SimpleAuthWelcome({
         <Image
           source={require('@/assets/images/Revvup-wordmark-white.png')}
           style={styles.wordmark}
-          resizeMode="contain"
+          contentFit="contain"
         />
       </View>
 

@@ -5,7 +5,7 @@
  * Used for displaying showroom showcases in home feed.
  */
 
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 
 // ============================================================================
 // TYPES
@@ -54,9 +54,7 @@ export interface ShowroomListResponse {
 
 /** Convert relative path to absolute CDN URL */
 function toAbsoluteUrl(url: string | null | undefined): string | null {
-  if (!url) return null;
-  if (url.startsWith('http')) return url;
-  return `${CDN_BASE}/${url}`;
+  return getAppImageUrl(url);
 }
 
 /**

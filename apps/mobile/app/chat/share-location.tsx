@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MapPin, RefreshCw, Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -112,7 +113,7 @@ export default function ShareLocationScreen() {
           </View>
         ) : mapPreviewUrl ? (
           <>
-            <Image source={{ uri: mapPreviewUrl }} style={styles.mapImage} resizeMode="cover" />
+            <Image source={{ uri: mapPreviewUrl }} style={styles.mapImage} contentFit="cover" />
             <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}> 
               <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
             </View>

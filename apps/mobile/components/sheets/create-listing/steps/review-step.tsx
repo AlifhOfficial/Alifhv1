@@ -8,7 +8,8 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { Share, AlertCircle } from 'lucide-react-native';
 
@@ -16,7 +17,7 @@ import { Colors, Spacing, Radius, Sizes, SheetTypography } from '@/constants/the
 import { useTheme } from '@/context/theme-context';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 import { createListing, updateListing } from '@/lib/sell-car-user-api';
-import { CDN_BASE } from '@/lib/config';
+import { getAppImageUrl } from '@/lib/config';
 
 import { StepContainer } from '../step-container';
 import { dataToPayload, type CreateListingData } from '../types';
@@ -24,9 +25,7 @@ import { dataToPayload, type CreateListingData } from '../types';
 // ─────────────────────────────────────────────────────────────────────────────
 
 function toAbsoluteUrl(url: string): string {
-  if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  return `${CDN_BASE}/${url.startsWith('/') ? url.slice(1) : url}`;
+  return getAppImageUrl(url) ?? '';
 }
 
 interface ReviewStepContentProps {
@@ -136,6 +135,7 @@ export function ReviewStepContent({
           <Image
             source={{ uri: toAbsoluteUrl(data.images[0]) }}
             style={styles.heroImage}
+            contentFit="cover"
           />
         ) : (
           <View style={[styles.heroImage, { backgroundColor: colors.fill2 }]} />

@@ -6,7 +6,8 @@
 
 import { Text } from '@/components/ui';
 import React from 'react';
-import { View, Image, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
 import { Spacing, Radius, Sizes } from '@/constants/theme';
@@ -109,7 +110,7 @@ export function MessageBubble({
               <Image
                 source={{ uri: getAppThumbUrl(listing.thumbnail)! }}
                 style={styles.listingImage}
-                resizeMode="cover"
+                contentFit="cover"
               />
             ) : (
               <View
@@ -149,7 +150,7 @@ export function MessageBubble({
             <Image
               source={{ uri: mediaUrl }}
               style={styles.mediaImage}
-              resizeMode="cover"
+              contentFit="cover"
             />
           )}
 
