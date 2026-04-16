@@ -138,13 +138,13 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             ) : (
               <Sparkles size={14} color={colors.primary} strokeWidth={2} />
             )}
-              <Text variant={SheetTypography.rowLabel} style={{ color: colors.primary }}>
+            <Text variant={SheetTypography.supporting} style={{ color: colors.primary }}>
               {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
             </Text>
           </HapticPressable>
         </View>
         {generateError && (
-          <Text variant={SheetTypography.rowLabel} style={{ color: colors.error }} tone="secondary">
+          <Text variant={SheetTypography.supporting} style={{ color: colors.error }} tone="secondary">
             {generateError}
           </Text>
         )}
@@ -167,7 +167,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
         />
         <View style={styles.charCount}>
           <Text
-            variant={SheetTypography.supporting}
+            variant="caption1"
             style={{ color: isNearLimit ? colors.warning : colors.labelQuaternary }}
            tone="secondary">
             {charCount}/{MAX_DESCRIPTION}
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     padding: Spacing.lg,
     fontFamily: InputTypography.fontFamily,
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 20,
     fontWeight: '400',
     textAlignVertical: 'top',
   },

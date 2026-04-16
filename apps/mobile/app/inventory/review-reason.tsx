@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SheetHeader, Text } from '@/components/ui';
-import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getStringParam, parseAiModerationParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
 import { getSheetBottomPadding } from '@/lib/sheet-layout';
@@ -33,51 +33,80 @@ export default function InventoryReviewReasonScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: getSheetBottomPadding(insets.bottom) },
+      ]}
+      contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
       <SheetHeader title="Under Review" />
 
-      <View style={[styles.card, { backgroundColor: colors.sheetSurface }]}>
-        <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }} numberOfLines={2}>
-          {listingTitle}
-        </Text>
+      <View
+        style={[
+          styles.heroSection,
+          {
+            backgroundColor: colors.sheetSurface,
+            borderColor: colors.sheetBorder,
+          },
+        ]}
+      >
+        <View style={styles.heroHeaderRow}>
+          <View style={[styles.heroIconWrap, { backgroundColor: colors.warning + '1A' }]}>
+            <AlertCircle size={Sizes.iconXs} color={colors.warning} />
+          </View>
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }} numberOfLines={2}>
+            {listingTitle}
+          </Text>
+        </View>
         <Text variant={SheetTypography.supporting} style={{ color: colors.sheetLabelMuted }}>
           Our system flagged this listing for an extra review before it goes live.
         </Text>
       </View>
 
       {hasReasoning || flags.length > 0 ? (
-        <View style={[styles.card, { backgroundColor: colors.sheetSurface }]}> 
+        <View
+          style={[
+            styles.section,
+            {
+              backgroundColor: colors.sheetSurface,
+              borderColor: colors.sheetBorder,
+            },
+          ]}
+        >
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Moderation Details</Text>
           {hasReasoning ? (
             <Text variant={SheetTypography.rowLabel} style={{ color: colors.sheetLabel }}>
               {aiModeration?.reasoning}
             </Text>
           ) : null}
           {flags.length > 0 ? (
-            <View style={styles.flagsWrap}>
-              {flags.map((flag, index) => {
-                const label = formatFlagLabel(flag);
-                if (!label) {
-                  return null;
-                }
+            <>
+              {hasReasoning ? <View style={[styles.divider, { backgroundColor: colors.border }]} /> : null}
+              <View style={styles.flagsWrap}>
+                {flags.map((flag, index) => {
+                  const label = formatFlagLabel(flag);
+                  if (!label) {
+                    return null;
+                  }
 
-                return (
-                  <View key={`${label}-${index}`} style={[styles.flag, { backgroundColor: colors.warningMuted }]}> 
-                    <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.warning }}>
-                      {label}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
+                  return (
+                    <View key={`${label}-${index}`} style={[styles.flag, { backgroundColor: colors.warning + '1A' }]}> 
+                      <Text variant={SheetTypography.supportingEmphasized} style={{ color: colors.warning }}>
+                        {label}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </>
           ) : null}
         </View>
       ) : (
-        <View style={[styles.emptyCard, { backgroundColor: colors.sheetSurface }]}> 
-          <AlertCircle size={18} color={colors.sheetLabelMuted} />
-          <Text variant={SheetTypography.supporting} style={{ color: colors.sheetLabelMuted }}>
+        <View style={[styles.emptyState, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
+          <AlertCircle size={Sizes.iconXs} color={colors.warning} />
+          <Text variant={SheetTypography.supporting} style={{ color: colors.sheetLabelMuted, flex: 1 }}>
             No specific moderation details are available yet.
           </Text>
         </View>
@@ -88,8 +117,6 @@ export default function InventoryReviewReasonScreen() {
           Our team will review within 24 hours. This assessment is automated and followed by human review.
         </Text>
       </View>
-
-      <View style={{ height: getSheetBottomPadding(insets.bottom) }} />
     </ScrollView>
   );
 }
@@ -101,40 +128,61 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: SheetChrome.contentPaddingTop,
+    gap: Spacing.md,
   },
-  header: {
-    paddingTop: Spacing.md,
-    paddingBottom: SheetChrome.headerPaddingBottom,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: SheetChrome.headerMarginBottom,
-    alignItems: 'center',
-  },
-  card: {
+  heroSection: {
     borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderCurve: 'continuous',
     paddingHorizontal: SheetChrome.rowPaddingHorizontal,
     paddingVertical: SheetChrome.rowPaddingVertical,
     gap: Spacing.md,
-    marginBottom: Spacing.md,
   },
-  emptyCard: {
+  heroHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  heroIconWrap: {
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  section: {
     borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderCurve: 'continuous',
     paddingHorizontal: SheetChrome.rowPaddingHorizontal,
     paddingVertical: SheetChrome.rowPaddingVertical,
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
+    gap: Spacing.md,
+  },
+  emptyState: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.md,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    borderCurve: 'continuous',
+    paddingHorizontal: SheetChrome.rowPaddingHorizontal,
+    paddingVertical: SheetChrome.rowPaddingVertical,
   },
   flagsWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   flag: {
     borderRadius: Radius.full,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
   },
   noteWrap: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
   },
 });

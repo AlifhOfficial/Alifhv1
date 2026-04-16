@@ -82,66 +82,6 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
         </Text>
       </View>
 
-      {/* Quick Notes */}
-      <View style={styles.section}>
-        <Text variant={SheetTypography.rowLabel} tone="secondary">
-          Quick add
-        </Text>
-        <View style={styles.chipsWrap}>
-          {QUICK_NOTES.map((note, idx) => {
-            const isAdded = notes.includes(note);
-            return (
-              <HapticPressable
-                key={idx}
-                onPress={() => addQuickNote(note)}
-                disabled={isAdded || notes.length >= MAX_SPECIAL_NOTES}
-                style={[
-                  styles.quickChip,
-                  {
-                    backgroundColor: isAdded ? colors.label : colors.surfaceSecondary,
-                    borderColor: isAdded ? colors.label : colors.border,
-                    opacity: isAdded || notes.length >= MAX_SPECIAL_NOTES ? 0.5 : 1,
-                  },
-                ]}
-              >
-                <Text
-                  variant={isAdded ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
-                  numberOfLines={1}
-                  style={{ color: isAdded ? colors.background : colors.label }}
-                >
-                  {note}
-                </Text>
-              </HapticPressable>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* Existing Notes */}
-      {notes.length > 0 && (
-        <View style={styles.section}>
-          <Text variant={SheetTypography.rowLabel} tone="secondary">Your Notes</Text>
-          <View style={styles.notesList}>
-            {notes.map((note, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.noteItem,
-                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-                ]}
-              >
-                <Text variant={SheetTypography.rowLabel} style={{ flex: 1 }}>
-                  {note}
-                </Text>
-                <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
-                  <X size={Sizes.iconXs} color={colors.labelQuaternary} strokeWidth={2} />
-                </HapticPressable>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
-
       {/* Custom Note Input */}
       {notes.length < MAX_SPECIAL_NOTES && (
         <View style={styles.section}>
@@ -185,6 +125,66 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
           </View>
         </View>
       )}
+
+      {/* Quick Notes */}
+      <View style={styles.section}>
+        <Text variant={SheetTypography.rowLabel} tone="secondary">
+          Quick add
+        </Text>
+        <View style={styles.chipsWrap}>
+          {QUICK_NOTES.map((note, idx) => {
+            const isAdded = notes.includes(note);
+            return (
+              <HapticPressable
+                key={idx}
+                onPress={() => addQuickNote(note)}
+                disabled={isAdded || notes.length >= MAX_SPECIAL_NOTES}
+                style={[
+                  styles.quickChip,
+                  {
+                    backgroundColor: isAdded ? colors.label : colors.surfaceSecondary,
+                    borderColor: isAdded ? colors.label : colors.border,
+                    opacity: isAdded || notes.length >= MAX_SPECIAL_NOTES ? 0.5 : 1,
+                  },
+                ]}
+              >
+                <Text
+                  variant={isAdded ? SheetTypography.rowLabelSelected : SheetTypography.rowLabel}
+                  style={{ color: isAdded ? colors.background : colors.label, flexShrink: 1 }}
+                >
+                  {note}
+                </Text>
+              </HapticPressable>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Existing Notes */}
+      {notes.length > 0 && (
+        <View style={styles.section}>
+          <Text variant={SheetTypography.rowLabel} tone="secondary">Your Notes</Text>
+          <View style={styles.notesList}>
+            {notes.map((note, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.noteItem,
+                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+                ]}
+              >
+                <Text variant={SheetTypography.rowLabel} style={{ flex: 1 }}>
+                  {note}
+                </Text>
+                <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
+                  <X size={Sizes.iconXs} color={colors.labelQuaternary} strokeWidth={2} />
+                </HapticPressable>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
     </StepContainer>
   );
 }
@@ -204,11 +204,11 @@ const styles = StyleSheet.create({
   chipsWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   quickChip: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
     maxWidth: '100%',

@@ -106,7 +106,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <View style={styles.container}>
       {/* Search - outside FlatList to prevent focus loss */}
-      <View style={[styles.searchWrapper, { backgroundColor: colors.surface }]}> 
+      <View style={[styles.searchWrapper, { backgroundColor: colors.sheet }]}> 
         <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}> 
           <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput

@@ -218,10 +218,16 @@ export function CreateListingSheetContent({
 
   const handleSuccess = useCallback(
     (createdListingId: string, approved: boolean, isDraft?: boolean) => {
-      const finalizeFlow = () => {
-        onSuccess?.(createdListingId);
-        (onForceClose ?? onClose)();
+      (onForceClose ?? onClose)();
 
+      try {
+        onSuccess?.(createdListingId);
+      } catch (error) {
+        console.warn('[CreateListing] onSuccess callback failed:', error);
+      }
+
+      // Let callers control post-submit navigation when they provide onSuccess.
+      if (!onSuccess) {
         if (approved) {
           router.replace('/inventory');
         } else if (isDraft) {
@@ -229,20 +235,26 @@ export function CreateListingSheetContent({
         } else {
           router.replace('/inventory?tab=in_review');
         }
-      };
-
-      if (isDraft) {
-        finalizeFlow();
-        return;
       }
 
-      showAlert(
-        'Listing update submitted',
-        'Your listing was published successfully. Some changes can take 5-10 minutes to fully reflect across the app. Thanks for your patience.',
-        [{ text: 'Got it', onPress: finalizeFlow }],
-      );
+      if (isDraft) return;
+
+      const isEditing = Boolean(listingId);
+      const successTitle = isEditing ? 'Listing update submitted' : 'Listing published';
+      const successMessage = isEditing
+        ? 'Your listing update was submitted successfully. Some changes can take 5-10 minutes to fully reflect across the app. Thanks for your patience.'
+        : 'Your listing was published successfully. Some changes can take 5-10 minutes to fully reflect across the app. Thanks for your patience.';
+
+      // Show the info alert after closing/navigating so it never blocks sheet dismissal.
+      setTimeout(() => {
+        showAlert(
+          successTitle,
+          successMessage,
+          [{ text: 'Got it' }],
+        );
+      }, 0);
     },
-    [onSuccess, onForceClose, onClose, router, showAlert],
+    [listingId, onSuccess, onForceClose, onClose, router, showAlert],
   );
 
   useFocusEffect(

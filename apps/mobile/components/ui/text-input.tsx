@@ -54,16 +54,25 @@ export const TextInput = forwardRef<TextInputRef, TextInputProps>(function TextI
   const flattenedStyle = StyleSheet.flatten(style) || {};
   const {
     fontFamily: _fontFamily,
-    fontSize: _fontSize,
-    fontStyle: _fontStyle,
-    fontVariant: _fontVariant,
-    fontWeight: _fontWeight,
+    fontSize,
+    fontStyle,
+    fontVariant,
+    fontWeight,
     includeFontPadding: _includeFontPadding,
-    letterSpacing: _letterSpacing,
-    lineHeight: _lineHeight,
-    textTransform: _textTransform,
+    letterSpacing,
+    lineHeight,
+    textTransform,
     ...nonTypographyStyle
   } = flattenedStyle;
+  const valueTypographyStyle = {
+    fontSize,
+    fontStyle,
+    fontVariant,
+    fontWeight,
+    letterSpacing,
+    lineHeight,
+    textTransform,
+  };
   const hasValue =
     props.value !== undefined && props.value !== null
       ? String(props.value).length > 0
@@ -89,6 +98,7 @@ export const TextInput = forwardRef<TextInputRef, TextInputProps>(function TextI
           ...InputTypography,
           ...styles.enforcedTextTypography,
         },
+        valueTypographyStyle,
         !hasValue && styles.enforcedPlaceholderTypography,
         Platform.OS === 'android' && styles.androidTextBase,
       ]}

@@ -12,18 +12,21 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   View,
   StyleSheet,
-  Image,
   ActivityIndicator,
   Modal,
   Pressable,
   useWindowDimensions,
+  Platform,
+  ActionSheetIOS,
 } from "react-native";
+import { Image } from "expo-image";
 import DraggableFlatList, {
   ScaleDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import * as Haptics from "expo-haptics";
 import { GripVertical, X, ImagePlus } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   Colors,
@@ -38,7 +41,7 @@ import {
   pickAndUploadListingImage,
   deleteListingImageByUrl,
 } from "@/components/user-inventory-management/utilities/image-upload";
-import { CDN_BASE, getThumbUrl } from "@/lib/config";
+import { getAppImageUrl, getThumbUrl } from "@/lib/config";
 
 import { StepContainer } from "../step-container";
 import type { StepContentProps } from "../types";
@@ -50,9 +53,7 @@ const GRID_COLUMNS = 2;
 const MAX_IMAGES = 30;
 
 function toAbsoluteUrl(url: string): string {
-  if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return `${CDN_BASE}/${url.startsWith("/") ? url.slice(1) : url}`;
+  return getAppImageUrl(url) ?? "";
 }
 
 // ─── Grid item types ─────────────────────────────────────────────────────────
@@ -68,16 +69,27 @@ type GridItem = CdnItem | UploadingItem;
 export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const imageSize =
+  const imageWidth =
     (width -
       SheetChrome.contentPaddingHorizontal * 2 -
       IMAGE_GAP * (GRID_COLUMNS - 1)) /
     GRID_COLUMNS;
+  const imageHeight = Math.round((imageWidth * 9) / 16);
+  const reorderModalHorizontalMargin = Spacing.lg;
+  const reorderModalHorizontalPadding = Spacing.md;
+  const reorderGridWidth =
+    width -
+    reorderModalHorizontalMargin * 2 -
+    reorderModalHorizontalPadding * 2;
+  const reorderImageWidth =
+    (reorderGridWidth - IMAGE_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
+  const reorderImageHeight = Math.round((reorderImageWidth * 9) / 16);
 
   const [uploading, setUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isDragHandlePressed, setIsDragHandlePressed] = useState(false);
+  const [isReorderOpen, setIsReorderOpen] = useState(false);
+  const [isReorderDragging, setIsReorderDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
   const [perceivedDone, setPerceivedDone] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -177,17 +189,40 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     }
   }, [data.vin, data.vinVerified, data.images, onUpdate]);
 
+  const confirmDeleteIOS = useCallback(
+    async (url: string) => {
+      try {
+        await deleteListingImageByUrl(url);
+      } catch {
+        /* best-effort */
+      }
+      onUpdate({ images: data.images.filter((u) => u !== url) });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    },
+    [data.images, onUpdate]
+  );
+
   const handleDeleteImage = useCallback((url: string) => {
-    setDeleteTarget(url);
-  }, []);
-
-  const lockParentScrollForDrag = useCallback(() => {
-    setIsDragHandlePressed(true);
-  }, []);
-
-  const unlockParentScrollForDrag = useCallback(() => {
-    setIsDragHandlePressed(false);
-  }, []);
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Cancel", "Remove"],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+          title: "Remove photo?",
+          message: "This photo will be removed from the listing.",
+          userInterfaceStyle: colorScheme === "dark" ? "dark" : "light",
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            void confirmDeleteIOS(url);
+          }
+        }
+      );
+    } else {
+      setDeleteTarget(url);
+    }
+  }, [colorScheme, confirmDeleteIOS]);
 
   const confirmDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -203,22 +238,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, [data.images, deleteTarget, onUpdate]);
 
-  // Drag end — only CDN items participate in drag; reconstruct CDN-only order
-  const handleDragEnd = useCallback(
-    ({ data: newData }: { data: GridItem[] }) => {
-      setIsDragging(false);
-      const cdnUrls = newData
-        .filter((i): i is CdnItem => i.type === "cdn")
-        .map((i) => i.url);
-      onUpdate({ images: cdnUrls });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    },
-    [onUpdate],
-  );
-  // Render individual image item — handles both CDN (draggable) and uploading (spinner)
-  const renderItem = useCallback(
-    ({ item, drag, isActive, getIndex }: RenderItemParams<GridItem>) => {
-      const imageIndex = getIndex() ?? 0;
+  // Render image item for the main scroll surface (no drag to avoid gesture conflicts)
+  const renderPreviewItem = useCallback(
+    (item: GridItem, imageIndex: number) => {
       // Only the first CDN item is the cover; uploading items are not yet confirmed
       const isThumbnail = imageIndex === 0 && item.type === "cdn";
       // Show thumb in grid — full key is only written to DB, never fetched for display
@@ -229,32 +251,95 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
       const isUploading = item.type === "uploading";
 
       return (
+        <View
+          key={item.type === "cdn" ? item.url : `opt-${item.localUri}`}
+          style={[
+            styles.imageCard,
+            { width: imageWidth, height: imageHeight },
+          ]}
+        >
+          <Image source={{ uri: imageUri }} style={styles.image} contentFit="cover" />
+
+          {/* Spinner overlay while uploading */}
+          {isUploading && (
+            <View
+              style={[
+                styles.uploadingOverlay,
+                { backgroundColor: colors.overlay },
+              ]}
+            >
+              <ActivityIndicator
+                size="small"
+                color={colors.primaryForeground}
+              />
+            </View>
+          )}
+
+          {/* Thumbnail badge — only on confirmed CDN cover */}
+          {isThumbnail && (
+            <View
+              style={[
+                styles.thumbnailBadge,
+                { backgroundColor: colors.primary },
+              ]}
+            >
+              <Text
+                variant={SheetTypography.supporting}
+                style={{ color: colors.primaryForeground }}
+              >
+                Cover
+              </Text>
+            </View>
+          )}
+
+          {/* Delete button — only for confirmed images */}
+          {!isUploading && item.type === "cdn" && (
+            <HapticPressable
+              onPress={() => handleDeleteImage(item.url)}
+              style={[
+                styles.deleteBtn,
+                { backgroundColor: colors.label + "CC" },
+              ]}
+            >
+              <X size={12} color={colors.background} strokeWidth={2.5} />
+            </HapticPressable>
+          )}
+        </View>
+      );
+    },
+    [
+      colors,
+      handleDeleteImage,
+      imageHeight,
+      imageWidth,
+    ],
+  );
+
+  const reorderData: CdnItem[] = data.images.map((url) => ({ type: "cdn", url }));
+
+  const renderReorderItem = useCallback(
+    ({ item, drag, isActive, getIndex }: RenderItemParams<CdnItem>) => {
+      const imageIndex = getIndex() ?? 0;
+      const imageUri = getThumbUrl(item.url) ?? toAbsoluteUrl(item.url);
+      const isThumbnail = imageIndex === 0;
+
+      return (
         <ScaleDecorator>
-          <View
+          <Pressable
+            onLongPress={() => {
+              Haptics.selectionAsync();
+              drag();
+            }}
+            delayLongPress={180}
+            disabled={isActive}
             style={[
               styles.imageCard,
-              { width: imageSize, height: imageSize },
+              { width: reorderImageWidth, height: reorderImageHeight },
               isActive && styles.imageCardActive,
             ]}
           >
-            <Image source={{ uri: imageUri }} style={styles.image} />
+            <Image source={{ uri: imageUri }} style={styles.image} contentFit="cover" />
 
-            {/* Spinner overlay while uploading */}
-            {isUploading && (
-              <View
-                style={[
-                  styles.uploadingOverlay,
-                  { backgroundColor: colors.overlay },
-                ]}
-              >
-                <ActivityIndicator
-                  size="small"
-                  color={colors.primaryForeground}
-                />
-              </View>
-            )}
-
-            {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View
                 style={[
@@ -271,50 +356,30 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
               </View>
             )}
 
-            {/* Drag affordance — keep drag separate from sheet scroll */}
-            {!isUploading && (
-              <HapticPressable
-                onPressIn={lockParentScrollForDrag}
-                onPressOut={unlockParentScrollForDrag}
-                onLongPress={() => {
-                  Haptics.selectionAsync();
-                  drag();
-                }}
-                delayLongPress={180}
-                disabled={isActive}
-                style={[styles.dragHandle, { backgroundColor: colors.overlay }]}
-              >
-                <GripVertical
-                  size={14}
-                  color={colors.primaryForeground}
-                  strokeWidth={2}
-                />
-              </HapticPressable>
-            )}
-
-            {/* Delete button — only for confirmed images */}
-            {!isUploading && item.type === "cdn" && (
-              <HapticPressable
-                onPress={() => handleDeleteImage(item.url)}
-                style={[
-                  styles.deleteBtn,
-                  { backgroundColor: colors.label + "CC" },
-                ]}
-              >
-                <X size={12} color={colors.background} strokeWidth={2.5} />
-              </HapticPressable>
-            )}
-          </View>
+            <View
+              pointerEvents="none"
+              style={[styles.dragHandle, { backgroundColor: colors.overlay }]}
+            >
+              <GripVertical
+                size={14}
+                color={colors.primaryForeground}
+                strokeWidth={2}
+              />
+            </View>
+          </Pressable>
         </ScaleDecorator>
       );
     },
-    [
-      colors,
-      handleDeleteImage,
-      imageSize,
-      lockParentScrollForDrag,
-      unlockParentScrollForDrag,
-    ],
+    [colors, reorderImageHeight, reorderImageWidth],
+  );
+
+  const handleReorderEnd = useCallback(
+    ({ data: newData }: { data: CdnItem[] }) => {
+      setIsReorderDragging(false);
+      onUpdate({ images: newData.map((i) => i.url) });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    },
+    [onUpdate],
   );
 
   // Combine confirmed CDN images + in-progress optimistic images into one grid
@@ -328,7 +393,8 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
   const totalCount = data.images.length + optimisticUris.length;
 
   return (
-    <StepContainer scrollEnabled={!(isDragging || isDragHandlePressed)}>
+    <>
+      <StepContainer>
       {/* Upload Button */}
       <HapticPressable
         onPress={handlePickImages}
@@ -378,82 +444,130 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Image Grid — shows immediately after picker, spinners on in-progress */}
       {gridData.length > 0 && (
-        <View style={styles.gridWrapper}>
-          <DraggableFlatList
-            data={gridData}
-            keyExtractor={(item) =>
-              item.type === "cdn" ? item.url : `opt-${item.localUri}`
-            }
-            renderItem={renderItem}
-            onDragEnd={handleDragEnd}
-            onDragBegin={() => setIsDragging(true)}
-            onRelease={() => {
-              setIsDragging(false);
-              setIsDragHandlePressed(false);
-            }}
-            numColumns={GRID_COLUMNS}
-            columnWrapperStyle={styles.row}
-            scrollEnabled={false}
-            activationDistance={2}
-            autoscrollSpeed={120}
-            dragItemOverflow={false}
-          />
+        <View style={[styles.gridWrapper, { minHeight: imageHeight }]}> 
+          <View style={styles.previewGrid}>
+            {gridData.map((item, index) => renderPreviewItem(item, index))}
+          </View>
+          {data.images.length > 1 && (
+            <HapticPressable
+              onPress={() => setIsReorderOpen(true)}
+              style={[styles.reorderButton, { backgroundColor: colors.fill2, borderColor: colors.border }]}
+            >
+              <GripVertical size={14} color={colors.labelSecondary} strokeWidth={2} />
+              <Text variant="subhead" style={{ color: colors.label }}>
+                Reorder photos
+              </Text>
+            </HapticPressable>
+          )}
           <Text
             variant={SheetTypography.supporting}
             tone="muted"
             style={{ marginTop: Spacing.sm }}
           >
-            Press and hold the handle to reorder photos
+            Scroll here is now independent from drag. Use Reorder photos to change order.
           </Text>
         </View>
       )}
+      </StepContainer>
 
       <Modal
         transparent
-        visible={!!deleteTarget}
-        animationType="fade"
-        onRequestClose={() => setDeleteTarget(null)}
+        visible={isReorderOpen}
+        animationType="slide"
+        onRequestClose={() => setIsReorderOpen(false)}
       >
-        <Pressable
-          style={[styles.overlay, { backgroundColor: colors.overlay }]}
-          onPress={() => setDeleteTarget(null)}
-        />
+        <View style={[styles.overlay, { backgroundColor: colors.overlay }]} />
         <View
           style={[
-            styles.modalCard,
-            { backgroundColor: colors.surfaceSecondary },
+            styles.reorderModalCard,
+            {
+              backgroundColor: colors.surfaceSecondary,
+              marginTop: insets.top + Spacing.sm,
+              marginBottom: insets.bottom + Spacing.md,
+            },
           ]}
         >
-          <Text variant="subheadEmphasized" style={{ color: colors.label }}>
-            Remove photo?
-          </Text>
-          <Text variant="footnote" tone="secondary">
-            This photo will be removed from the listing.
-          </Text>
-          <View style={styles.modalActions}>
+          <View style={styles.reorderHeader}>
+            <Text variant="subheadEmphasized" style={{ color: colors.label }}>
+              Reorder photos
+            </Text>
             <HapticPressable
-              onPress={() => setDeleteTarget(null)}
-              style={[styles.modalButton, { backgroundColor: colors.surface }]}
+              onPress={() => setIsReorderOpen(false)}
+              style={[styles.closeReorderBtn, { backgroundColor: colors.fill2 }]}
             >
-              <Text variant="subhead" style={{ color: colors.label }}>
-                Keep
-              </Text>
-            </HapticPressable>
-            <HapticPressable
-              onPress={confirmDelete}
-              style={[styles.modalButton, { backgroundColor: colors.error }]}
-            >
-              <Text
-                variant="subheadEmphasized"
-                style={{ color: colors.primaryForeground }}
-              >
-                Remove
-              </Text>
+              <X size={14} color={colors.label} strokeWidth={2.5} />
             </HapticPressable>
           </View>
+
+          <DraggableFlatList
+            data={reorderData}
+            keyExtractor={(item) => item.url}
+            renderItem={renderReorderItem}
+            onDragEnd={handleReorderEnd}
+            onDragBegin={() => setIsReorderDragging(true)}
+            onRelease={() => setIsReorderDragging(false)}
+            numColumns={GRID_COLUMNS}
+            columnWrapperStyle={styles.reorderRow}
+            scrollEnabled={!isReorderDragging}
+            activationDistance={8}
+            autoscrollSpeed={120}
+            dragItemOverflow={false}
+            contentContainerStyle={[
+              styles.reorderListContent,
+              { paddingBottom: insets.bottom + Spacing.sm },
+            ]}
+          />
         </View>
       </Modal>
-    </StepContainer>
+
+      {Platform.OS === "android" && (
+        <Modal
+          transparent
+          visible={!!deleteTarget}
+          animationType="fade"
+          onRequestClose={() => setDeleteTarget(null)}
+        >
+          <Pressable
+            style={[styles.overlay, { backgroundColor: colors.overlay }]}
+            onPress={() => setDeleteTarget(null)}
+          />
+          <View
+            style={[
+              styles.modalCard,
+              { backgroundColor: colors.surfaceSecondary },
+            ]}
+          >
+            <Text variant="subheadEmphasized" style={{ color: colors.label }}>
+              Remove photo?
+            </Text>
+            <Text variant="footnote" tone="secondary">
+              This photo will be removed from the listing.
+            </Text>
+            <View style={styles.modalActions}>
+              <HapticPressable
+                onPress={() => setDeleteTarget(null)}
+                style={[styles.modalButton, { backgroundColor: colors.surface }]}
+              >
+                <Text variant="subhead" style={{ color: colors.label }}>
+                  Keep
+                </Text>
+              </HapticPressable>
+              <HapticPressable
+                onPress={confirmDelete}
+                style={[styles.modalButton, { backgroundColor: colors.error }]}
+              >
+                <Text
+                  variant="subheadEmphasized"
+                  style={{ color: colors.primaryForeground }}
+                >
+                  Remove
+                </Text>
+              </HapticPressable>
+            </View>
+          </View>
+        </Modal>
+      )}
+    </>
   );
 }
 
@@ -483,8 +597,28 @@ const styles = StyleSheet.create({
   gridWrapper: {
     marginTop: Spacing.xs,
   },
+  previewGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: IMAGE_GAP,
+  },
+  reorderButton: {
+    marginTop: Spacing.sm,
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
   row: {
     gap: IMAGE_GAP,
+    marginBottom: IMAGE_GAP,
+  },
+  reorderRow: {
+    justifyContent: "space-between",
     marginBottom: IMAGE_GAP,
   },
   imageCard: {
@@ -534,6 +668,29 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
+  },
+  reorderModalCard: {
+    marginHorizontal: Spacing.lg,
+    borderRadius: Radius.xl,
+    padding: Spacing.md,
+    flex: 1,
+    gap: Spacing.sm,
+  },
+  reorderHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  closeReorderBtn: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Radius.full,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reorderListContent: {
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.sm,
   },
   modalCard: {
     marginHorizontal: 24,
