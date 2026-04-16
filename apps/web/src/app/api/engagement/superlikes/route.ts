@@ -12,7 +12,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { toggleSuperlikeForUser } from '@alifh/database';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 const ToggleSuperlikeSchema = z.object({
   listingId: z.string().min(1, 'Listing ID is required'),

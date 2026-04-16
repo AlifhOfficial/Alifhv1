@@ -33,7 +33,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { expireAllExpiredListings } from '@alifh/database';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow up to 60s for large batches
 
 export async function GET(req: NextRequest) {

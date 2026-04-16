@@ -5,7 +5,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useToast } from '@/hooks/use-toast';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { StaffInviteActionModal } from './staff-invite-action-modal';
@@ -31,28 +32,26 @@ interface UserStaffInvitesProps {
 }
 
 export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedInvite, setSelectedInvite] = useState<{ id: string; name: string; role: string } | null>(null);
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const shouldFetchInvites = initialInvites === undefined;
 
-  const { data: invitesData, isLoading } = useQuery({
-    queryKey: ['user', 'staff-invites'],
+  const { data: invitesData, isLoading, refetch } = useAsyncQuery({
     queryFn: async () => {
       const res = await fetch('/api/user/staff-invites');
       if (!res.ok) throw new Error('Failed to fetch invites');
       return res.json();
     },
+    enabled: shouldFetchInvites,
     initialData: initialInvites,
-    initialDataUpdatedAt: initialInvites ? Date.now() : undefined,
-    staleTime: initialInvites ? 60_000 : 0,
   });
 
   const invites: StaffInvite[] = invitesData?.data || [];
 
-  const actionMutation = useMutation({
+  const actionMutation = useAsyncMutation({
     mutationFn: async ({ inviteId, action }: { inviteId: string; action: 'accept' | 'reject' }) => {
       const res = await fetch('/api/user/staff-invites', {
         method: 'POST',
@@ -65,8 +64,8 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
       }
       return res.json();
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'staff-invites'] });
+    onSuccess: async (_, variables) => {
+      await refetch();
       toast({
         title: variables.action === 'accept' ? 'Invitation Accepted!' : 'Invitation Declined',
         description: variables.action === 'accept' 

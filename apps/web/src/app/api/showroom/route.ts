@@ -17,7 +17,6 @@ import { getCachedPublishedShowrooms } from '@/lib/showroom-cache';
 import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic'; // Uses searchParams
 
 /**
  * Attach public URLs to showroom cards

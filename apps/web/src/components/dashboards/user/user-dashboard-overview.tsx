@@ -31,9 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { HealthStatus } from '@/components/shared/health-status';
 import type { ExtendedUser } from '@/types/auth';
-import type { HealthCheckResponse } from '@/lib/health';
 
 // ============================================================================
 // Stat Label with Tooltip
@@ -74,10 +72,9 @@ function formatNumber(num: number): string {
 interface UserDashboardOverviewProps {
   user: ExtendedUser;
   initialStats: DashboardStats;
-  initialHealth: HealthCheckResponse;
 }
 
-export function UserDashboardOverview({ user, initialStats: stats, initialHealth }: UserDashboardOverviewProps) {
+export function UserDashboardOverview({ user, initialStats: stats }: UserDashboardOverviewProps) {
   const firstName = (user as any)?.firstName || user?.name?.split(' ')[0] || 'there';
 
   const memberSince = stats?.memberSince ? new Date(stats.memberSince) : null;
@@ -95,18 +92,13 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
 
       {/* Header */}
       <header>
-        <div className="flex flex-col compact:flex-row compact:items-start compact:justify-between gap-3 compact:gap-4">
-          <div>
-            <h1 className="text-title3 compact:text-title2 font-semibold tracking-tight text-foreground/90">
-              {greeting}, {firstName}
-            </h1>
-            <p className="text-caption1 compact:text-subhead text-muted-foreground mt-1">
-              Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </p>
-          </div>
-          <div className="flex-shrink-0 self-start">
-            <HealthStatus initialHealth={initialHealth} enableFetch={false} />
-          </div>
+        <div>
+          <h1 className="text-title3 compact:text-title2 font-semibold tracking-tight text-foreground/90">
+            {greeting}, {firstName}
+          </h1>
+          <p className="text-caption1 compact:text-subhead text-muted-foreground mt-1">
+            Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </p>
         </div>
       </header>
 
@@ -159,8 +151,8 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
             {/* Views vs Saves bar chart */}
             <div className="flex-1 flex flex-col min-h-0">
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground/40 font-medium mb-2">Views vs Saves</p>
-              <div className="flex-1 min-h-[110px]">
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full min-h-[110px]">
+                <ResponsiveContainer width="100%" height={110} minWidth={0} minHeight={0}>
                   <BarChart
                     data={[
                       { name: 'Views', value: stats.totalViews ?? 0 },

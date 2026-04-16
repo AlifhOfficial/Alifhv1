@@ -12,7 +12,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { queryKeys } from '@/lib/query-keys';
 import type { ShowroomData } from '@/components/pages/showroom/types';
 
@@ -68,9 +68,9 @@ export function usePublicShowroom(
   options: UsePublicShowroomOptions = {}
 ): UsePublicShowroomReturn {
   const { enabled = true, initialShowroom } = options;
+  const shouldFetch = enabled && !!partnerId && partnerId.length >= 3 && initialShowroom === undefined;
   
-  const query = useQuery<ShowroomApiResponse, Error>({
-    queryKey: queryKeys.showroom.detail(partnerId || ''),
+  const query = useAsyncQuery<ShowroomApiResponse>({
     queryFn: async () => {
       const response = await fetch(`/api/showroom/${encodeURIComponent(partnerId!)}`);
       
@@ -83,14 +83,8 @@ export function usePublicShowroom(
       
       return response.json();
     },
-    enabled: enabled && !!partnerId && partnerId.length >= 3,
-    retry: 1,
-    // If we have server-side data, use it immediately
+    enabled: shouldFetch,
     initialData: initialShowroom ? { showroom: initialShowroom as ShowroomApiResponse['showroom'] } : undefined,
-    staleTime: initialShowroom ? Infinity : 0,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
   
   return {

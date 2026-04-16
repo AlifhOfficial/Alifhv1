@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
 import { Loader2, ChevronDown, CheckCircle2, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -67,7 +67,6 @@ interface FunnelFormDrawerProps {
 }
 
 export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProps) {
-  const queryClient = useQueryClient();
   const isEditing = !!funnel;
 
   // Form state
@@ -93,7 +92,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
     }
   }, [open, funnel]);
 
-  const createMutation = useMutation({
+  const createMutation = useAsyncMutation({
     mutationFn: async (data: { name: string; description: string | null; filters: FunnelFilters; isActive: boolean }) => {
       const res = await fetch('/api/partner/consignment/funnels', {
         method: 'POST',
@@ -107,14 +106,11 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['consignment-funnels'] });
-      queryClient.invalidateQueries({ queryKey: ['partner-all-funnels'] });
-      queryClient.invalidateQueries({ queryKey: ['funnel-preview'] });
       onClose();
     },
   });
 
-  const updateMutation = useMutation({
+  const updateMutation = useAsyncMutation({
     mutationFn: async (data: { name?: string; description?: string | null; filters?: FunnelFilters; isActive?: boolean }) => {
       const res = await fetch(`/api/partner/consignment/funnels/${funnel!.id}`, {
         method: 'PUT',
@@ -128,9 +124,6 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['consignment-funnels'] });
-      queryClient.invalidateQueries({ queryKey: ['partner-all-funnels'] });
-      queryClient.invalidateQueries({ queryKey: ['funnel-preview'] });
       onClose();
     },
   });

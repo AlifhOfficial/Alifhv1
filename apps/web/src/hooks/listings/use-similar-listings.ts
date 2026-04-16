@@ -15,7 +15,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -82,19 +82,12 @@ export function useSimilarListings(
   options: UseSimilarListingsOptions = {}
 ) {
   const { enabled = true, initialData } = options;
+  const shouldFetch = !!listingId && enabled && initialData === undefined;
 
-  const query = useQuery({
-    queryKey: ['listing', 'similar', listingId],
+  const query = useAsyncQuery({
     queryFn: () => fetchSimilarListings(listingId!),
-    enabled: !!listingId && enabled,
-    // Don't retry - if it fails, just don't show the section
-    retry: false,
+    enabled: shouldFetch,
     initialData,
-    initialDataUpdatedAt: initialData ? Date.now() : undefined,
-    staleTime: initialData ? Infinity : 0,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    placeholderData: initialData ?? [],
   });
 
   return {

@@ -15,6 +15,7 @@
 
 import { signOut as betterAuthSignOut } from './client';
 import { getQueryClient } from '@/lib/query-client';
+import { clearFavoritesStore } from '@/hooks/engagement/favorites/use-favorites-unified';
 
 /**
  * Clears all Better Auth cookies including OAuth state cookies.
@@ -70,8 +71,8 @@ export async function handleSignOut() {
 
     // Clear client-side caches for favorites/superlikes to avoid reuse after logout
     try {
+      clearFavoritesStore();
       const queryClient = getQueryClient();
-      queryClient.removeQueries({ queryKey: ['favorites-status'] });
       queryClient.clear();
     } catch (e) {
       console.warn('Failed to clear query cache:', e);

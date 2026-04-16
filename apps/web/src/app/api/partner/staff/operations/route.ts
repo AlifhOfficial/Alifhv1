@@ -20,7 +20,6 @@ import {
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 
 // Helper: Check if operation would leave partner with no owners

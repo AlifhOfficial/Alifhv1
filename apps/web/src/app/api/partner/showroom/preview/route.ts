@@ -14,7 +14,6 @@ import { getShowroomPreviewByPartnerId } from '@alifh/database';
 import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 /**
  * Attach public URLs to all image fields for preview display

@@ -12,7 +12,6 @@ import { toggleFavoriteForUser } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 const ToggleFavoriteSchema = z.object({
   listingId: z.string().min(1, 'Listing ID is required'),

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 /** Zero-work ping endpoint to measure pure Railway + Next.js overhead */
 export async function GET() {

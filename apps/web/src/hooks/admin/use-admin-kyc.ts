@@ -17,7 +17,8 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -135,8 +136,7 @@ export interface UseAdminKycOptions {
 export function useAdminKyc(options: UseAdminKycOptions = {}) {
   const { status = 'all', limit = 20, page = 1 } = options;
   
-  const query = useQuery({
-    queryKey: ['admin-kyc', { status, limit, page }],
+  const query = useAsyncQuery({
     queryFn: async () => {
       const params = new URLSearchParams({
         status,
@@ -175,8 +175,7 @@ export function useAdminKyc(options: UseAdminKycOptions = {}) {
  * Fetch single KYC record details
  */
 export function useAdminKycRecord(id: string | null) {
-  const query = useQuery({
-    queryKey: ['admin-kyc-record', id],
+  const query = useAsyncQuery({
     queryFn: async () => {
       if (!id) throw new Error('No ID provided');
       
@@ -207,9 +206,7 @@ export function useAdminKycRecord(id: string | null) {
  * KYC admin actions - approve and reject
  */
 export function useAdminKycActions() {
-  const queryClient = useQueryClient();
-  
-  const approveMutation = useMutation({
+  const approveMutation = useAsyncMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/admin/kyc/${id}/approve`, {
         method: 'POST',
@@ -223,13 +220,9 @@ export function useAdminKycActions() {
       
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-kyc'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-kyc-record'] });
-    },
   });
   
-  const rejectMutation = useMutation({
+  const rejectMutation = useAsyncMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
       const res = await fetch(`/api/admin/kyc/${id}/reject`, {
         method: 'POST',
@@ -244,10 +237,6 @@ export function useAdminKycActions() {
       }
       
       return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-kyc'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-kyc-record'] });
     },
   });
 

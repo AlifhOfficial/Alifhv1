@@ -17,7 +17,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -184,16 +184,6 @@ export interface SearchUsersOptions {
 // Query Keys
 // ============================================================================
 
-const ADMIN_KEYS = {
-  all: ['admin'] as const,
-  users: () => [...ADMIN_KEYS.all, 'users'] as const,
-  usersList: (options: ListUsersOptions) => [...ADMIN_KEYS.users(), 'list', options] as const,
-  userSearch: (options: SearchUsersOptions) => [...ADMIN_KEYS.users(), 'search', options] as const,
-  partners: () => [...ADMIN_KEYS.all, 'partners'] as const,
-  partnersList: (options: ListPartnersOptions) => [...ADMIN_KEYS.partners(), 'list', options] as const,
-  stats: () => [...ADMIN_KEYS.all, 'stats'] as const,
-};
-
 // ============================================================================
 // API Functions
 // ============================================================================
@@ -314,8 +304,7 @@ async function fetchAdminStats(): Promise<AdminStats> {
  * @returns User list with loading/error states
  */
 export function useAdminUsers(options: ListUsersOptions = {}) {
-  const query = useQuery({
-    queryKey: ADMIN_KEYS.usersList(options),
+  const query = useAsyncQuery({
     queryFn: () => fetchAdminUsers(options),
   });
 
@@ -323,7 +312,7 @@ export function useAdminUsers(options: ListUsersOptions = {}) {
     users: query.data?.users || [],
     pagination: query.data?.pagination,
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
     refetch: query.refetch,
   };
@@ -338,8 +327,7 @@ export function useAdminUsers(options: ListUsersOptions = {}) {
  * @returns Single user with loading/error states
  */
 export function useAdminUserByEmail(email: string | null, enabled: boolean = true) {
-  const query = useQuery({
-    queryKey: ADMIN_KEYS.userSearch({ email: email || undefined }),
+  const query = useAsyncQuery({
     queryFn: () => searchAdminUsers({ email: email! }),
     enabled: enabled && !!email,
   });
@@ -347,7 +335,7 @@ export function useAdminUserByEmail(email: string | null, enabled: boolean = tru
   return {
     user: query.data?.user,
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
     refetch: query.refetch,
   };
@@ -362,8 +350,7 @@ export function useAdminUserByEmail(email: string | null, enabled: boolean = tru
  * @returns Single user with loading/error states
  */
 export function useAdminUserByPhone(phone: string | null, enabled: boolean = true) {
-  const query = useQuery({
-    queryKey: ADMIN_KEYS.userSearch({ phone: phone || undefined }),
+  const query = useAsyncQuery({
     queryFn: () => searchAdminUsers({ phone: phone! }),
     enabled: enabled && !!phone,
   });
@@ -371,7 +358,7 @@ export function useAdminUserByPhone(phone: string | null, enabled: boolean = tru
   return {
     user: query.data?.user,
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
     refetch: query.refetch,
   };
@@ -391,8 +378,7 @@ export function useAdminUserSearch(
 ) {
   const { limit = 10, enabled = true } = options;
 
-  const queryResult = useQuery({
-    queryKey: ADMIN_KEYS.userSearch({ query: query || undefined, limit }),
+  const queryResult = useAsyncQuery({
     queryFn: () => searchAdminUsers({ query: query!, limit }),
     enabled: enabled && !!query && query.length >= 2,
   });
@@ -400,7 +386,7 @@ export function useAdminUserSearch(
   return {
     users: queryResult.data?.users || [],
     isLoading: queryResult.isLoading,
-    isError: queryResult.isError,
+    isError: !!queryResult.error,
     error: queryResult.error,
   };
 }
@@ -412,8 +398,7 @@ export function useAdminUserSearch(
  * @returns Partner list with loading/error states
  */
 export function useAdminPartners(options: ListPartnersOptions = {}) {
-  const query = useQuery({
-    queryKey: ADMIN_KEYS.partnersList(options),
+  const query = useAsyncQuery({
     queryFn: () => fetchAdminPartners(options),
   });
 
@@ -421,7 +406,7 @@ export function useAdminPartners(options: ListPartnersOptions = {}) {
     partners: query.data?.partners || [],
     pagination: query.data?.pagination,
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
     refetch: query.refetch,
   };
@@ -434,15 +419,14 @@ export function useAdminPartners(options: ListPartnersOptions = {}) {
  * @returns Statistics with loading/error states
  */
 export function useAdminStats() {
-  const query = useQuery({
-    queryKey: ADMIN_KEYS.stats(),
+  const query = useAsyncQuery({
     queryFn: fetchAdminStats,
   });
 
   return {
     stats: query.data,
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
     refetch: query.refetch,
   };

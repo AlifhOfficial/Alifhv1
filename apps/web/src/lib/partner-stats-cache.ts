@@ -12,11 +12,23 @@
  * @module lib/partner-stats-cache
  */
 
+import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { getPartnerDescriptiveStats } from '@alifh/database';
 
-export const getCachedPartnerDescriptiveStats = unstable_cache(
-  async (partnerId: string) => getPartnerDescriptiveStats(partnerId),
+const DEBUG = process.env.CACHE_DEBUG === '1';
+const dbg = (msg: string) => { if (DEBUG) console.warn(`[cache] ${msg}`); };
+
+const _getCachedPartnerDescriptiveStats = unstable_cache(
+  async (partnerId: string) => {
+    dbg(`MISS partner-descriptive-stats partnerId=${partnerId}`);
+    return getPartnerDescriptiveStats(partnerId);
+  },
   ['partner-descriptive-stats'],
-  { revalidate: 86400 } // 24 hours
+  { revalidate: 86400 }
 );
+
+export const getCachedPartnerDescriptiveStats = cache(async (partnerId: string) => {
+  dbg(`REQUEST partner-descriptive-stats partnerId=${partnerId}`);
+  return _getCachedPartnerDescriptiveStats(partnerId);
+});

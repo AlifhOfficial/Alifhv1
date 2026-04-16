@@ -7,7 +7,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth/client';
 import { Loader2, CheckCircle2, Info, Phone } from 'lucide-react';
@@ -82,7 +82,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
     setForm(f => ({ ...f, ...updates }));
   };
 
-  const updateMutation = useMutation({
+  const updateMutation = useAsyncMutation({
     mutationFn: async (data: Partial<PartnerProfile>) => {
       const res = await fetch('/api/partner/profile', {
         method: 'PATCH',

@@ -1,45 +1,17 @@
-/**
- * Favorites & Superlikes Hook - Unified Implementation
- * 
- * Single source of truth for all favorite/superlike operations.
- * One API call, one cache, simple state management.
- * 
- * Features:
- * - Single cache key for all favorite/superlike data
- * - Optimistic updates for instant UI feedback
- * - Automatic auth modal handling
- * - Quota tracking built-in
- * 
- * Usage:
- * ```tsx
- * const { favorites, superlikes, quota } = useFavoritesStatus();
- * const favorite = useFavorite(listingId);
- * const superlike = useSuperlike(listingId);
- * ```
- */
-
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { getFavoritesStatusAction } from '@/actions/favorites';
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface FavoritesStatusData {
-  favorites: string[];
-  superlikes: string[];
-  quota: {
-    currentMonthSuperlikesUsed: number;
-    maxSuperlikesPerMonth: number;
-    premiumSuperlikesBonus: number;
-    remaining: number;
-    periodEndDate?: string | Date | null;
-    periodStartDate?: string | Date | null;
-  };
-}
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
+import {
+  clearFavoritesStore,
+  ensureFavoritesLoaded,
+  refreshFavorites,
+  seedFavorites,
+  updateFavoritesState,
+  useFavoritesStore,
+  type FavoritesStatusData,
+} from './favorites-store';
 
 interface AuthState {
   show: boolean;
@@ -47,14 +19,6 @@ interface AuthState {
 }
 
 const DEFAULT_AUTH_STATE: AuthState = { show: false, message: '' };
-
-// ============================================================================
-// API Functions
-// ============================================================================
-
-async function fetchFavoritesStatus(): Promise<FavoritesStatusData> {
-  return getFavoritesStatusAction();
-}
 
 async function toggleFavoriteAPI(listingId: string): Promise<{ status: { isFavorite: boolean; isSuperliked: boolean } }> {
   const res = await fetch('/api/engagement/favorites', {
@@ -98,85 +62,61 @@ async function toggleSuperlikeAPI(listingId: string): Promise<{
   return res.json();
 }
 
-// ============================================================================
-// Main Hook: Get All Status Data
-// ============================================================================
-
 export function useFavoritesStatus(options?: {
   enabled?: boolean;
   initialData?: FavoritesStatusData;
 }) {
-  return useQuery<FavoritesStatusData>({
-    queryKey: ['favorites-status'],
-    queryFn: fetchFavoritesStatus,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    enabled: options?.enabled ?? true,
-    staleTime: Infinity,
-    gcTime: Infinity,
-    initialData: options?.initialData,
-  });
+  const store = useFavoritesStore(options);
+
+  return {
+    data: store.data,
+    isLoading: store.isLoading && !store.data,
+    error: store.error ? new Error(store.error) : null,
+    refetch: refreshFavorites,
+  };
 }
 
-// ============================================================================
-// Individual Favorite Hook
-// ============================================================================
-
 export function useFavorite(listingId: string) {
-  const queryClient = useQueryClient();
+  const { data } = useFavoritesStatus();
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
-
-  // Read from cache only - parent component fetches via useFavoritesStatus({ enabled: isSignedIn })
-  // enabled: false prevents this hook from triggering API calls
-  const { data } = useQuery<FavoritesStatusData>({
-    queryKey: ['favorites-status'],
-    queryFn: fetchFavoritesStatus,
-    enabled: false, // Never fetch - only subscribe to cache updates
-  });
 
   const isFavorite = data?.favorites.includes(listingId) || false;
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: () => toggleFavoriteAPI(listingId),
     onMutate: async () => {
-      // Cancel outgoing queries
-      await queryClient.cancelQueries({ queryKey: ['favorites-status'] });
-      
-      // Snapshot current state
-      const previous = queryClient.getQueryData<FavoritesStatusData>(['favorites-status']);
-      
-      // Optimistic update
-      if (previous) {
-        const willBeAdded = !isFavorite;
-        queryClient.setQueryData<FavoritesStatusData>(['favorites-status'], {
-          ...previous,
+      await ensureFavoritesLoaded();
+      const previous = data ?? null;
+
+      updateFavoritesState((current) => {
+        if (!current) return current;
+        const willBeAdded = !current.favorites.includes(listingId);
+        return {
+          ...current,
           favorites: willBeAdded
-            ? [...previous.favorites, listingId]
-            : previous.favorites.filter(id => id !== listingId),
-        });
-      }
-      
-      return { previous };
+            ? [...current.favorites, listingId]
+            : current.favorites.filter((id) => id !== listingId),
+        };
+      });
+
+      return previous;
     },
-    onError: (error: Error, _, context) => {
-      // Rollback on error
-      if (context?.previous) {
-        queryClient.setQueryData(['favorites-status'], context.previous);
+    onError: async (error, _variables, previous) => {
+      if (previous) {
+        seedFavorites(previous);
       }
-      
-      // Handle auth errors
+
       try {
         const parsed = JSON.parse(error.message);
         if (parsed.auth) {
           setAuthRequired({ show: true, message: parsed.message });
         }
-      } catch {}
+      } catch {
+        // Ignore parse failures and surface the generic error.
+      }
     },
-    onSuccess: () => {
-      // Invalidate all favorites-related caches
-      queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
-      queryClient.invalidateQueries({ queryKey: ['favorites-listings'] });
+    onSuccess: async () => {
+      await refreshFavorites();
     },
   });
 
@@ -184,7 +124,7 @@ export function useFavorite(listingId: string) {
     isFavorite,
     isUpdating: mutation.isPending,
     error: mutation.error?.message || null,
-    toggle: () => mutation.mutate(),
+    toggle: () => mutation.mutate(undefined),
     requireAuth: () => setAuthRequired({ show: true, message: 'Please sign in to save favorites' }),
     authRequired: authRequired.show,
     authMessage: authRequired.message,
@@ -192,56 +132,45 @@ export function useFavorite(listingId: string) {
   };
 }
 
-// ============================================================================
-// Individual Superlike Hook
-// ============================================================================
-
 export function useSuperlike(listingId: string) {
-  const queryClient = useQueryClient();
+  const { data } = useFavoritesStatus();
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
-
-  // Read from cache only - parent component fetches via useFavoritesStatus({ enabled: isSignedIn })
-  // enabled: false prevents this hook from triggering API calls
-  const { data } = useQuery<FavoritesStatusData>({
-    queryKey: ['favorites-status'],
-    queryFn: fetchFavoritesStatus,
-    enabled: false, // Never fetch - only subscribe to cache updates
-  });
 
   const isSuperliked = data?.superlikes.includes(listingId) || false;
   const quota = data?.quota || null;
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: () => toggleSuperlikeAPI(listingId),
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['favorites-status'] });
-      const previous = queryClient.getQueryData<FavoritesStatusData>(['favorites-status']);
-      
-      if (previous) {
-        const willBeAdded = !isSuperliked;
-        queryClient.setQueryData<FavoritesStatusData>(['favorites-status'], {
-          ...previous,
+      await ensureFavoritesLoaded();
+      const previous = data ?? null;
+
+      updateFavoritesState((current) => {
+        if (!current) return current;
+        const willBeAdded = !current.superlikes.includes(listingId);
+        return {
+          ...current,
           superlikes: willBeAdded
-            ? [...previous.superlikes, listingId]
-            : previous.superlikes.filter(id => id !== listingId),
+            ? [...current.superlikes, listingId]
+            : current.superlikes.filter((id) => id !== listingId),
           quota: willBeAdded
             ? {
-                ...previous.quota,
-                currentMonthSuperlikesUsed: previous.quota.currentMonthSuperlikesUsed + 1,
-                remaining: previous.quota.remaining - 1,
+                ...current.quota,
+                currentMonthSuperlikesUsed: current.quota.currentMonthSuperlikesUsed + 1,
+                remaining: current.quota.remaining - 1,
               }
-            : previous.quota,
-        });
-      }
-      
-      return { previous };
+            : current.quota,
+        };
+      });
+
+      return previous;
     },
-    onError: (error: Error, _, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(['favorites-status'], context.previous);
+    onError: async (error, _variables, previous) => {
+      if (previous) {
+        seedFavorites(previous);
       }
-      
+
       try {
         const parsed = JSON.parse(error.message);
         if (parsed.auth) {
@@ -249,21 +178,19 @@ export function useSuperlike(listingId: string) {
         } else if (parsed.quotaExceeded) {
           setQuotaExceeded(true);
         }
-      } catch {}
-    },
-    onSuccess: (data) => {
-      // Update quota from server response
-      const previous = queryClient.getQueryData<FavoritesStatusData>(['favorites-status']);
-      if (previous && data.quota) {
-        queryClient.setQueryData<FavoritesStatusData>(['favorites-status'], {
-          ...previous,
-          quota: data.quota,
-        });
+      } catch {
+        // Ignore parse failures and surface the generic error.
       }
-      // Invalidate all favorites-related caches
-      queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
-      queryClient.invalidateQueries({ queryKey: ['superlikes-listings'] });
-      queryClient.invalidateQueries({ queryKey: ['navbar-favorites-listings'] });
+    },
+    onSuccess: async (result) => {
+      updateFavoritesState((current) => {
+        if (!current) return current;
+        return {
+          ...current,
+          quota: result.quota ?? current.quota,
+        };
+      });
+      await refreshFavorites();
     },
   });
 
@@ -272,7 +199,7 @@ export function useSuperlike(listingId: string) {
     isUpdating: mutation.isPending,
     error: mutation.error?.message || null,
     quota,
-    toggle: () => mutation.mutate(),
+    toggle: () => mutation.mutate(undefined),
     requireAuth: () => setAuthRequired({ show: true, message: 'Please sign in to superlike listings' }),
     authRequired: authRequired.show,
     authMessage: authRequired.message,
@@ -281,10 +208,6 @@ export function useSuperlike(listingId: string) {
     dismissQuotaError: () => setQuotaExceeded(false),
   };
 }
-
-// ============================================================================
-// Favorites Listings Hook - Fetch Full Listing Data
-// ============================================================================
 
 export interface ListingCardData {
   id: string;
@@ -312,10 +235,6 @@ async function fetchListingCards(ids: string[]): Promise<ListingCardData[]> {
   return getListingCardsByIdsAction(ids);
 }
 
-/**
- * Fetch full listing data for favorites.
- * Caches indefinitely, refetches only after invalidation.
- */
 export function useFavoritesListings(options?: {
   initialStatus?: FavoritesStatusData;
   initialListings?: ListingCardData[];
@@ -324,16 +243,13 @@ export function useFavoritesListings(options?: {
     initialData: options?.initialStatus,
   });
   const favoriteIds = favoritesData?.favorites || [];
+  const favoritesKey = favoriteIds.join(',');
 
-  const listingsQuery = useQuery({
-    queryKey: ['favorites-listings'],
+  const listingsQuery = useAsyncQuery({
     queryFn: () => fetchListingCards(favoriteIds),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     enabled: favoriteIds.length > 0,
-    staleTime: options?.initialListings ? Infinity : 60_000,
-    refetchOnMount: false,
     initialData: options?.initialListings,
+    dependencies: [favoritesKey],
   });
 
   return {
@@ -341,13 +257,13 @@ export function useFavoritesListings(options?: {
     favoriteIds,
     isLoading: isLoadingStatus || listingsQuery.isLoading,
     error: listingsQuery.error?.message || null,
+    refresh: async () => {
+      await refreshFavorites();
+      await listingsQuery.refetch();
+    },
   };
 }
 
-/**
- * Fetch full listing data for superlikes.
- * Caches indefinitely, refetches only after invalidation.
- */
 export function useSuperlikesListings(options?: {
   initialStatus?: FavoritesStatusData;
   initialListings?: ListingCardData[];
@@ -356,16 +272,13 @@ export function useSuperlikesListings(options?: {
     initialData: options?.initialStatus,
   });
   const superlikeIds = favoritesData?.superlikes || [];
+  const superlikesKey = superlikeIds.join(',');
 
-  const listingsQuery = useQuery({
-    queryKey: ['superlikes-listings'],
+  const listingsQuery = useAsyncQuery({
     queryFn: () => fetchListingCards(superlikeIds),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     enabled: superlikeIds.length > 0,
-    staleTime: options?.initialListings ? Infinity : 60_000,
-    refetchOnMount: false,
     initialData: options?.initialListings,
+    dependencies: [superlikesKey],
   });
 
   return {
@@ -373,5 +286,12 @@ export function useSuperlikesListings(options?: {
     superlikeIds,
     isLoading: isLoadingStatus || listingsQuery.isLoading,
     error: listingsQuery.error?.message || null,
+    refresh: async () => {
+      await refreshFavorites();
+      await listingsQuery.refetch();
+    },
   };
 }
+
+export { clearFavoritesStore };
+export type { FavoritesStatusData };

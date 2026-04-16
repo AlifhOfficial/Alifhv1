@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Trash2, Mail, User, UserMinus, Clock, RefreshCw, Search, X, UserPlus, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
@@ -104,7 +104,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
   };
 
   // Invite mutation
-  const inviteMutation = useMutation({
+  const inviteMutation = useAsyncMutation({
     mutationFn: async (data: typeof inviteFormData) => {
       const res = await fetch('/api/partner/staff/invite', {
         method: 'POST',
@@ -133,7 +133,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
   });
 
   // Remove mutation
-  const removeMutation = useMutation({
+  const removeMutation = useAsyncMutation({
     mutationFn: async (memberId: string) => {
       const res = await fetch('/api/partner/staff/operations', {
         method: 'POST',
@@ -160,7 +160,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
   });
 
   // Cancel invite mutation
-  const cancelInviteMutation = useMutation({
+  const cancelInviteMutation = useAsyncMutation({
     mutationFn: async (inviteId: string) => {
       const res = await fetch('/api/partner/staff/operations', {
         method: 'POST',
@@ -187,7 +187,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
   });
 
   // Update role mutation
-  const updateRoleMutation = useMutation({
+  const updateRoleMutation = useAsyncMutation({
     mutationFn: async ({ staffId, role }: { staffId: string; role: string }) => {
       const res = await fetch('/api/partner/staff/operations', {
         method: 'POST',

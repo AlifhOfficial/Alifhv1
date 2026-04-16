@@ -21,7 +21,6 @@ import { db, partner as partnerTable, partnerStaff as partnerStaffTable, eq, and
 export const runtime = 'nodejs';
 
 // Disable body parsing, we need raw body for webhook verification
-export const dynamic = 'force-dynamic';
 
 /**
  * Update partner tier based on subscription plan

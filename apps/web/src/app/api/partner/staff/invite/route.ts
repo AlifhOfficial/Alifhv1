@@ -9,7 +9,6 @@ import { sendStaffInvite } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 const inviteSchema = z.object({
   email: z.string().email(),

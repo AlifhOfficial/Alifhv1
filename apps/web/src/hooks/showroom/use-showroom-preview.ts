@@ -12,7 +12,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import type { ShowroomData } from '@/components/pages/showroom/types';
 
 // ============================================================================
@@ -50,8 +50,7 @@ export interface UseShowroomPreviewReturn {
  * @returns Showroom data, loading state, and error
  */
 export function useShowroomPreview(): UseShowroomPreviewReturn {
-  const query = useQuery<ShowroomPreviewApiResponse, Error>({
-    queryKey: ['showroom', 'preview'],
+  const query = useAsyncQuery<ShowroomPreviewApiResponse>({
     queryFn: async () => {
       const response = await fetch('/api/partner/showroom/preview');
       
@@ -70,7 +69,6 @@ export function useShowroomPreview(): UseShowroomPreviewReturn {
       
       return response.json();
     },
-    retry: 1,
   });
   
   return {

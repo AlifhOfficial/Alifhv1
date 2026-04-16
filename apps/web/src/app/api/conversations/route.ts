@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
   createOrGetConversation,
@@ -13,6 +14,45 @@ import {
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
+
+const DEBUG = process.env.CACHE_DEBUG === '1';
+const dbg = (msg: string) => { if (DEBUG) console.warn(`[cache] ${msg}`); };
+
+const CONVERSATIONS_CACHE_REVALIDATE_SECONDS = 10;
+
+const getCachedConversationsPayload = unstable_cache(
+  async (
+    userId: string,
+    partnerIds: string[],
+    partnerScope: 'only' | 'exclude' | undefined,
+    limit: number,
+    offset: number,
+    includeArchived: boolean,
+    scope: 'staff' | 'personal' | null
+  ) => {
+    dbg(`MISS conversations userId=${userId} scope=${scope} offset=${offset}`);
+    const conversations = await getUserConversations(userId, {
+      limit,
+      offset,
+      includeArchived,
+      partnerIds,
+      partnerScope,
+    });
+
+    const totalUnread =
+      scope === 'staff' || scope === 'personal'
+        ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)
+        : await getTotalUnreadCount(userId);
+
+    return {
+      conversations,
+      totalUnread,
+      hasMore: conversations.length === limit,
+    };
+  },
+  ['api-conversations-payload'],
+  { revalidate: CONVERSATIONS_CACHE_REVALIDATE_SECONDS }
+);
 
 
 // ============================================================================
@@ -47,24 +87,18 @@ export async function GET(req: NextRequest) {
             : undefined
         : undefined;
 
-    const conversations = await getUserConversations(user.id, {
+    dbg(`REQUEST conversations userId=${user.id} scope=${scope} offset=${offset}`);
+    const payload = await getCachedConversationsPayload(
+      user.id,
+      partnerIds,
+      partnerScope,
       limit,
       offset,
       includeArchived,
-      partnerIds,
-      partnerScope,
-    });
+      scope === 'staff' || scope === 'personal' ? scope : null
+    );
 
-    const totalUnread =
-      scope === 'staff' || scope === 'personal'
-        ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)
-        : await getTotalUnreadCount(user.id);
-
-    return NextResponse.json({
-      conversations,
-      totalUnread,
-      hasMore: conversations.length === limit,
-    });
+    return NextResponse.json(payload);
   } catch (error) {
     const details =
       process.env.NODE_ENV !== 'production'

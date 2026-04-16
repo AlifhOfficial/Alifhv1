@@ -27,7 +27,6 @@ import {
 
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 const reassignSchema = z.object({
   newUserId: z.string().min(1, 'New user ID is required'),

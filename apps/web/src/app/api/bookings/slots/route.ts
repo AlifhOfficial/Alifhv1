@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPublicBookingAvailability } from '@/lib/bookings/public-availability';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 function cachedJson(data: unknown, init?: { status?: number }) {
   return NextResponse.json(data, { status: init?.status });

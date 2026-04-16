@@ -17,7 +17,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCachedQuickSearch, getCachedPopularMakes, getCachedSearchFacets } from "@/lib/search-cache";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 // Rate limiting removed — public read endpoint protected by CF DDoS/bot + CDN caching.
 // Upstash REST round-trip was adding ~100ms per request to typeahead.

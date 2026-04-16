@@ -11,7 +11,6 @@ import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   // Authentication required - protect AI credits from abuse

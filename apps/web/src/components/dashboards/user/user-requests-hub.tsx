@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import { PartnerApplicationForm } from './partner-application-form';
 import { UserStaffInvites } from './user-staff-invites';
 import { usePartnerRequest, usePartnerRequestCancel } from '@/hooks/partner';
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useAuth } from '@/providers/auth-provider';
 import Link from 'next/link';
 import { cn } from '@/utils';
@@ -117,25 +117,24 @@ interface UserRequestsHubProps {
   initialInvites?: StaffInvite[];
 }
 
-export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: UserRequestsHubProps) {
+export function UserRequestsHub({ initialPartnerRequest, initialInvites }: UserRequestsHubProps) {
   const [view, setView] = useState<View>('overview');
   const [confirmCancel, setConfirmCancel] = useState(false);
   const { session: user } = useAuth();
   const { data: partnerRequest, isLoading: loadingPartner } = usePartnerRequest(initialPartnerRequest);
   const { cancel, isCancelling } = usePartnerRequestCancel();
+  const hasServerInvites = initialInvites !== undefined;
+  const shouldFetchInvites = !hasServerInvites;
+  const resolvedInitialInvites = initialInvites ?? [];
   
-  const { data: invitesData, isLoading: loadingInvites } = useQuery({
-    queryKey: ['user', 'staff-invites'],
+  const { data: invitesData, isLoading: loadingInvites } = useAsyncQuery({
     queryFn: async () => {
       const res = await fetch('/api/user/staff-invites');
       if (!res.ok) throw new Error('Failed to fetch invites');
       return res.json();
     },
-    initialData: { data: initialInvites },
-    initialDataUpdatedAt: Date.now(),
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    enabled: shouldFetchInvites,
+    initialData: hasServerInvites ? { data: resolvedInitialInvites } : undefined,
   });
   
   const inviteCount = invitesData?.data?.length || 0;
@@ -186,7 +185,9 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
           >
             ← Back
           </button>
-          <UserStaffInvites initialInvites={{ data: initialInvites }} />
+          <UserStaffInvites
+            initialInvites={hasServerInvites ? { data: resolvedInitialInvites } : undefined}
+          />
         </div>
       </div>
     );

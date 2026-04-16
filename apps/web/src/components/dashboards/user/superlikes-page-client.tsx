@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Zap } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
 import { SuperlikeQuotaBadge } from '@/components/engagement';
@@ -15,8 +14,7 @@ interface SuperlikesPageClientProps {
 }
 
 export function SuperlikesPageClient({ initialStatus, initialListings }: SuperlikesPageClientProps) {
-  const queryClient = useQueryClient();
-  const { listings, superlikeIds, isLoading, error } = useSuperlikesListings({
+  const { listings, superlikeIds, isLoading, error, refresh } = useSuperlikesListings({
     initialStatus,
     initialListings,
   });
@@ -37,8 +35,7 @@ export function SuperlikesPageClient({ initialStatus, initialListings }: Superli
   );
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
-    queryClient.invalidateQueries({ queryKey: ['superlikes-listings'] });
+    void refresh();
   };
 
   return (

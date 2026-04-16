@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import {
   ArrowLeft,
   ChevronLeft,
@@ -62,12 +62,11 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
   const [offset, setOffset] = useState(0);
   const limit = 20;
 
-  const { data, isLoading, error } = useQuery<{
+  const { data, isLoading, error } = useAsyncQuery<{
     listings: MatchingListing[];
     total: number;
     hasMore: boolean;
   }>({
-    queryKey: ['funnel-matches', funnel.id, offset],
     queryFn: () => getFunnelMatchesAction(funnel.id, { limit, offset }),
   });
 

@@ -7,7 +7,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/hooks/profile';
 import { Loader2, CheckCircle2, Info } from 'lucide-react';
@@ -35,19 +36,17 @@ interface StaffProfileFormProps {
 
 export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffProfileFormProps) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const { profile: userProfile } = useUserProfile(initialUserProfile);
+  const shouldFetchProfile = initialProfile === undefined;
 
-  const { data: profile, isLoading } = useQuery<StaffProfile>({
-    queryKey: ['staff-profile'],
+  const { data: profile, isLoading, refetch, setData } = useAsyncQuery<StaffProfile>({
     queryFn: async () => {
       const res = await fetch('/api/staff/profile');
       if (!res.ok) throw new Error('Failed to fetch profile');
       return res.json();
     },
+    enabled: shouldFetchProfile,
     initialData: initialProfile ?? undefined,
-    initialDataUpdatedAt: initialProfile ? Date.now() : undefined,
-    staleTime: initialProfile ? 60_000 : 0,
   });
 
   const [editingField, setEditingField] = useState<EditingField>(null);
@@ -104,7 +103,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
     setForm(f => ({ ...f, ...updates }));
   };
 
-  const updateMutation = useMutation({
+  const updateMutation = useAsyncMutation({
     mutationFn: async (data: Partial<StaffProfile>) => {
       const res = await fetch('/api/staff/profile', {
         method: 'PATCH',
@@ -114,8 +113,8 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
       if (!res.ok) throw new Error('Failed to update profile');
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff-profile'] });
+    onSuccess: async () => {
+      await refetch();
     },
   });
 
@@ -274,8 +273,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
         return;
       }
 
-      // Refresh profile data
-      queryClient.invalidateQueries({ queryKey: ['staff-profile'] });
+      await refetch();
       
       toast({ title: 'Work phone verified!' });
       setPhoneJustVerified(true);

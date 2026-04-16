@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useToast } from '@/hooks/use-toast';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { 
   Mail, 
   Phone, 
@@ -31,7 +32,6 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // ============================================================================
 // Types
@@ -87,18 +87,14 @@ function useCommunications(filter?: { status?: string; type?: string; search?: s
   const queryString = params.toString();
   const url = `/api/admin/communications${queryString ? `?${queryString}` : ''}`;
   
-  return useQuery<{ communications: Communication[] }>({
-    queryKey: ['admin-communications', filter],
+  return useAsyncQuery<{ communications: Communication[] }>({
     queryFn: () => fetcher(url),
-    refetchInterval: 30000, // Refresh every 30s
   });
 }
 
 function useCommunicationStats() {
-  return useQuery<{ stats: CommunicationStats }>({
-    queryKey: ['admin-communications-stats'],
+  return useAsyncQuery<{ stats: CommunicationStats }>({
     queryFn: () => fetcher('/api/admin/communications?statsOnly=true'),
-    refetchInterval: 30000,
   });
 }
 
@@ -168,7 +164,7 @@ function formatDate(dateString: string) {
 // ============================================================================
 
 function CommunicationStatsCards() {
-  const { data, isPending: isLoading } = useCommunicationStats();
+  const { data, isLoading } = useCommunicationStats();
 
   if (isLoading) {
     return (
@@ -580,17 +576,16 @@ export function AdminCommunicationsView() {
     debouncedSetSearchQuery(value);
   };
 
-  const queryClient = useQueryClient();
-  
-  const { data, isPending: isLoading, error, refetch } = useCommunications({
+  const { data: statsData, refetch: refetchStats } = useCommunicationStats();
+  const { data, isLoading, error, refetch } = useCommunications({
     status: filterStatus || undefined,
     type: filterType || undefined,
     search: searchQuery || undefined,
   });
 
   const handleRefresh = () => {
-    refetch();
-    queryClient.invalidateQueries({ queryKey: ['admin-communications-stats'] });
+    void refetch();
+    void refetchStats();
   };
 
   const communications = data?.communications || [];

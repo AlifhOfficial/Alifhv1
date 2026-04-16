@@ -23,7 +23,6 @@ import {
 } from "@alifh/database";
 import { getCachedSearchFacets, getCachedSearchResults } from '@/lib/search-cache';
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 // Rate limiting removed from search — adds ~100ms per request (Upstash REST round-trip).
 // Public search is protected by Cloudflare's built-in DDoS/bot protection + CDN caching.

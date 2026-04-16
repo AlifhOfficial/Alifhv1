@@ -12,7 +12,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -179,25 +179,7 @@ export function useMyListings(options: UseMyListingsOptions = {}) {
     enabled = true,
   } = options;
 
-  // Build query key from all filter params
-  const queryKey = [
-    'my-listings',
-    {
-      status,
-      moderationStatus,
-      lifecycleStatus,
-      listingType,
-      staffMemberUserId,
-      partnerId,
-      q,
-      sort,
-      limit,
-      offset,
-    },
-  ] as const;
-
-  const query = useQuery<ListingsResponse, Error>({
-    queryKey,
+  const query = useAsyncQuery<ListingsResponse>({
     queryFn: () =>
       fetchMyListings({
         status,
@@ -213,7 +195,6 @@ export function useMyListings(options: UseMyListingsOptions = {}) {
         offset,
       }),
     enabled,
-    refetchOnWindowFocus: true,
   });
 
   return {
@@ -226,7 +207,7 @@ export function useMyListings(options: UseMyListingsOptions = {}) {
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isRefetching: query.isRefetching,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
 
     // Actions

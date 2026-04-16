@@ -7,7 +7,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
 import type { AdminUserData } from '@/hooks/admin';
 import {
   Ban,
@@ -30,7 +29,6 @@ export function AdminUserOperations({
   onOperationComplete,
 }: UserOperationsProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [showBanModal, setShowBanModal] = useState(false);
   const [banReason, setBanReason] = useState('');
@@ -50,14 +48,6 @@ export function AdminUserOperations({
         throw new Error(error.error || 'Operation failed');
       }
 
-      // Invalidate all admin user queries to force refetch
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'user'] });
-      
-      // Also invalidate user-profile in case admin is viewing their own profile
-      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-      
-      // Also refresh the page for server components
       router.refresh();
       
       alert('Operation successful! Data updated.');

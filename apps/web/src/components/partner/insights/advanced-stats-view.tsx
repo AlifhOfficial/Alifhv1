@@ -194,7 +194,7 @@ function WaveChart({ className = 'text-primary', data }: { className?: string; d
   const isGhost = !data;
 
   return (
-    <ResponsiveContainer width={40} height={24} minWidth={0}>
+    <ResponsiveContainer width={40} height={24} minWidth={0} minHeight={0}>
       <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -230,7 +230,7 @@ function MiniBarChart({ className = 'text-primary', data, width = 40, height = 2
   const isGhost = !data;
 
   return (
-    <ResponsiveContainer width={width} height={height} minWidth={0}>
+    <ResponsiveContainer width={width} height={height} minWidth={0} minHeight={0}>
       <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <Bar
           dataKey="y"
@@ -263,7 +263,7 @@ function MiniDonutChart({ data, size = 80, innerRadius = 24 }: { data: DonutData
     const ghostData = [{ name: 'empty', value: 1, color: '#e5e7eb' }];
     return (
       <div style={{ width: size, height: size }} className="opacity-30">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <PieChart>
             <Pie
               data={ghostData}
@@ -286,7 +286,7 @@ function MiniDonutChart({ data, size = 80, innerRadius = 24 }: { data: DonutData
 
   return (
     <div style={{ width: size, height: size }}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <PieChart>
           <Pie
             data={data}
@@ -715,7 +715,7 @@ function PriceDistributionChart({ data }: PriceDistributionChartProps) {
       
       {/* Visual Bar Chart */}
       <div className="h-40 mb-4">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <BarChart data={chartData} margin={{ top: 8, right: 0, left: 0, bottom: 0 }}>
             <Bar 
               dataKey="value" 

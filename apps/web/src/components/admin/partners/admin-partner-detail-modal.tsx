@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { X, Loader2, Mail, Phone, MapPin, Calendar } from 'lucide-react';
 import { AdminPartnerOperations } from '@/components/admin/partner-operations';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -11,8 +11,7 @@ interface AdminPartnerDetailModalProps {
 }
 
 export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDetailModalProps) {
-  const { data: partner, isPending } = useQuery({
-    queryKey: ['admin', 'partner', partnerId],
+  const { data: partner, isLoading } = useAsyncQuery({
     queryFn: async () => {
       const res = await fetch(`/api/admin/partners?partnerId=${partnerId}`);
       if (!res.ok) throw new Error('Failed to fetch partner');
@@ -20,8 +19,6 @@ export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDeta
       return data.data[0]; // API returns array
     },
   });
-
-  const isLoading = isPending;
 
   return (
     <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 p-4">

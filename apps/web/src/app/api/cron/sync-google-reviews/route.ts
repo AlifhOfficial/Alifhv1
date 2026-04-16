@@ -11,7 +11,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { googleReviews } from '@alifh/database';
 
 export const maxDuration = 300; // 5 minutes max execution
-export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {

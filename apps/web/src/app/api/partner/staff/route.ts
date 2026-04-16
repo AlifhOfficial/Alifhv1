@@ -10,7 +10,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 // V1: Invite expiry is 7 days from invite date
 const INVITE_EXPIRY_DAYS = 7;

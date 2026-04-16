@@ -20,7 +20,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 // ============================================================================
 // GET - List All Partners

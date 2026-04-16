@@ -19,7 +19,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { getAllPartnerFunnels, getPartnerFunnelStats, getPartnerFunnelStaff } from '@alifh/database';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 
 /**

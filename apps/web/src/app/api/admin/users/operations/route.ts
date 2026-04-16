@@ -31,7 +31,6 @@ import {
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 function resolveWsBroadcastUrl() {
   const wsUrl = process.env.INTERNAL_WS_URL || process.env.NEXT_PUBLIC_WS_URL || 'wss://ws.revvup.ae';

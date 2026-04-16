@@ -16,8 +16,10 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -125,14 +127,12 @@ async function cancelPartnerRequestAPI(): Promise<void> {
 // ============================================================================
 
 export function usePartnerRequest(initialData?: PartnerRequest | null) {
-  return useQuery<PartnerRequest | null>({
-    queryKey: ['partner-request'],
+  const shouldFetch = initialData === undefined;
+
+  return useAsyncQuery<PartnerRequest | null>({
     queryFn: fetchPartnerRequest,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    enabled: shouldFetch,
     initialData: initialData !== undefined ? initialData : undefined,
-    initialDataUpdatedAt: initialData !== undefined ? Date.now() : undefined,
-    staleTime: initialData !== undefined ? Infinity : 0,
   });
 }
 
@@ -141,10 +141,10 @@ export function usePartnerRequest(initialData?: PartnerRequest | null) {
 // ============================================================================
 
 export function usePartnerRequestSubmit() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: (input: CreatePartnerRequestInput) => submitPartnerRequestAPI(input),
     onError: (error: Error) => {
       try {
@@ -155,8 +155,7 @@ export function usePartnerRequestSubmit() {
       } catch {}
     },
     onSuccess: () => {
-      // Invalidate to fetch the new request
-      queryClient.invalidateQueries({ queryKey: ['partner-request'] });
+      router.refresh();
     },
   });
 
@@ -177,10 +176,10 @@ export function usePartnerRequestSubmit() {
 // ============================================================================
 
 export function usePartnerRequestCancel() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: () => cancelPartnerRequestAPI(),
     onError: (error: Error) => {
       try {
@@ -191,9 +190,7 @@ export function usePartnerRequestCancel() {
       } catch {}
     },
     onSuccess: () => {
-      // Clear the request from cache
-      queryClient.setQueryData(['partner-request'], null);
-      queryClient.invalidateQueries({ queryKey: ['partner-request'] });
+      router.refresh();
     },
   });
 
@@ -214,10 +211,10 @@ export function usePartnerRequestCancel() {
 // ============================================================================
 
 export function usePartnerRequestDismiss() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: () => cancelPartnerRequestAPI(), // Same DELETE endpoint works for dismissed rejected applications
     onError: (error: Error) => {
       try {
@@ -228,9 +225,7 @@ export function usePartnerRequestDismiss() {
       } catch {}
     },
     onSuccess: () => {
-      // Clear the request from cache
-      queryClient.setQueryData(['partner-request'], null);
-      queryClient.invalidateQueries({ queryKey: ['partner-request'] });
+      router.refresh();
     },
   });
 

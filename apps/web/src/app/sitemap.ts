@@ -4,7 +4,6 @@ import { staticPages } from '@/lib/navigation';
 const BASE_URL = 'https://revvup.ae';
 
 // Force dynamic generation - don't cache sitemap at build time
-export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const urls: MetadataRoute.Sitemap = [];

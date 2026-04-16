@@ -11,7 +11,7 @@
 
 import { useCallback, useMemo, useRef, useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { 
   urlToSearchParams, 
   searchParamsToUrl, 
@@ -232,7 +232,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   // initialData should only be used for the exact initial query
   const currentQueryKeyString = JSON.stringify(queryKey);
   const [initialQueryKey] = useState<string | null>(() => (
-    initialData ? currentQueryKeyString : null
+    initialData !== undefined ? currentQueryKeyString : null
   ));
 
   // Only use initialData if we're still on the initial query
@@ -240,18 +240,13 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   const effectiveInitialData = isInitialQuery ? initialData : undefined;
 
   // Fetch search results
-  const query = useQuery({
-    queryKey,
+  const query = useAsyncQuery({
     queryFn: () => fetchSearch(requestParams),
-    // Server-side data for instant display - only for the initial query
     initialData: effectiveInitialData ?? undefined,
-    // Cache settings for smooth back navigation
-    // Server-seeded initial data should be the source of truth until params change.
-    staleTime: effectiveInitialData ? Infinity : 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for back navigation
-    refetchOnWindowFocus: false,
-    refetchOnMount: false, // Don't refetch on mount if we have cached data
-    enabled: !serverDriven && ((params.page || 1) <= 1 || resolvedCursor !== undefined),
+    enabled:
+      !serverDriven &&
+      effectiveInitialData === undefined &&
+      ((params.page || 1) <= 1 || resolvedCursor !== undefined),
   });
 
   const data = serverDriven ? (initialData ?? undefined) : query.data;
@@ -451,21 +446,18 @@ export function useQuickSearch(
 
   // Popular makes — shown when dropdown opens with no/short query.
   // Preloaded from server on initial render to avoid client fetch
-  const { data: popularData, isLoading: popularLoading } = useQuery({
-    queryKey: ['listings', 'suggest', 'popular'],
+  const { data: popularData, isLoading: popularLoading } = useAsyncQuery({
     queryFn: async () => {
       const response = await fetch('/api/listings/search/suggest?popular=true&limit=5');
       if (!response.ok) return { suggestions: FALLBACK_SUGGESTIONS };
       return response.json();
     },
-    enabled: enabled && !isTyping,
-    initialData: initialData ? { suggestions: initialData } : undefined,
-    staleTime: 60 * 60 * 1000, // 1 hour — matches server cache
+    enabled: enabled && !isTyping && initialData === undefined,
+    initialData: initialData !== undefined ? { suggestions: initialData } : undefined,
   });
 
   // Typed search — only fires at 2+ chars
-  const { data: searchData, isLoading: searchLoading } = useQuery({
-    queryKey: ['listings', 'suggest', query, context?.make, context?.model],
+  const { data: searchData, isLoading: searchLoading } = useAsyncQuery({
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set('q', query);

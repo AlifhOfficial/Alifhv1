@@ -19,7 +19,6 @@ import { parseSearchIntent, intentToSearchParams } from '@alifh/ai/search';
 import { searchParamsToUrl } from '@/lib/search-utils';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 
 export async function POST(req: NextRequest) {

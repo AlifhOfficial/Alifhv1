@@ -13,7 +13,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -50,16 +50,12 @@ export function usePartnerStats(
   partnerId: string | null | undefined,
   initialData?: PartnerStats | null
 ) {
-  const query = useQuery({
-    queryKey: ['partner-stats', partnerId],
+  const shouldFetch = !!partnerId && initialData === undefined;
+
+  const query = useAsyncQuery({
     queryFn: () => fetchPartnerStats(partnerId!),
-    enabled: !!partnerId,
+    enabled: shouldFetch,
     initialData: initialData ?? undefined,
-    staleTime: initialData ? Infinity : 0,
-    gcTime: initialData ? Infinity : undefined,
-    refetchOnWindowFocus: false, // Don't refetch on focus - expensive
-    refetchOnMount: false, // Don't refetch if we have data
-    refetchOnReconnect: false,
   });
 
   return {

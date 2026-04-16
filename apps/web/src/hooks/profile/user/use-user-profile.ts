@@ -7,7 +7,9 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useAuth } from '@/providers/auth-provider';
 import type { ExtendedUser } from '@/types/auth';
 
@@ -119,32 +121,23 @@ async function updateUserProfileAPI(updates: UserProfileUpdate): Promise<UserPro
 // ============================================================================
 
 export function useUserProfile(initialData?: UserProfileResponse | null) {
-  const queryClient = useQueryClient();
   const { session, setSessionUser, isAuthenticated } = useAuth();
+  const shouldFetch = isAuthenticated && initialData === undefined;
 
-  const query = useQuery<UserProfileResponse | null>({
-    queryKey: ['user-profile'],
+  const query = useAsyncQuery<UserProfileResponse | null>({
     queryFn: fetchUserProfile,
-    refetchOnWindowFocus: false, // No auto refetch
-    refetchOnMount: initialData ? false : true,
-    refetchOnReconnect: false, // No auto refetch on reconnect
-    retry: false, // Don't retry on 401
-    enabled: isAuthenticated, // Only fetch when user is logged in
-    staleTime: initialData ? Infinity : 0,
+    enabled: shouldFetch,
     initialData: initialData ?? undefined,
   });
 
-  // Update profile mutation
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: updateUserProfileAPI,
     onSuccess: async (updatedProfile, variables) => {
-      // Update the profile within the cached response
-      queryClient.setQueryData<UserProfileResponse | null>(['user-profile'], (old) => {
+      query.setData((old) => {
         if (!old) return { profile: updatedProfile, stats: { listingsCount: 0, soldCount: 0, responseTime: null, responseRate: null }, passkeys: [] };
         return { ...old, profile: updatedProfile };
       });
-      
-      // Ensure session-backed UI (sidebar/navbar) reflects changes immediately.
+
       const touchesSession =
         'avatar' in variables ||
         'firstName' in variables ||
@@ -175,6 +168,15 @@ export function useUserProfile(initialData?: UserProfileResponse | null) {
     },
   });
 
+  useEffect(() => {
+    const handleRefresh = () => {
+      void query.refetch();
+    };
+
+    window.addEventListener('user-profile-refresh', handleRefresh);
+    return () => window.removeEventListener('user-profile-refresh', handleRefresh);
+  }, [query]);
+
   return {
     profile: query.data?.profile ?? null,
     stats: query.data?.stats ?? null,
@@ -182,9 +184,9 @@ export function useUserProfile(initialData?: UserProfileResponse | null) {
     isLoading: query.isLoading,
     isUpdating: mutation.isPending,
     error: query.error?.message || mutation.error?.message || null,
-    refresh: () => queryClient.refetchQueries({ queryKey: ['user-profile'] }),
+    refresh: query.refetch,
     updateProfile: (updates: UserProfileUpdate) => mutation.mutateAsync(updates),
-    invalidateCache: () => queryClient.invalidateQueries({ queryKey: ['user-profile'] }),
+    invalidateCache: query.refetch,
   };
 }
 

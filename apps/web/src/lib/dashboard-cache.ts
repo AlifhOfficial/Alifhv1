@@ -9,13 +9,23 @@
  * @module lib/dashboard-cache
  */
 
+import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { getUserDashboardStats } from '../../../../packages/database/src/queries/user-dashboard';
 
-// Cache dashboard stats for 24 hours
-// Stats change infrequently - users don't need real-time updates for views/saves/counts
-export const getCachedUserDashboardStats = unstable_cache(
-  async (userId: string) => getUserDashboardStats(userId),
+const DEBUG = process.env.CACHE_DEBUG === '1';
+const dbg = (msg: string) => { if (DEBUG) console.warn(`[cache] ${msg}`); };
+
+const _getCachedUserDashboardStats = unstable_cache(
+  async (userId: string) => {
+    dbg(`MISS user-dashboard-stats userId=${userId}`);
+    return getUserDashboardStats(userId);
+  },
   ['user-dashboard-stats'],
-  { revalidate: 86400 } // 24 hours
+  { revalidate: 86400 }
 );
+
+export const getCachedUserDashboardStats = cache(async (userId: string) => {
+  dbg(`REQUEST user-dashboard-stats userId=${userId}`);
+  return _getCachedUserDashboardStats(userId);
+});

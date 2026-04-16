@@ -29,7 +29,6 @@ import { getCurrentUserProfileBundle } from "@/lib/current-user-profile";
 import { deleteFile } from "@/lib/storage";
 
 export const runtime = "nodejs";
-export const dynamic = 'force-dynamic';
 
 
 const UpdateProfileSchema = z.object({

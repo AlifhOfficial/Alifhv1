@@ -12,7 +12,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function normalizeExpiresAt(value: unknown): string {

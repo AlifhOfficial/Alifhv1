@@ -18,7 +18,7 @@ import {
   userFavorite, 
   userSuperlikeQuota,
 } from '../schema';
-import { eq, and, sql, isNull, gte, lte } from 'drizzle-orm';
+import { eq, and, sql, isNull } from 'drizzle-orm';
 
 // ============================================================================
 // Types
@@ -60,8 +60,6 @@ export async function getUserDashboardStats(userId: string): Promise<UserDashboa
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const [
     listingStats,
-    soldResult,
-    expiringResult,
     mySavesResult,
     superlikeQuotaResult,
   ] = await Promise.all([
@@ -70,6 +68,8 @@ export async function getUserDashboardStats(userId: string): Promise<UserDashboa
       .select({
         activeCount: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'approved' and ${carListing.lifecycleStatus} = 'active')::int`,
         totalCount: sql<number>`count(*)::int`,
+        soldCount: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'sold')::int`,
+        expiringCount: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'approved' and ${carListing.lifecycleStatus} = 'active' and ${carListing.expiresAt} >= ${now} and ${carListing.expiresAt} <= ${sevenDaysFromNow})::int`,
         totalViews: sql<number>`coalesce(sum(${carListing.viewCount}), 0)::int`,
         totalSaves: sql<number>`coalesce(sum(${carListing.favouriteCount}), 0)::int`,
       })
@@ -79,35 +79,6 @@ export async function getUserDashboardStats(userId: string): Promise<UserDashboa
           eq(carListing.userId, userId),
           eq(carListing.postedByRole, 'user'),
           isNull(carListing.partnerId)
-        )
-      ),
-
-    // 2. Sold count
-    db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(carListing)
-      .where(
-        and(
-          eq(carListing.userId, userId),
-          eq(carListing.postedByRole, 'user'),
-          isNull(carListing.partnerId),
-          eq(carListing.lifecycleStatus, 'sold')
-        )
-      ),
-
-    // 3. Expiring soon (within 7 days)
-    db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(carListing)
-      .where(
-        and(
-          eq(carListing.userId, userId),
-          eq(carListing.postedByRole, 'user'),
-          isNull(carListing.partnerId),
-          eq(carListing.moderationStatus, 'approved'),
-          eq(carListing.lifecycleStatus, 'active'),
-          gte(carListing.expiresAt, now),
-          lte(carListing.expiresAt, sevenDaysFromNow)
         )
       ),
 
@@ -138,8 +109,8 @@ export async function getUserDashboardStats(userId: string): Promise<UserDashboa
   const avgViewsPerListing = activeListings > 0 ? Math.round(totalViews / activeListings) : 0;
   const saveRate = totalViews > 0 ? Math.round((totalSaves / totalViews) * 100 * 10) / 10 : 0;
 
-  const soldCount = soldResult[0]?.count ?? 0;
-  const expiringSoon = expiringResult[0]?.count ?? 0;
+  const soldCount = stats?.soldCount ?? 0;
+  const expiringSoon = stats?.expiringCount ?? 0;
   const mySaves = mySavesResult[0]?.count ?? 0;
 
   const quota = superlikeQuotaResult[0];

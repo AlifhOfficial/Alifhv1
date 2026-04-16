@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import Link from 'next/link';
 import { 
   Building2, 
@@ -45,19 +45,17 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
   const { session, isLoading: sessionLoading } = useAuth();
   const user = session as unknown as ExtendedUser | null;
   const membership = user?.partnerMemberships?.[0];
+  const shouldFetchProfile = !!membership?.partnerId && initialProfile === undefined;
 
-  const { data: profile, isLoading: profileLoading, error } = useQuery<DealerProfile>({
-    queryKey: ['staff', 'works-for', membership?.partnerId],
+  const { data: profile, isLoading: profileLoading, error } = useAsyncQuery<DealerProfile>({
     queryFn: async () => {
       if (!membership) throw new Error('No partner membership found');
       const res = await fetch(`/api/partners/${membership.partnerId}/dealer-profile`);
       if (!res.ok) throw new Error('Failed to fetch profile');
       return res.json();
     },
-    enabled: !!membership?.partnerId,
+    enabled: shouldFetchProfile,
     initialData: initialProfile ?? undefined,
-    initialDataUpdatedAt: initialProfile ? Date.now() : undefined,
-    staleTime: initialProfile ? 60_000 : 0,
   });
 
   const isLoading = sessionLoading || profileLoading;

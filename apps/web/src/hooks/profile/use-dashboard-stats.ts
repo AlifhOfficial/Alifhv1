@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useAuth } from '@/providers/auth-provider';
 
 // ============================================================================
@@ -63,16 +63,11 @@ async function fetchDashboardStats(): Promise<DashboardStats> {
 
 export function useDashboardStats(initialData?: DashboardStats | null) {
   const { isAuthenticated } = useAuth();
+  const shouldFetch = isAuthenticated && initialData === undefined;
   
-  const query = useQuery({
-    queryKey: ['user-dashboard-stats'],
+  const query = useAsyncQuery({
     queryFn: fetchDashboardStats,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    enabled: isAuthenticated,
-    staleTime: 24 * 60 * 60 * 1000,
-    gcTime: 24 * 60 * 60 * 1000,
+    enabled: shouldFetch,
     initialData: initialData ?? undefined,
   });
 

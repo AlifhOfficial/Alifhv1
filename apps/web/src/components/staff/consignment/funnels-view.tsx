@@ -8,7 +8,8 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { 
   Plus, 
   Trash2,
@@ -64,7 +65,6 @@ interface ConsignmentFunnelsViewProps {
 }
 
 export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewProps) {
-  const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingFunnel, setEditingFunnel] = useState<ConsignmentFunnel | null>(null);
   const [viewingFunnel, setViewingFunnel] = useState<ConsignmentFunnel | null>(null);
@@ -112,8 +112,9 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
     return () => clearInterval(timer);
   }, [cooldownRemaining]);
 
-  const { data, isLoading, isFetching, error, refetch } = useQuery<{ funnels: FunnelWithCount[] }>({
-    queryKey: ['consignment-funnels'],
+  const shouldFetchFunnels = initialData === undefined;
+
+  const { data, isLoading, isFetching, error, refetch } = useAsyncQuery<{ funnels: FunnelWithCount[] }>({
     queryFn: async () => {
       // Add cache-busting param to bypass browser HTTP cache
       const res = await fetch(`/api/partner/consignment/funnels?_t=${Date.now()}`, {
@@ -122,13 +123,11 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
       if (!res.ok) throw new Error('Failed to fetch funnels');
       return res.json();
     },
-    refetchOnMount: initialData ? false : 'always',
+    enabled: shouldFetchFunnels,
     initialData,
-    initialDataUpdatedAt: initialData ? Date.now() : undefined,
-    staleTime: initialData ? 60_000 : 0,
   });
 
-  const deleteMutation = useMutation({
+  const deleteMutation = useAsyncMutation({
     mutationFn: async (funnelId: string) => {
       const res = await fetch(`/api/partner/consignment/funnels/${funnelId}`, {
         method: 'DELETE',
@@ -136,9 +135,8 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
       if (!res.ok) throw new Error('Failed to delete funnel');
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['consignment-funnels'] });
-      queryClient.invalidateQueries({ queryKey: ['partner-all-funnels'] });
+    onSuccess: async () => {
+      await refetch();
     },
   });
 
@@ -175,11 +173,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
               }
               setLastSyncTime(now);
               setIsSyncing(true);
-              // Refetch main query
               await refetch();
-              // Also invalidate funnel previews
-              queryClient.invalidateQueries({ queryKey: ['funnel-preview'] });
-              // Reset syncing after a delay
               setTimeout(() => setIsSyncing(false), 500);
             }}
             disabled={isSyncing || isFetching}
@@ -348,14 +342,12 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
   const filterTags = getFilterTags(funnel.filters);
 
   // Fetch preview listings only when expanded (lazy load)
-  const { data: previewData, isLoading: previewLoading } = useQuery<{
+  const { data: previewData, isLoading: previewLoading } = useAsyncQuery<{
     listings: MatchingListing[];
     total: number;
   }>({
-    queryKey: ['funnel-preview', funnel.id],
     queryFn: () => getFunnelMatchesAction(funnel.id, { limit: 4 }),
     enabled: isExpanded, // Only fetch when row is expanded
-
   });
 
   return (

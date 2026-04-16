@@ -24,6 +24,7 @@
  * @module lib/search-cache
  */
 
+import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import {
   getSearchFacets,
@@ -35,54 +36,68 @@ import {
   type SearchResponse,
 } from '@alifh/database';
 
+const DEBUG = process.env.CACHE_DEBUG === '1';
+const dbg = (msg: string) => { if (DEBUG) console.warn(`[cache] ${msg}`); };
+
 const _getCachedSearchFacets = unstable_cache(
-  async (params: SearchParams) => getSearchFacets(params),
+  async (params: SearchParams) => {
+    dbg(`MISS search-facets params=${JSON.stringify(params).slice(0, 80)}`);
+    return getSearchFacets(params);
+  },
   ['search-facets'],
-  { revalidate: 3600 } // 1 hour
+  { revalidate: 3600 }
 );
 
 const _getCachedSearchResults = unstable_cache(
-  async (params: SearchParams) => searchListings(params, { fast: true }),
+  async (params: SearchParams) => {
+    dbg(`MISS search-results params=${JSON.stringify(params).slice(0, 80)}`);
+    return searchListings(params, { fast: true });
+  },
   ['search-results'],
-  { revalidate: 120 } // 2 minutes
+  { revalidate: 120 }
 );
 
-// Cache quick search (autocomplete) for 10 minutes
-// Longer cache OK since make/model/trim names don't change often
 const _getCachedQuickSearch = unstable_cache(
-  async (query: string, limit: number, context?: { make?: string; model?: string }) => 
-    quickSearch(query, limit, context),
+  async (query: string, limit: number, context?: { make?: string; model?: string }) => {
+    dbg(`MISS quick-search query=${query}`);
+    return quickSearch(query, limit, context);
+  },
   ['quick-search'],
-  { revalidate: 600 } // 10 minutes
+  { revalidate: 600 }
 );
 
-// Cache popular makes for 1 hour
-// Very stable data - top makes rarely change
 const _getCachedPopularMakes = unstable_cache(
-  async (limit: number) => getPopularMakes(limit),
+  async (limit: number) => {
+    dbg(`MISS popular-makes limit=${limit}`);
+    return getPopularMakes(limit);
+  },
   ['popular-makes'],
-  { revalidate: 3600 } // 1 hour
+  { revalidate: 3600 }
 );
 
-export async function getCachedSearchFacets(params: SearchParams): Promise<SearchFacets> {
+export const getCachedSearchFacets = cache(async (params: SearchParams): Promise<SearchFacets> => {
+  dbg(`REQUEST search-facets params=${JSON.stringify(params).slice(0, 80)}`);
   return _getCachedSearchFacets(params);
-}
+});
 
-export async function getCachedSearchResults(params: SearchParams): Promise<SearchResponse> {
+export const getCachedSearchResults = cache(async (params: SearchParams): Promise<SearchResponse> => {
+  dbg(`REQUEST search-results params=${JSON.stringify(params).slice(0, 80)}`);
   return _getCachedSearchResults(params);
-}
+});
 
-export async function getCachedQuickSearch(
-  query: string, 
-  limit: number, 
+export const getCachedQuickSearch = cache(async (
+  query: string,
+  limit: number,
   context?: { make?: string; model?: string }
-) {
+) => {
+  dbg(`REQUEST quick-search query=${query}`);
   return _getCachedQuickSearch(query, limit, context);
-}
+});
 
-export async function getCachedPopularMakes(limit: number) {
+export const getCachedPopularMakes = cache(async (limit: number) => {
+  dbg(`REQUEST popular-makes limit=${limit}`);
   return _getCachedPopularMakes(limit);
-}
+});
 
 // Re-export for convenience
 export { getSearchFacets };

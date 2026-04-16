@@ -13,7 +13,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useAuth } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
 
@@ -50,15 +50,11 @@ async function fetchUserStats(): Promise<UserStats> {
 
 export function useUserStats(initialData?: UserStats | null) {
   const { isAuthenticated } = useAuth();
+  const shouldFetch = isAuthenticated && initialData === undefined;
   
-  const query = useQuery({
-    queryKey: queryKeys.user.stats(),
+  const query = useAsyncQuery({
     queryFn: fetchUserStats,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    enabled: isAuthenticated,
-    staleTime: initialData ? Infinity : 0,
+    enabled: shouldFetch,
     initialData: initialData ?? undefined,
   });
 

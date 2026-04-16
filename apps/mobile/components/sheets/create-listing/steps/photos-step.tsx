@@ -77,6 +77,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDragHandlePressed, setIsDragHandlePressed] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
   const [perceivedDone, setPerceivedDone] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -180,6 +181,14 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     setDeleteTarget(url);
   }, []);
 
+  const lockParentScrollForDrag = useCallback(() => {
+    setIsDragHandlePressed(true);
+  }, []);
+
+  const unlockParentScrollForDrag = useCallback(() => {
+    setIsDragHandlePressed(false);
+  }, []);
+
   const confirmDelete = useCallback(async () => {
     if (!deleteTarget) return;
     const target = deleteTarget;
@@ -265,7 +274,12 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Drag affordance — keep drag separate from sheet scroll */}
             {!isUploading && (
               <HapticPressable
-                onLongPress={drag}
+                onPressIn={lockParentScrollForDrag}
+                onPressOut={unlockParentScrollForDrag}
+                onLongPress={() => {
+                  Haptics.selectionAsync();
+                  drag();
+                }}
                 delayLongPress={180}
                 disabled={isActive}
                 style={[styles.dragHandle, { backgroundColor: colors.overlay }]}
@@ -294,7 +308,13 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         </ScaleDecorator>
       );
     },
-    [colors, handleDeleteImage],
+    [
+      colors,
+      handleDeleteImage,
+      imageSize,
+      lockParentScrollForDrag,
+      unlockParentScrollForDrag,
+    ],
   );
 
   // Combine confirmed CDN images + in-progress optimistic images into one grid
@@ -308,7 +328,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
   const totalCount = data.images.length + optimisticUris.length;
 
   return (
-    <StepContainer scrollEnabled={!isDragging}>
+    <StepContainer scrollEnabled={!(isDragging || isDragHandlePressed)}>
       {/* Upload Button */}
       <HapticPressable
         onPress={handlePickImages}
@@ -367,11 +387,16 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             renderItem={renderItem}
             onDragEnd={handleDragEnd}
             onDragBegin={() => setIsDragging(true)}
-            onRelease={() => setIsDragging(false)}
+            onRelease={() => {
+              setIsDragging(false);
+              setIsDragHandlePressed(false);
+            }}
             numColumns={GRID_COLUMNS}
             columnWrapperStyle={styles.row}
             scrollEnabled={false}
-            activationDistance={12}
+            activationDistance={2}
+            autoscrollSpeed={120}
+            dragItemOverflow={false}
           />
           <Text
             variant={SheetTypography.supporting}

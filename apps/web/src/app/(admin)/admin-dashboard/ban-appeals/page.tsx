@@ -7,7 +7,7 @@
 
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { useState, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 interface BanAppeal {
   appeal: {
@@ -45,11 +45,9 @@ export default function AdminBanAppealsPage() {
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [reviewingAppeal, setReviewingAppeal] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState('');
-  const queryClient = useQueryClient();
 
   // V1: Always fetch all appeals - filter client-side so stats remain accurate
-  const { data, isLoading } = useQuery<{ appeals: BanAppeal[] }>({
-    queryKey: ['admin', 'ban-appeals'],
+  const { data, isLoading, refetch } = useAsyncQuery<{ appeals: BanAppeal[] }>({
     queryFn: async () => {
       const res = await fetch('/api/admin/appeals/ban');
       if (!res.ok) throw new Error('Failed to fetch appeals');
@@ -82,7 +80,7 @@ export default function AdminBanAppealsPage() {
 
       if (!res.ok) throw new Error('Failed to review appeal');
 
-      queryClient.invalidateQueries({ queryKey: ['admin', 'ban-appeals'] });
+      await refetch();
       setReviewingAppeal(null);
       setReviewNote('');
     } catch {

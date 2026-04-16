@@ -26,7 +26,6 @@ import {
 import { db, kycRecord, userProfile, eq } from '@alifh/database';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 // In-memory deduplication to prevent parallel processing of the same session
 const processingSessionsMap = new Map<string, Promise<any>>();

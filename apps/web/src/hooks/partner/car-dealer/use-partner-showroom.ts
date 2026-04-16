@@ -7,7 +7,8 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import type {
   ShowroomTeamMember,
   ShowroomAchievement,
@@ -242,46 +243,39 @@ export function usePartnerShowroom(
     initialShowroom?: PartnerShowroom | null;
   }
 ) {
-  const queryClient = useQueryClient();
+  const shouldFetch = !!partnerId && options?.initialShowroom === undefined;
 
-  const query = useQuery({
-    queryKey: ['partner-showroom', partnerId],
+  const query = useAsyncQuery({
     queryFn: () => fetchShowroom(partnerId!),
-    enabled: !!partnerId,
+    enabled: shouldFetch,
     initialData: options?.initialShowroom ?? undefined,
-    staleTime: options?.initialShowroom ? Infinity : 0,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
-  const updateMutation = useMutation({
+  const updateMutation = useAsyncMutation({
     mutationFn: (updates: ShowroomUpdateData) => updateShowroomAPI(partnerId!, updates),
     onSuccess: (data) => {
-      queryClient.setQueryData(['partner-showroom', partnerId], data);
+      query.setData(data);
     },
   });
 
-  const publishMutation = useMutation({
+  const publishMutation = useAsyncMutation({
     mutationFn: () => publishShowroomAPI(partnerId!),
-    onSuccess: () => {
-      // Refetch to get latest data with resolved URLs
-      queryClient.invalidateQueries({ queryKey: ['partner-showroom', partnerId] });
+    onSuccess: async () => {
+      await query.refetch();
     },
   });
 
-  const unpublishMutation = useMutation({
+  const unpublishMutation = useAsyncMutation({
     mutationFn: () => unpublishShowroomAPI(partnerId!),
-    onSuccess: () => {
-      // Refetch to get latest data
-      queryClient.invalidateQueries({ queryKey: ['partner-showroom', partnerId] });
+    onSuccess: async () => {
+      await query.refetch();
     },
   });
 
   return {
     showroom: query.data ?? null,
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: !!query.error,
     error: query.error,
     
     // Update

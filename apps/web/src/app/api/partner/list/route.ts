@@ -16,7 +16,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPartnersList } from '@alifh/database';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 
 /**

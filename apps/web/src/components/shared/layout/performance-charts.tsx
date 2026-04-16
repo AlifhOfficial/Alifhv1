@@ -29,7 +29,7 @@ const formatCurrency = (cents: number) => {
 
 export function RevenueBreakdownChart({ data }: RevenueBreakdownChartProps) {
   return (
-    <ResponsiveContainer width="100%" height={200}>
+    <ResponsiveContainer width="100%" height={200} minWidth={0} minHeight={0}>
       <PieChart>
         <Pie
           data={data}
@@ -64,7 +64,7 @@ interface RatingRadialChartProps {
 
 export function RatingRadialChart({ data }: RatingRadialChartProps) {
   return (
-    <ResponsiveContainer width="100%" height={180}>
+    <ResponsiveContainer width="100%" height={180} minWidth={0} minHeight={0}>
       <RadialBarChart 
         cx="50%" 
         cy="50%" 
@@ -95,7 +95,7 @@ const formatNumber = (num: number) => {
 
 export function EngagementBarChart({ data }: EngagementBarChartProps) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height={220} minWidth={0} minHeight={0}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
         <XAxis 
@@ -132,7 +132,7 @@ interface QualityMetricsBarChartProps {
 
 export function QualityMetricsBarChart({ data }: QualityMetricsBarChartProps) {
   return (
-    <ResponsiveContainer width="100%" height={180}>
+    <ResponsiveContainer width="100%" height={180} minWidth={0} minHeight={0}>
       <BarChart data={data} layout="vertical">
         <XAxis type="number" domain={[0, 5]} hide />
         <YAxis type="category" dataKey="name" hide />
@@ -161,7 +161,7 @@ interface OperationalRadialChartProps {
 
 export function OperationalRadialChart({ data }: OperationalRadialChartProps) {
   return (
-    <ResponsiveContainer width="100%" height={240}>
+    <ResponsiveContainer width="100%" height={240} minWidth={0} minHeight={0}>
       <RadialBarChart 
         cx="50%" 
         cy="50%" 

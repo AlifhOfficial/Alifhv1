@@ -29,7 +29,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 // ============================================================================
 // Validation Schemas

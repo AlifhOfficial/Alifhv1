@@ -6,7 +6,7 @@
 
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { useState, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { Card, CardContent } from '@/components/ui/layout/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -61,11 +61,9 @@ export default function AdminFeedbackPage() {
   const [adminNote, setAdminNote] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [processing, setProcessing] = useState<string | null>(null);
-  const queryClient = useQueryClient();
 
   // Fetch all feedback
-  const { data, isLoading } = useQuery<{ feedback: FeedbackItem[] }>({
-    queryKey: ['admin', 'feedback'],
+  const { data, isLoading, refetch } = useAsyncQuery<{ feedback: FeedbackItem[] }>({
     queryFn: async () => {
       const res = await fetch('/api/admin/feedback');
       if (!res.ok) throw new Error('Failed to fetch feedback');
@@ -107,7 +105,7 @@ export default function AdminFeedbackPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ feedbackId, action: 'markRead' }),
       });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'feedback'] });
+      await refetch();
     } catch (err) {
       console.error('Failed to mark as read:', err);
     }
@@ -129,7 +127,7 @@ export default function AdminFeedbackPage() {
 
       if (!res.ok) throw new Error('Failed to update feedback');
 
-      queryClient.invalidateQueries({ queryKey: ['admin', 'feedback'] });
+      await refetch();
       setExpandedFeedback(null);
       setAdminNote('');
     } catch (err) {
@@ -151,7 +149,7 @@ export default function AdminFeedbackPage() {
 
       if (!res.ok) throw new Error('Failed to delete feedback');
 
-      queryClient.invalidateQueries({ queryKey: ['admin', 'feedback'] });
+      await refetch();
     } catch (err) {
       console.error('Failed to delete feedback:', err);
       alert('Failed to delete feedback');

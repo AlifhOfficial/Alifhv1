@@ -9,9 +9,8 @@
 
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { Search, X, Package } from 'lucide-react';
-import { queryKeys } from '@/lib/query-keys';
 import { BlackShowroomCard, BlackShowroomCardSkeleton } from './black-showroom-card';
 import type { ShowroomCardData } from './black-showroom-card';
 import { cn } from '@/utils';
@@ -76,18 +75,14 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
     setSearchQuery('');
   };
   
-  const { data, isLoading, error } = useQuery({
-    queryKey: queryKeys.showroom.list(1, 50),
+  const hasServerData = initialShowrooms !== undefined;
+  const { data, isLoading, error } = useAsyncQuery({
     queryFn: () => fetchShowrooms(1, 50),
-    // Use server-side data if available
-    initialData: initialShowrooms ? {
+    enabled: !hasServerData,
+    initialData: initialShowrooms !== undefined ? {
       showrooms: initialShowrooms,
       pagination: { page: 1, limit: 50, total: initialShowrooms.length, totalPages: 1, hasMore: false }
     } : undefined,
-    staleTime: initialShowrooms ? Infinity : 0,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   // Filter showrooms by search query (dealer name)

@@ -17,7 +17,9 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -165,12 +167,8 @@ async function reviewPartnerRequestAPI(input: ReviewPartnerRequestInput): Promis
 // ============================================================================
 
 export function usePartnerRequestsAdmin(options: ListPartnerRequestsOptions = {}) {
-  const queryKey = ['partner-requests-admin', options];
-
-  return useQuery({
-    queryKey,
+  return useAsyncQuery({
     queryFn: () => fetchPartnerRequestsAdmin(options),
-    refetchOnWindowFocus: true,
   });
 }
 
@@ -179,8 +177,7 @@ export function usePartnerRequestsAdmin(options: ListPartnerRequestsOptions = {}
 // ============================================================================
 
 export function usePartnerRequestById(requestId: string | null) {
-  return useQuery({
-    queryKey: ['partner-request', requestId],
+  return useAsyncQuery({
     queryFn: () => {
       if (!requestId) throw new Error('Request ID is required');
       return fetchPartnerRequestById(requestId);
@@ -194,25 +191,12 @@ export function usePartnerRequestById(requestId: string | null) {
 // ============================================================================
 
 export function usePartnerRequestReview() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: (input: ReviewPartnerRequestInput) => reviewPartnerRequestAPI(input),
-    onSuccess: (data, variables) => {
-      // Invalidate the list query to refresh
-      queryClient.invalidateQueries({ queryKey: ['partner-requests-admin'] });
-      
-      // Update the specific request in cache if it exists
-      queryClient.invalidateQueries({ queryKey: ['partner-request', variables.requestId] });
-      
-      // If counts were fetched, invalidate them
-      queryClient.invalidateQueries({ 
-        queryKey: ['partner-requests-admin'],
-        predicate: (query) => {
-          const options = query.queryKey[1] as ListPartnerRequestsOptions | undefined;
-          return options?.includeCounts === true;
-        }
-      });
+    onSuccess: () => {
+      router.refresh();
     },
   });
 
@@ -230,10 +214,12 @@ export function usePartnerRequestReview() {
 // ============================================================================
 
 export function usePartnerRequestCounts() {
-  return useQuery({
-    queryKey: ['partner-request-counts'],
+  const query = useAsyncQuery({
     queryFn: () => fetchPartnerRequestsAdmin({ includeCounts: true, limit: 1 }),
-    select: (data) => data.counts,
-    refetchOnWindowFocus: true,
   });
+
+  return {
+    ...query,
+    data: query.data?.counts ?? null,
+  };
 }

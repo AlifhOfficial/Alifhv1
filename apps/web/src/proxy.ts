@@ -39,8 +39,6 @@ function checkSitePassword(request: NextRequest): NextResponse | null {
 /**
  * Lightweight middleware proxy.
  *
- * Subdomain routing (status.revvup.ae) is handled by Vercel rewrites in vercel.json.
- *
  * Middleware only handles:
  * 1. Site password protection (staging environments)
  * 2. Cookie-existence check -> redirect unauthenticated users from protected dashboard pages

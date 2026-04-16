@@ -6,7 +6,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, RefreshCw, User, Phone } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -31,7 +32,6 @@ const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
 
 export function StaffProfile() {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,8 +40,7 @@ export function StaffProfile() {
   });
 
   // Fetch current profile
-  const { data: profileData, isLoading, isRefetching, refetch } = useQuery({
-    queryKey: ['staff', 'profile'],
+  const { data: profileData, isLoading, isRefetching, refetch } = useAsyncQuery({
     queryFn: async () => {
       const res = await fetch('/api/partner/staff/profile');
       if (!res.ok) throw new Error('Failed to fetch profile');
@@ -62,7 +61,7 @@ export function StaffProfile() {
   }, [profile]);
 
   // Update mutation
-  const updateMutation = useMutation({
+  const updateMutation = useAsyncMutation({
     mutationFn: async (data: typeof formData) => {
       const res = await fetch('/api/partner/staff/profile', {
         method: 'PATCH',
@@ -75,8 +74,8 @@ export function StaffProfile() {
       }
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff', 'profile'] });
+    onSuccess: async () => {
+      await refetch();
       toast({ title: 'Profile saved' });
       setEditing(false);
     },

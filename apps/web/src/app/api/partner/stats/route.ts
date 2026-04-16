@@ -19,7 +19,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { getCachedPartnerDescriptiveStats } from '@/lib/partner-stats-cache';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 
 export async function GET(_req: NextRequest) {

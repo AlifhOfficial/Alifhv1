@@ -1,25 +1,7 @@
-/**
- * Listing Mutations Hook - Create, Update, Delete Operations
- * 
- * React Query mutations for listing management with optimistic updates.
- * Handles all CRUD operations and lifecycle changes.
- * 
- * Usage:
- * ```tsx
- * const { deleteListing, isDeleting } = useDeleteListing();
- * const { updateListing, isUpdating } = useUpdateListing();
- * const { extendListing, isExtending } = useExtendListing();
- * ```
- */
-
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ListingData, ListingsResponse } from './use-my-listings';
-
-// ============================================================================
-// Types
-// ============================================================================
+import { useRouter } from 'next/navigation';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
 
 export interface UpdateListingInput {
   id: string;
@@ -27,7 +9,6 @@ export interface UpdateListingInput {
     price: number;
     description: string;
     mileage: number;
-    // Add more fields as needed
   }>;
 }
 
@@ -49,10 +30,6 @@ export interface MarkSoldResult {
 export interface ArchiveResult {
   success: boolean;
 }
-
-// ============================================================================
-// API Functions
-// ============================================================================
 
 async function deleteListingAPI(listingId: string): Promise<DeleteListingResult> {
   const res = await fetch(`/api/listings/${listingId}`, {
@@ -139,69 +116,12 @@ async function unarchiveListingAPI(listingId: string): Promise<ArchiveResult> {
   return res.json();
 }
 
-// ============================================================================
-// Optimistic Update Helper
-// ============================================================================
-
-function removeListingFromCache(
-  queryClient: ReturnType<typeof useQueryClient>,
-  listingId: string
-) {
-  // Update all my-listings queries
-  queryClient.setQueriesData<ListingsResponse>(
-    { queryKey: ['my-listings'], exact: false },
-    (old) => {
-      if (!old) return old;
-      return {
-        ...old,
-        data: old.data.filter((l) => l.id !== listingId),
-        listings: old.listings.filter((l) => l.id !== listingId),
-        meta: old.meta ? { ...old.meta, count: Math.max(0, old.meta.count - 1) } : old.meta,
-      };
-    }
-  );
-}
-
-function updateListingInCache(
-  queryClient: ReturnType<typeof useQueryClient>,
-  listingId: string,
-  updates: Partial<ListingData>
-) {
-  queryClient.setQueriesData<ListingsResponse>(
-    { queryKey: ['my-listings'], exact: false },
-    (old) => {
-      if (!old) return old;
-      const updater = (l: ListingData) =>
-        l.id === listingId ? { ...l, ...updates } : l;
-      return {
-        ...old,
-        data: old.data.map(updater),
-        listings: old.listings.map(updater),
-      };
-    }
-  );
-}
-
-// ============================================================================
-// Delete Hook
-// ============================================================================
-
 export function useDeleteListing() {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
+  const router = useRouter();
+  const mutation = useAsyncMutation({
     mutationFn: deleteListingAPI,
-    onMutate: async (listingId) => {
-      await queryClient.cancelQueries({ queryKey: ['my-listings'] });
-      removeListingFromCache(queryClient, listingId);
-    },
     onSuccess: () => {
-      // Refetch to get accurate stats
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
-    },
-    onError: () => {
-      // Rollback on error
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      router.refresh();
     },
   });
 
@@ -212,23 +132,12 @@ export function useDeleteListing() {
   };
 }
 
-// ============================================================================
-// Extend Hook
-// ============================================================================
-
 export function useExtendListing() {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
+  const router = useRouter();
+  const mutation = useAsyncMutation({
     mutationFn: extendListingAPI,
-    onSuccess: (result, listingId) => {
-      updateListingInCache(queryClient, listingId, {
-        expiresAt: result.newExpiresAt,
-        extensionCount: result.extensionCount,
-        lastExtendedAt: new Date().toISOString(),
-      });
-      // Also invalidate to get fresh stats
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+    onSuccess: () => {
+      router.refresh();
     },
   });
 
@@ -239,27 +148,12 @@ export function useExtendListing() {
   };
 }
 
-// ============================================================================
-// Mark Sold Hook
-// ============================================================================
-
 export function useMarkSold() {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
+  const router = useRouter();
+  const mutation = useAsyncMutation({
     mutationFn: markSoldAPI,
-    onMutate: async (listingId) => {
-      await queryClient.cancelQueries({ queryKey: ['my-listings'] });
-      updateListingInCache(queryClient, listingId, {
-        lifecycleStatus: 'sold',
-        isPublic: false,
-      });
-    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      router.refresh();
     },
   });
 
@@ -270,27 +164,12 @@ export function useMarkSold() {
   };
 }
 
-// ============================================================================
-// Archive/Unarchive Hooks
-// ============================================================================
-
 export function useArchiveListing() {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
+  const router = useRouter();
+  const mutation = useAsyncMutation({
     mutationFn: archiveListingAPI,
-    onMutate: async (listingId) => {
-      await queryClient.cancelQueries({ queryKey: ['my-listings'] });
-      updateListingInCache(queryClient, listingId, {
-        lifecycleStatus: 'archived',
-        isPublic: false,
-      });
-    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      router.refresh();
     },
   });
 
@@ -302,21 +181,11 @@ export function useArchiveListing() {
 }
 
 export function useUnarchiveListing() {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
+  const router = useRouter();
+  const mutation = useAsyncMutation({
     mutationFn: unarchiveListingAPI,
-    onMutate: async (listingId) => {
-      await queryClient.cancelQueries({ queryKey: ['my-listings'] });
-      updateListingInCache(queryClient, listingId, {
-        lifecycleStatus: 'active',
-      });
-    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
-    },
-    onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      router.refresh();
     },
   });
 
@@ -327,10 +196,6 @@ export function useUnarchiveListing() {
   };
 }
 
-// ============================================================================
-// Combined Actions Hook (convenience)
-// ============================================================================
-
 export function useListingActions() {
   const deleteHook = useDeleteListing();
   const extendHook = useExtendListing();
@@ -339,32 +204,15 @@ export function useListingActions() {
   const unarchiveHook = useUnarchiveListing();
 
   return {
-    // Delete
     deleteListing: deleteHook.deleteListing,
     isDeleting: deleteHook.isDeleting,
-
-    // Extend
     extendListing: extendHook.extendListing,
     isExtending: extendHook.isExtending,
-
-    // Mark Sold
     markSold: markSoldHook.markSold,
     isMarkingSold: markSoldHook.isMarkingSold,
-
-    // Archive
     archiveListing: archiveHook.archiveListing,
     isArchiving: archiveHook.isArchiving,
-
-    // Unarchive
     unarchiveListing: unarchiveHook.unarchiveListing,
     isUnarchiving: unarchiveHook.isUnarchiving,
-
-    // Combined loading state
-    isAnyLoading:
-      deleteHook.isDeleting ||
-      extendHook.isExtending ||
-      markSoldHook.isMarkingSold ||
-      archiveHook.isArchiving ||
-      unarchiveHook.isUnarchiving,
   };
 }

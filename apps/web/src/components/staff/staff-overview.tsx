@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import Link from 'next/link';
 import { 
   User, 
@@ -42,8 +42,7 @@ interface StaffProfile {
 }
 
 export function StaffOverview() {
-  const { data: staffProfile, isLoading } = useQuery<StaffProfile>({
-    queryKey: ['staff-profile'],
+  const { data: staffProfile, isLoading } = useAsyncQuery<StaffProfile>({
     queryFn: async () => {
       const res = await fetch('/api/staff/profile');
       if (!res.ok) throw new Error('Failed to fetch staff profile');

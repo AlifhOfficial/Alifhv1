@@ -7,7 +7,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Ban,
   CheckCircle,
@@ -30,7 +29,6 @@ export function AdminPartnerOperations({
   onOperationComplete,
 }: PartnerOperationsProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [suspendReason, setSuspendReason] = useState('');
@@ -49,12 +47,6 @@ export function AdminPartnerOperations({
         throw new Error(error.error || 'Operation failed');
       }
 
-      // Invalidate partner queries to force refetch
-      queryClient.invalidateQueries({ queryKey: ['admin', 'partners'] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'partner'] });
-      queryClient.invalidateQueries({ queryKey: ['partner'] });
-      
-      // Also refresh the page for server components
       router.refresh();
       
       alert('Operation successful! Data updated.');

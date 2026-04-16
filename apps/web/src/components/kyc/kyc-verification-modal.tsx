@@ -8,7 +8,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { X, Loader2, CheckCircle2, ArrowRight, Clock } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/utils/cn';
 
 type KycStatus = 'intro' | 'loading' | 'verifying' | 'confirm-cancel' | 'in-review' | 'success' | 'failed' | 'duplicate';
@@ -24,7 +23,6 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
   const [verificationUrl, setVerificationUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const queryClient = useQueryClient();
 
   // Reset state when modal closes
   useEffect(() => {
@@ -56,8 +54,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
 
       const { status: webhookStatus, reason } = event.data;
 
-      // Await refetch to ensure fresh data before updating UI
-      await queryClient.refetchQueries({ queryKey: ['user-profile'] });
+      window.dispatchEvent(new Event('user-profile-refresh'));
 
       switch (webhookStatus) {
         case 'approved':
@@ -87,7 +84,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [status, onVerified, queryClient]);
+  }, [status, onVerified]);
 
   const startVerification = async () => {
     try {
@@ -114,7 +111,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
         
         setVerificationUrl(url.toString());
         setStatus('verifying');
-        queryClient.refetchQueries({ queryKey: ['user-profile'] });
+        window.dispatchEvent(new Event('user-profile-refresh'));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start verification');
@@ -128,10 +125,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
   const cancelSession = async () => {
     try {
       await fetch('/api/kyc/cancel', { method: 'POST' });
-      // Invalidate first to clear any cached data
-      queryClient.removeQueries({ queryKey: ['user-profile'] });
-      // Then refetch fresh data
-      await queryClient.refetchQueries({ queryKey: ['user-profile'] });
+      window.dispatchEvent(new Event('user-profile-refresh'));
     } catch {
       // Silent fail - next session start will clean up anyway
     }

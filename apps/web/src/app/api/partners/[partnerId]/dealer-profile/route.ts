@@ -28,8 +28,6 @@ import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 // Force dynamic - disable ALL Vercel caching
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
 
 
 /**

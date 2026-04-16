@@ -9,7 +9,6 @@ import { NextResponse } from 'next/server'
 import { analyzeFuelEfficiency, getFallbackAnalysis, type FuelAnalysisInput } from '@alifh/ai/fuel'
 
 export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {

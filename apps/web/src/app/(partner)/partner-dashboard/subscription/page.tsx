@@ -9,7 +9,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { 
   CreditCard, 
   RefreshCw, 
@@ -130,8 +131,7 @@ export default function PartnerBillingPage() {
     isLoading: subLoading,
     refetch: refetchSub,
     isRefetching: subRefetching,
-  } = useQuery<{ success: boolean; data: SubscriptionData }>({
-    queryKey: ['partner', 'billing', 'subscription'],
+  } = useAsyncQuery<{ success: boolean; data: SubscriptionData }>({
     queryFn: async () => {
       const res = await fetch('/api/partner/billing/subscription');
       if (!res.ok) throw new Error('Failed to fetch subscription');
@@ -145,8 +145,7 @@ export default function PartnerBillingPage() {
     isLoading: invoicesLoading,
     refetch: refetchInvoices,
     isRefetching: invoicesRefetching,
-  } = useQuery<{ success: boolean; data: InvoicesData }>({
-    queryKey: ['partner', 'billing', 'invoices'],
+  } = useAsyncQuery<{ success: boolean; data: InvoicesData }>({
     queryFn: async () => {
       const res = await fetch('/api/partner/billing/invoices');
       if (!res.ok) throw new Error('Failed to fetch invoices');
@@ -155,7 +154,7 @@ export default function PartnerBillingPage() {
   });
 
   // Open Stripe portal mutation
-  const openPortalMutation = useMutation({
+  const openPortalMutation = useAsyncMutation({
     mutationFn: async () => {
       const res = await fetch('/api/partner/billing/portal', {
         method: 'POST',
@@ -173,7 +172,7 @@ export default function PartnerBillingPage() {
   });
 
   // Create checkout session mutation
-  const checkoutMutation = useMutation({
+  const checkoutMutation = useAsyncMutation({
     mutationFn: async (plan: 'flow' | 'black') => {
       const res = await fetch('/api/partner/billing/checkout', {
         method: 'POST',

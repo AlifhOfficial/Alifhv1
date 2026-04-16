@@ -7,7 +7,8 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAsyncMutation } from '@/hooks/use-async-mutation';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useAuth } from '@/providers/auth-provider';
 
 // ============================================================================
@@ -146,26 +147,19 @@ export function usePartnerProfile(
   partnerId: string | null | undefined,
   initialData?: PartnerProfile | null
 ) {
-  const queryClient = useQueryClient();
   const { session, setSessionUser } = useAuth();
+  const shouldFetch = !!partnerId && initialData === undefined;
 
-  const query = useQuery({
-    queryKey: ['partner-profile', partnerId],
+  const query = useAsyncQuery({
     queryFn: () => fetchPartnerProfile(partnerId!),
-    enabled: !!partnerId,
+    enabled: shouldFetch,
     initialData: initialData ?? undefined,
-    staleTime: initialData ? Infinity : 0,
-    gcTime: initialData ? Infinity : undefined,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
   });
 
-  const mutation = useMutation({
+  const mutation = useAsyncMutation({
     mutationFn: (updates: PartnerProfileUpdate) => updatePartnerProfileAPI(partnerId!, updates),
     onSuccess: (updatedProfile, variables) => {
-      // Update local cache directly - no refetch needed
-      queryClient.setQueryData(['partner-profile', partnerId], updatedProfile);
+      query.setData(updatedProfile);
       
       // If logo or brandName changed, refresh session so sidebar updates
       const touchesSession = 'logo' in variables || 'brandName' in variables;
@@ -190,7 +184,7 @@ export function usePartnerProfile(
   const refetchFresh = async () => {
     if (!partnerId) return;
     const freshData = await fetchPartnerProfile(partnerId, true);
-    queryClient.setQueryData(['partner-profile', partnerId], freshData);
+    query.setData(freshData);
     return freshData;
   };
 

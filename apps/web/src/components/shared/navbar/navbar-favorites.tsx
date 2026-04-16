@@ -7,8 +7,8 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Heart, ChevronRight, Loader2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useFavoritesStatus } from '@/hooks/engagement';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
 import { getAppThumbUrl } from '@/utils/storage';
@@ -40,14 +40,10 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
   // Top 3 IDs to show in the dropdown preview
   const top3Ids = useMemo(() => favoriteIds.slice(0, 3), [favoriteIds]);
 
-  const { data: orderedListings = [], isLoading: isLoadingListings } = useQuery<ListingPayload[]>({
-    queryKey: ['navbar-favorites-listings', ...top3Ids],
+  const { data: orderedListings = [], isLoading: isLoadingListings } = useAsyncQuery<ListingPayload[]>({
     queryFn: () => getNavbarFavoriteListings(top3Ids),
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     enabled: isSignedIn && top3Ids.length > 0,
+    dependencies: [isSignedIn, top3Ids.join(',')],
   });
 
   const handleToggle = useCallback(() => {

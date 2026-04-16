@@ -196,25 +196,27 @@ export async function getPartnerSalesStats(partnerId: string): Promise<PartnerSa
 
   // Run consolidated sales query and slowest listing query in parallel
   const [salesStatsResult, slowestActiveResult] = await Promise.all([
-    // Single query for all sales aggregations
+    // Single query for sales aggregations plus active count for sell-through rate
     db
       .select({
         // This month
-        soldThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} >= ${monthStart})`,
-        revenueThisMonth: sql<number>`COALESCE(SUM(${carListing.soldPrice}) FILTER (WHERE ${carListing.soldAt} >= ${monthStart}), 0)`,
+        soldThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${monthStart})`,
+        revenueThisMonth: sql<number>`COALESCE(SUM(${carListing.soldPrice}) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${monthStart}), 0)`,
         // All time
-        totalSoldAllTime: count(),
-        revenueAllTime: sql<number>`COALESCE(SUM(${carListing.soldPrice}), 0)`,
-        avgSoldPrice: avg(carListing.soldPrice),
+        totalSoldAllTime: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL)`,
+        revenueAllTime: sql<number>`COALESCE(SUM(${carListing.soldPrice}) FILTER (WHERE ${carListing.soldAt} IS NOT NULL), 0)`,
+        avgSoldPrice: sql<number>`AVG(${carListing.soldPrice}) FILTER (WHERE ${carListing.soldAt} IS NOT NULL)`,
         // Days to sell metrics
-        avgDaysToSell: sql<number>`AVG(EXTRACT(EPOCH FROM (${carListing.soldAt} - ${carListing.publishedAt})) / 86400) FILTER (WHERE ${carListing.publishedAt} IS NOT NULL)`,
-        fastestSale: sql<number>`MIN(EXTRACT(EPOCH FROM (${carListing.soldAt} - ${carListing.publishedAt})) / 86400) FILTER (WHERE ${carListing.publishedAt} IS NOT NULL)`,
+        avgDaysToSell: sql<number>`AVG(EXTRACT(EPOCH FROM (${carListing.soldAt} - ${carListing.publishedAt})) / 86400) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.publishedAt} IS NOT NULL)`,
+        fastestSale: sql<number>`MIN(EXTRACT(EPOCH FROM (${carListing.soldAt} - ${carListing.publishedAt})) / 86400) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.publishedAt} IS NOT NULL)`,
+        // Active listings for sell-through denominator
+        activeCount: sql<number>`COUNT(*) FILTER (WHERE ${carListing.lifecycleStatus} = 'active')`,
       })
       .from(carListing)
       .where(
         and(
           eq(carListing.partnerId, partnerId),
-          isNotNull(carListing.soldAt)
+          isNull(carListing.deletedAt)
         )
       ),
     // Slowest active listing (oldest unsold) + active count in one query
@@ -241,21 +243,9 @@ export async function getPartnerSalesStats(partnerId: string): Promise<PartnerSa
       .limit(1),
   ]);
 
-  // Get active count for sell-through rate
-  const [activeCount] = await db
-    .select({ count: count() })
-    .from(carListing)
-    .where(
-      and(
-        eq(carListing.partnerId, partnerId),
-        eq(carListing.lifecycleStatus, 'active'),
-        isNull(carListing.deletedAt)
-      )
-    );
-
   const salesStats = salesStatsResult[0];
   const soldCount = Number(salesStats?.soldThisMonth ?? 0);
-  const active = Number(activeCount?.count ?? 0);
+  const active = Number(salesStats?.activeCount ?? 0);
   const sellThroughRate = soldCount + active > 0 
     ? Math.round((soldCount / (soldCount + active)) * 100) 
     : 0;

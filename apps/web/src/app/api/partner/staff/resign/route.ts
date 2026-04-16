@@ -13,7 +13,6 @@ import { getSessionUser } from '@/lib/auth/session-context';
 // 3 resign attempts per day - prevent abuse
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 const resignSchema = z.object({
   reason: z.string().optional(),

@@ -12,7 +12,6 @@ import { db, carListing, eq, and, ne } from '@alifh/database';
 import { decodeVIN, isValidVINFormat, formatVIN } from '@/lib/vin-decoder';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 // Simple timing helper
 function createTimer() {

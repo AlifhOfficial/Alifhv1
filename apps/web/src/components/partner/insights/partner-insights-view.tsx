@@ -10,7 +10,6 @@
 import React from 'react';
 import { TrendBadge } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
-import { HealthStatus } from '@/components/shared/health-status';
 import {
   Tooltip,
   TooltipContent,
@@ -23,7 +22,6 @@ import {
   Info,
 } from 'lucide-react';
 import type { ExtendedUser } from '@/types/auth';
-import type { HealthCheckResponse } from '@/lib/health';
 
 // ============================================================================
 // Types
@@ -312,7 +310,6 @@ function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
 interface PartnerInsightsViewProps {
   user: ExtendedUser;
   initialStats: PartnerStats;
-  initialHealth: HealthCheckResponse | null;
 }
 
 // ============================================================================
@@ -322,7 +319,6 @@ interface PartnerInsightsViewProps {
 export function PartnerInsightsView({
   user,
   initialStats,
-  initialHealth,
 }: PartnerInsightsViewProps) {
   const stats = initialStats;
 
@@ -363,9 +359,6 @@ export function PartnerInsightsView({
                 </div>
               </div>
               
-              <div className="flex-shrink-0">
-                <HealthStatus initialHealth={initialHealth} enableFetch={false} />
-              </div>
             </div>
           </header>
 

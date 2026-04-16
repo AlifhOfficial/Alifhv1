@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Heart } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
 import { useFavoritesListings } from '@/hooks/engagement';
@@ -13,8 +12,7 @@ interface FavoritesPageClientProps {
 }
 
 export function FavoritesPageClient({ initialStatus, initialListings }: FavoritesPageClientProps) {
-  const queryClient = useQueryClient();
-  const { listings, favoriteIds, isLoading, error } = useFavoritesListings({
+  const { listings, favoriteIds, isLoading, error, refresh } = useFavoritesListings({
     initialStatus,
     initialListings,
   });
@@ -33,8 +31,7 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
   );
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
-    queryClient.invalidateQueries({ queryKey: ['favorites-listings'] });
+    void refresh();
   };
 
   return (

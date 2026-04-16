@@ -11,7 +11,7 @@
 
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useAsyncQuery } from '@/hooks/use-async-query';
 
 // ============================================================================
 // Types
@@ -57,15 +57,12 @@ export function useSellerStats(
   id: string | null | undefined,
   initialData?: SellerStats | null
 ) {
-  const query = useQuery({
-    queryKey: ['seller-stats', type, id],
+  const shouldFetch = !!type && !!id && initialData === undefined;
+
+  const query = useAsyncQuery({
     queryFn: () => fetchSellerStats(type!, id!),
-    enabled: !!type && !!id,
+    enabled: shouldFetch,
     initialData: initialData ?? undefined,
-    initialDataUpdatedAt: initialData ? Date.now() : undefined,
-    staleTime: initialData ? Infinity : 0,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
   });
 
   return {
