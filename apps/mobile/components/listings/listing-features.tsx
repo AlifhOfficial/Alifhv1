@@ -32,27 +32,38 @@ export const ListingFeatures = memo(function ListingFeatures({
 
   const hasMore = extras.length > MAX_VISIBLE_FEATURES;
   const visibleExtras = hasMore ? extras.slice(0, MAX_VISIBLE_FEATURES) : extras;
+  const isInteractive = hasMore && Boolean(onViewAll);
+
+  const content = (
+    <View style={[styles.card, { backgroundColor: colors.surface }]}> 
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Features</Text>
+        {isInteractive ? (
+          <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+        ) : null}
+      </View>
+      {visibleExtras.map((extra) => (
+        <React.Fragment key={extra}>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <View style={styles.row}>
+            <Text variant="subhead">{formatEnumValue(extra)}</Text>
+          </View>
+        </React.Fragment>
+      ))}
+    </View>
+  );
 
   return (
     <Animated.View entering={FadeInDown.delay(0).duration(350)}>
-      <View style={[styles.card, { backgroundColor: colors.surface }]}>
-        <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Features</Text>
-          {hasMore && (
-            <HapticPressable onPress={onViewAll}>
-              <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
-            </HapticPressable>
-          )}
-        </View>
-        {visibleExtras.map((extra) => (
-          <React.Fragment key={extra}>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <View style={styles.row}>
-              <Text variant="subhead">{formatEnumValue(extra)}</Text>
-            </View>
-          </React.Fragment>
-        ))}
-      </View>
+      {isInteractive ? (
+        <HapticPressable
+          onPress={onViewAll}
+          accessibilityRole="button"
+          accessibilityLabel="Open all features"
+        >
+          {content}
+        </HapticPressable>
+      ) : content}
     </Animated.View>
   );
 });

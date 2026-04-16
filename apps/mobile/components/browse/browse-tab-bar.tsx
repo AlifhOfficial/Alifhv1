@@ -41,15 +41,13 @@ export function BrowseTabBar({
   onViewModeChange,
 }: BrowseTabBarProps) {
   const { colorScheme } = useTheme();
-  const { getActiveFilterCount, sortBy } = useSearch();
+  const { getActiveFilterCount } = useSearch();
   const colors = Colors[colorScheme];
   const visibilityProgress = useSharedValue(visible ? 1 : 0);
   const bubbleBackgroundColor = colorScheme === 'dark' ? colors.surfaceSecondary : colors.background;
 
   const activeFilterCount = getActiveFilterCount();
-  const isSortActive = sortBy !== 'relevance';
-  const nonSortFilterCount = Math.max(0, activeFilterCount - (isSortActive ? 1 : 0));
-  const hasFilters = nonSortFilterCount > 0;
+  const hasFilters = activeFilterCount > 0;
 
   const handleSearchPress = useCallback(() => {
     if (process.env.EXPO_OS === 'ios') {
@@ -208,7 +206,7 @@ export function BrowseTabBar({
                 ]}
               >
                 <Text variant="subheadEmphasized" tone="default" style={{ fontVariant: ['tabular-nums'] }}>
-                  {nonSortFilterCount > 9 ? '9+' : nonSortFilterCount}
+                  {activeFilterCount > 9 ? '9+' : activeFilterCount}
                 </Text>
               </MotiPressable>
             ) : null}

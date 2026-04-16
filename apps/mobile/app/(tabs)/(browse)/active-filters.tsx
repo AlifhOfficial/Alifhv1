@@ -93,15 +93,26 @@ export default function ActiveFiltersScreen() {
 
   const removeChip = (chip: (typeof chips)[number]) => {
     if (chip.locked) return;
+    const shouldCloseAfterRemoval = chips.length === 1;
+
     if (chip.key === 'sort') {
       resetSort();
+      if (shouldCloseAfterRemoval) {
+        router.back();
+      }
       return;
     }
     if (['make', 'model', 'trim', 'q', 'partnerId', 'sellerId', 'tags', 'extras'].includes(chip.key)) {
       removeSearchParam(chip.key as 'make' | 'model' | 'trim' | 'q' | 'partnerId' | 'sellerId' | 'tags' | 'extras', chip.index);
+      if (shouldCloseAfterRemoval) {
+        router.back();
+      }
       return;
     }
     removeFilterParam(chip.key as 'price' | 'year' | 'mileage' | 'emirate' | 'bodyType' | 'fuelType' | 'transmission' | 'specs' | 'exteriorColor' | 'interiorColor' | 'engineSize' | 'condition' | 'isNegotiable' | 'isBlkListing' | 'isBlackTierPartner' | 'sellerType' | 'exportStatus', chip.index);
+    if (shouldCloseAfterRemoval) {
+      router.back();
+    }
   };
 
   const clearAll = () => {

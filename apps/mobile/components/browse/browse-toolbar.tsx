@@ -40,7 +40,7 @@ export function BrowseToolbar({
   bottomOffset = Layout.tabBarHeight,
 }: BrowseToolbarProps) {
   const { colorScheme } = useTheme();
-  const { filterParams, searchParams, subscribeToBrowseDrawer, subscribeToBrowseSort } = useSearch();
+  const { filterParams, searchParams, sortBy, subscribeToBrowseDrawer, subscribeToBrowseSort } = useSearch();
   const colors = Colors[colorScheme];
 
   const handleSearchPress = useCallback(() => {
@@ -81,11 +81,12 @@ export function BrowseToolbar({
       (filterParams.transmission?.length ?? 0) +
       (filterParams.specs?.length ?? 0) +
       (filterParams.condition ? 1 : 0) +
-      (filterParams.sellerType ? 1 : 0);
+      (filterParams.sellerType ? 1 : 0) +
+      (sortBy !== 'relevance' ? 1 : 0);
 
     if (filterCount > 0) return `${filterCount} filters`;
     return 'Search';
-  }, [filterParams, searchParams]);
+  }, [filterParams, searchParams, sortBy]);
 
   return (
     <>

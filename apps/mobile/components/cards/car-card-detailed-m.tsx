@@ -262,7 +262,15 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
         {showDeferredSections ? (
           <>
-            {/* 3. Highlights */}
+            {/* 3. Description */}
+            {listing.description && (
+              <ListingDescription
+                description={listing.description}
+                onReadMore={openDescSheet}
+              />
+            )}
+
+            {/* 4. Highlights */}
             <ListingHighlights
               specialNotes={listing.specialNotes}
               tags={listing.tags}
@@ -285,14 +293,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               steeringSide={listing.steeringSide}
               onViewAll={openSpecsSheet}
             />
-
-            {/* 4. Description */}
-            {listing.description && (
-              <ListingDescription
-                description={listing.description}
-                onReadMore={openDescSheet}
-              />
-            )}
 
             {/* 5. Features */}
             <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />

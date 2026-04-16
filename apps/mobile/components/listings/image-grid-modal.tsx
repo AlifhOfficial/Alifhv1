@@ -4,7 +4,7 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { StyleSheet, View, Modal, ScrollView, Dimensions, StatusBar } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +41,7 @@ export function ImageGridModal({
   const insets = useSafeAreaInsets();
   const [selectedIndex, setSelectedIndex] = useState(currentIndex);
   const [showLightbox, setShowLightbox] = useState(false);
+  const wasOpenRef = useRef(isOpen);
   const displayTitle = useMemo(() => {
     if (!title) {
       return '';
@@ -61,7 +62,10 @@ export function ImageGridModal({
   const totalImages = validImages.length;
 
   useEffect(() => {
-    if (isOpen) {
+    const wasOpen = wasOpenRef.current;
+    wasOpenRef.current = isOpen;
+
+    if (isOpen && !wasOpen) {
       let cancelled = false;
       queueMicrotask(() => {
         if (cancelled) return;
@@ -74,6 +78,14 @@ export function ImageGridModal({
       };
     }
   }, [isOpen, currentIndex]);
+
+  useEffect(() => {
+    if (!isOpen || showLightbox) {
+      return;
+    }
+
+    setSelectedIndex(currentIndex);
+  }, [currentIndex, isOpen, showLightbox]);
 
   const handleImagePress = useCallback((index: number) => {
     Haptics.selectionAsync();

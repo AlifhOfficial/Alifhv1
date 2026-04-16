@@ -253,45 +253,45 @@ export default function BookingDetailsScreen() {
 
         <View style={[styles.section, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
           <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>Overview</Text>
-          <View style={styles.detailRow}>
-            <Info size={Sizes.iconSm} color={colors.labelSecondary} />
-            <View style={styles.detailText}>
+          <View style={styles.overviewRow}>
+            <Info size={Sizes.iconXs} color={colors.labelSecondary} />
+            <View style={styles.overviewDetailText}>
               <Text variant="caption1" tone="muted">Status</Text>
               <Text variant="subheadEmphasized" style={{ color: statusColor }}>{statusLabel}</Text>
             </View>
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <View style={styles.detailRow}>
+          <View style={[styles.divider, styles.overviewDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.overviewRow}>
             <Text variant="subheadEmphasized" style={[styles.refLabel, { color: colors.labelSecondary }]}>#</Text>
-            <View style={styles.detailText}>
+            <View style={styles.overviewDetailText}>
               <Text variant="caption1" tone="muted">Ref No.</Text>
               <Text variant="subheadEmphasized" numberOfLines={1} style={{ color: colors.label }}>
                 {booking.confirmationToken || 'Not issued'}
               </Text>
             </View>
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <View style={styles.detailRow}>
-            <Calendar1 size={Sizes.iconSm} color={colors.labelSecondary} />
-            <View style={styles.detailText}>
+          <View style={[styles.divider, styles.overviewDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.overviewRow}>
+            <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
+            <View style={styles.overviewDetailText}>
               <Text variant="caption1" tone="muted">Date</Text>
               <Text variant="subhead">{formatBookingDate(booking.scheduledDate)}</Text>
             </View>
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <View style={styles.detailRow}>
-            <Clock size={Sizes.iconSm} color={colors.labelSecondary} />
-            <View style={styles.detailText}>
+          <View style={[styles.divider, styles.overviewDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.overviewRow}>
+            <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
+            <View style={styles.overviewDetailText}>
               <Text variant="caption1" tone="muted">Time</Text>
               <Text variant="subhead">{timeRange}</Text>
             </View>
           </View>
           {booking.numberOfAttendees > 1 ? (
             <>
-              <View style={[styles.divider, { backgroundColor: colors.border }]} />
-              <View style={styles.detailRow}>
-                <Users size={Sizes.iconSm} color={colors.labelSecondary} />
-                <View style={styles.detailText}>
+              <View style={[styles.divider, styles.overviewDivider, { backgroundColor: colors.border }]} />
+              <View style={styles.overviewRow}>
+                <Users size={Sizes.iconXs} color={colors.labelSecondary} />
+                <View style={styles.overviewDetailText}>
                   <Text variant="caption1" tone="muted">Attendees</Text>
                   <Text variant="subhead">{booking.numberOfAttendees}</Text>
                 </View>
@@ -440,7 +440,11 @@ export default function BookingDetailsScreen() {
           {isActive ? (
             <HapticPressable
               onPress={() => handleAddToCalendar(booking)}
-              style={[styles.secondaryActionBtn, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}
+              style={[
+                styles.secondaryActionBtn,
+                cancelCheck.canCancel ? styles.splitActionBtn : styles.fullWidthActionBtn,
+                { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder },
+              ]}
             >
               <CalendarPlus size={Sizes.iconSm} color={colors.label} />
               <Text variant="subheadEmphasized" style={{ color: colors.label }}>Add to Calendar</Text>
@@ -456,7 +460,11 @@ export default function BookingDetailsScreen() {
                   params: { bookingId: booking.id },
                 });
               }}
-              style={[styles.primaryActionBtn, { backgroundColor: colors.error }]}
+              style={[
+                styles.primaryActionBtn,
+                isActive ? styles.splitActionBtn : styles.fullWidthActionBtn,
+                { backgroundColor: colors.error },
+              ]}
             >
               <CircleX size={Sizes.iconSm} color={colors.primaryForeground} />
               <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>Cancel Booking</Text>
@@ -562,6 +570,19 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: Spacing.xs,
   },
+  overviewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingVertical: 2,
+  },
+  overviewDetailText: {
+    flex: 1,
+    gap: 2,
+  },
+  overviewDivider: {
+    marginVertical: Spacing.xs,
+  },
   partnerHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -595,9 +616,19 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   actions: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    flexWrap: 'wrap',
     gap: Spacing.sm,
     marginTop: Spacing.sm,
     width: '100%',
+  },
+  fullWidthActionBtn: {
+    width: '100%',
+  },
+  splitActionBtn: {
+    flex: 1,
+    minWidth: 0,
   },
   primaryActionBtn: {
     flexDirection: 'row',

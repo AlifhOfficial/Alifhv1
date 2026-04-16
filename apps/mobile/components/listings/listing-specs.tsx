@@ -71,28 +71,39 @@ export const ListingSpecs = memo(function ListingSpecs({
 
   const visibleSpecs = specs.slice(0, MAX_VISIBLE_SPECS);
   const hasMore = specs.length > MAX_VISIBLE_SPECS;
+  const isInteractive = hasMore && Boolean(onViewAll);
+
+  const content = (
+    <View style={[styles.card, { backgroundColor: colors.surface }]}> 
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Specifications</Text>
+        {isInteractive ? (
+          <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+        ) : null}
+      </View>
+      {visibleSpecs.map((spec) => (
+        <React.Fragment key={spec.label}>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <View style={styles.specRow}>
+            <Text variant="subhead" tone="secondary">{spec.label}</Text>
+            <Text variant="subhead">{spec.value === null || spec.value === undefined ? '—' : String(spec.value)}</Text>
+          </View>
+        </React.Fragment>
+      ))}
+    </View>
+  );
 
   return (
     <Animated.View entering={FadeInDown.delay(0).duration(350)}>
-      <View style={[styles.card, { backgroundColor: colors.surface }]}>
-        <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Specifications</Text>
-          {hasMore && (
-            <HapticPressable onPress={onViewAll}>
-              <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
-            </HapticPressable>
-          )}
-        </View>
-        {visibleSpecs.map((spec) => (
-          <React.Fragment key={spec.label}>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <View style={styles.specRow}>
-              <Text variant="subhead" tone="secondary">{spec.label}</Text>
-              <Text variant="subhead">{spec.value === null || spec.value === undefined ? '—' : String(spec.value)}</Text>
-            </View>
-          </React.Fragment>
-        ))}
-      </View>
+      {isInteractive ? (
+        <HapticPressable
+          onPress={onViewAll}
+          accessibilityRole="button"
+          accessibilityLabel="Open all specifications"
+        >
+          {content}
+        </HapticPressable>
+      ) : content}
     </Animated.View>
   );
 });
