@@ -8,7 +8,7 @@
  */
 
 import { Text, useAlert, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect, useSegments } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -360,8 +360,25 @@ export function CreateListingFlow({
   const segments = useSegments();
   const [flowId, setFlowId] = useState<string | null>(null);
   const isOnCreateListingSheet = segments[segments.length - 1] === 'create-listing-sheet';
+  const reopenRetryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const pushFlowRoute = useCallback(
+    (id: string) => {
+      router.push({ pathname: '/create-listing-sheet', params: { flowId: id } });
+    },
+    [router],
+  );
+
+  const clearReopenRetryTimeout = useCallback(() => {
+    if (reopenRetryTimeoutRef.current) {
+      clearTimeout(reopenRetryTimeoutRef.current);
+      reopenRetryTimeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
+    clearReopenRetryTimeout();
+
     if (!visible) {
       if (flowId) {
         deleteCreateListingFlowSession(flowId);
@@ -379,7 +396,13 @@ export function CreateListingFlow({
         isPublishedEdit,
       });
       setFlowId(sessionId);
-      router.push({ pathname: '/create-listing-sheet', params: { flowId: sessionId } });
+      pushFlowRoute(sessionId);
+      return;
+    }
+
+    if (!getCreateListingFlowSession(flowId)) {
+      // Session was cleaned up out-of-band (e.g. route race); recreate on next render.
+      setFlowId(null);
       return;
     }
 
@@ -392,7 +415,7 @@ export function CreateListingFlow({
     });
 
     if (!isOnCreateListingSheet) {
-      router.push({ pathname: '/create-listing-sheet', params: { flowId } });
+      pushFlowRoute(flowId);
     }
   }, [
     visible,
@@ -402,17 +425,40 @@ export function CreateListingFlow({
     listingId,
     isPublishedEdit,
     flowId,
-    router,
+    pushFlowRoute,
     isOnCreateListingSheet,
+    clearReopenRetryTimeout,
   ]);
+
+  useEffect(() => {
+    if (!visible || !flowId || isOnCreateListingSheet) {
+      clearReopenRetryTimeout();
+      return;
+    }
+
+    // Global nav lock can swallow rapid consecutive pushes. Retry once after lock window.
+    reopenRetryTimeoutRef.current = setTimeout(() => {
+      if (!getCreateListingFlowSession(flowId)) {
+        setFlowId(null);
+        return;
+      }
+
+      if (!isOnCreateListingSheet) {
+        pushFlowRoute(flowId);
+      }
+    }, 700);
+
+    return clearReopenRetryTimeout;
+  }, [visible, flowId, isOnCreateListingSheet, pushFlowRoute, clearReopenRetryTimeout]);
 
   useEffect(
     () => () => {
+      clearReopenRetryTimeout();
       if (flowId) {
         deleteCreateListingFlowSession(flowId);
       }
     },
-    [flowId],
+    [flowId, clearReopenRetryTimeout],
   );
 
   return null;

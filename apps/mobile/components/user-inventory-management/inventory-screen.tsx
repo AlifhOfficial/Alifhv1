@@ -199,6 +199,29 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
   const [isPublishedEdit, setIsPublishedEdit] = useState(false);
   const handledEditNonceRef = useRef<string | null>(null);
+  const relaunchFlowFrameRef = useRef<number | null>(null);
+
+  const forceRestartListingFlow = useCallback((configureFlow: () => void) => {
+    if (relaunchFlowFrameRef.current !== null) {
+      cancelAnimationFrame(relaunchFlowFrameRef.current);
+      relaunchFlowFrameRef.current = null;
+    }
+
+    setShowEditFlow(false);
+    relaunchFlowFrameRef.current = requestAnimationFrame(() => {
+      configureFlow();
+      setShowEditFlow(true);
+      relaunchFlowFrameRef.current = null;
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (relaunchFlowFrameRef.current !== null) {
+        cancelAnimationFrame(relaunchFlowFrameRef.current);
+      }
+    };
+  }, []);
 
   const openFilterSheet = useCallback(() => {
     if (process.env.EXPO_OS === "ios")
@@ -219,10 +242,12 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
 
   // Handler to open create flow (fresh, no initial data)
   const openCreateFlow = useCallback(() => {
-    setEditInitialData(undefined);
-    setEditingListingId(null);
-    setShowEditFlow(true);
-  }, []);
+    forceRestartListingFlow(() => {
+      setEditInitialData(undefined);
+      setEditingListingId(null);
+      setIsPublishedEdit(false);
+    });
+  }, [forceRestartListingFlow]);
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -245,15 +270,16 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
         const listing = await getListingForEdit(listingId);
         const initialData: Partial<CreateListingData> =
           buildCreateListingInitialData(listing);
-        setEditInitialData(initialData);
-        setEditingListingId(listingId);
-        setIsPublishedEdit(publishedEdit);
-        setShowEditFlow(true);
+        forceRestartListingFlow(() => {
+          setEditInitialData(initialData);
+          setEditingListingId(listingId);
+          setIsPublishedEdit(publishedEdit);
+        });
       } catch (err) {
         console.error("Failed to load listing for edit:", err);
       }
     },
-    [],
+    [forceRestartListingFlow],
   );
 
   useEffect(() => {

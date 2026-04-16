@@ -23,19 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+
 import { SORT_OPTIONS, type SearchParams, type SearchFacets } from '@/lib/search-utils';
 import { cn } from '@/lib/utils';
 
@@ -92,16 +80,21 @@ export function ListingsHeader({
   setSort,
   initialSuggestions,
 }: ListingsHeaderProps) {
-  // Popover open states
-  const [makesOpen, setMakesOpen] = useState(false);
-  const [modelsOpen, setModelsOpen] = useState(false);
-  const [trimsOpen, setTrimsOpen] = useState(false);
-  
   // Dynamic island expanded state
   const [islandExpanded, setIslandExpanded] = useState(false);
   
   // Mobile search sheet state
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  // Show-all state for makes/models/trims (mobile sheet)
+  const [mobileShowAllMakes, setMobileShowAllMakes] = useState(false);
+  const [mobileShowAllModels, setMobileShowAllModels] = useState(false);
+  const [mobileShowAllTrims, setMobileShowAllTrims] = useState(false);
+
+  // Show-all state for makes/models/trims (desktop expanded island)
+  const [desktopShowAllMakes, setDesktopShowAllMakes] = useState(false);
+  const [desktopShowAllModels, setDesktopShowAllModels] = useState(false);
+  const [desktopShowAllTrims, setDesktopShowAllTrims] = useState(false);
   
 
 
@@ -264,50 +257,9 @@ export function ListingsHeader({
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60">Makes</p>
                         {(facets?.make ?? []).length > 8 && (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <button className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
-                                View all ({(facets?.make ?? []).length})
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent 
-                              className="w-[calc(100vw-2rem)] p-0 bg-sidebar border-sidebar-border rounded-xl shadow-lg overflow-hidden" 
-                              align="center"
-                              sideOffset={8}
-                            >
-                              <Command className="bg-transparent">
-                                <CommandInput placeholder="Search makes..." className="h-12 border-b border-sidebar-border text-callout px-4" />
-                                <CommandList className="max-h-[50vh]">
-                                  <CommandEmpty className="py-6 text-center text-callout text-muted-foreground">No makes found.</CommandEmpty>
-                                  <CommandGroup className="p-2">
-                                    {(facets?.make ?? []).map((make) => {
-                                      const isSelected = params.make?.includes(make.value) ?? false;
-                                      return (
-                                        <CommandItem
-                                          key={make.value}
-                                          value={make.label}
-                                          onSelect={() => {
-                                            if (isSelected) {
-                                              toggleMake(make.value);
-                                            } else {
-                                              setFilters({ make: [make.value], model: undefined, trim: undefined });
-                                            }
-                                          }}
-                                          className={cn(
-                                            "flex items-center justify-between gap-3 px-4 py-3 text-callout tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
-                                            isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                          )}
-                                        >
-                                          <span className="flex-1 truncate">{make.label}</span>
-                                          <span className="text-subhead text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
-                                        </CommandItem>
-                                      );
-                                    })}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
+                          <button onClick={() => setMobileShowAllMakes(v => !v)} className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
+                            {mobileShowAllMakes ? 'View less' : `View all (${(facets?.make ?? []).length})`}
+                          </button>
                         )}
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -326,7 +278,7 @@ export function ListingsHeader({
                           );
                         })}
                         {/* Unselected makes */}
-                        {(facets?.make ?? []).filter(m => !(params.make ?? []).includes(m.value)).slice(0, 8).map((make) => (
+                        {(facets?.make ?? []).filter(m => !(params.make ?? []).includes(m.value)).slice(0, mobileShowAllMakes ? undefined : 8).map((make) => (
                           <button
                             key={make.value}
                             onClick={() => toggleMake(make.value)}
@@ -345,50 +297,9 @@ export function ListingsHeader({
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60">Models</p>
                           {(facets?.model ?? []).length > 8 && (
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <button className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
-                                  View all ({(facets?.model ?? []).length})
-                                </button>
-                              </PopoverTrigger>
-                              <PopoverContent 
-                                className="w-[calc(100vw-2rem)] p-0 bg-sidebar border-sidebar-border rounded-xl shadow-lg overflow-hidden" 
-                                align="center"
-                                sideOffset={8}
-                              >
-                                <Command className="bg-transparent">
-                                  <CommandInput placeholder="Search models..." className="h-12 border-b border-sidebar-border text-callout px-4" />
-                                  <CommandList className="max-h-[50vh]">
-                                    <CommandEmpty className="py-6 text-center text-callout text-muted-foreground">No models found.</CommandEmpty>
-                                    <CommandGroup className="p-2">
-                                      {(facets?.model ?? []).map((model) => {
-                                        const isSelected = params.model?.includes(model.value) ?? false;
-                                        return (
-                                          <CommandItem
-                                            key={model.value}
-                                            value={model.label}
-                                            onSelect={() => {
-                                              if (isSelected) {
-                                                toggleModel(model.value);
-                                              } else {
-                                                setFilters({ model: [model.value], trim: undefined });
-                                              }
-                                            }}
-                                            className={cn(
-                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
-                                              isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                            )}
-                                          >
-                                            <span className="flex-1 truncate">{model.label}</span>
-                                            <span className="text-subhead text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
-                                          </CommandItem>
-                                        );
-                                      })}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
+                            <button onClick={() => setMobileShowAllModels(v => !v)} className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
+                              {mobileShowAllModels ? 'View less' : `View all (${(facets?.model ?? []).length})`}
+                            </button>
                           )}
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -407,7 +318,7 @@ export function ListingsHeader({
                             );
                           })}
                           {/* Unselected models */}
-                          {(facets?.model ?? []).filter(m => !(params.model ?? []).includes(m.value)).slice(0, 8).map((model) => (
+                          {(facets?.model ?? []).filter(m => !(params.model ?? []).includes(m.value)).slice(0, mobileShowAllModels ? undefined : 8).map((model) => (
                             <button
                               key={model.value}
                               onClick={() => toggleModel(model.value)}
@@ -427,50 +338,9 @@ export function ListingsHeader({
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60">Trims</p>
                           {(facets?.trim ?? []).length > 8 && (
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <button className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
-                                  View all ({(facets?.trim ?? []).length})
-                                </button>
-                              </PopoverTrigger>
-                              <PopoverContent 
-                                className="w-[calc(100vw-2rem)] p-0 bg-sidebar border-sidebar-border rounded-xl shadow-lg overflow-hidden" 
-                                align="center"
-                                sideOffset={8}
-                              >
-                                <Command className="bg-transparent">
-                                  <CommandInput placeholder="Search trims..." className="h-12 border-b border-sidebar-border text-callout px-4" />
-                                  <CommandList className="max-h-[50vh]">
-                                    <CommandEmpty className="py-6 text-center text-callout text-muted-foreground">No trims found.</CommandEmpty>
-                                    <CommandGroup className="p-2">
-                                      {(facets?.trim ?? []).map((trim) => {
-                                        const isSelected = params.trim?.includes(trim.value) ?? false;
-                                        return (
-                                          <CommandItem
-                                            key={trim.value}
-                                            value={trim.label}
-                                            onSelect={() => {
-                                              if (isSelected) {
-                                                toggleTrim(trim.value);
-                                              } else {
-                                                setFilters({ trim: [trim.value] });
-                                              }
-                                            }}
-                                            className={cn(
-                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
-                                              isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                            )}
-                                          >
-                                            <span className="flex-1 truncate">{trim.label}</span>
-                                            <span className="text-subhead text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
-                                          </CommandItem>
-                                        );
-                                      })}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
+                            <button onClick={() => setMobileShowAllTrims(v => !v)} className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
+                              {mobileShowAllTrims ? 'View less' : `View all (${(facets?.trim ?? []).length})`}
+                            </button>
                           )}
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -489,7 +359,7 @@ export function ListingsHeader({
                             );
                           })}
                           {/* Unselected trims */}
-                          {(facets?.trim ?? []).filter(t => !(params.trim ?? []).includes(t.value)).slice(0, 8).map((trim) => (
+                          {(facets?.trim ?? []).filter(t => !(params.trim ?? []).includes(t.value)).slice(0, mobileShowAllTrims ? undefined : 8).map((trim) => (
                             <button
                               key={trim.value}
                               onClick={() => toggleTrim(trim.value)}
@@ -1017,7 +887,7 @@ export function ListingsHeader({
                       );
                     })}
                     {/* Unselected makes */}
-                    {(facets?.make ?? []).filter(m => !(params.make ?? []).includes(m.value)).slice(0, 8).map((make) => (
+                    {(facets?.make ?? []).filter(m => !(params.make ?? []).includes(m.value)).slice(0, desktopShowAllMakes ? undefined : 8).map((make) => (
                       <button
                         key={make.value}
                         onClick={() => toggleMake(make.value)}
@@ -1027,47 +897,14 @@ export function ListingsHeader({
                         <span className="text-caption1 text-muted-foreground/60 tabular-nums">{make.count}</span>
                       </button>
                     ))}
-                    {/* View all button */}
+                    {/* View all / View less makes */}
                     {(facets?.make ?? []).length > 8 && (
-                      <Popover open={makesOpen} onOpenChange={setMakesOpen}>
-                        <PopoverTrigger asChild>
-                          <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all">
-                            <span>View all ({(facets?.make ?? []).length})</span>
-                            <ChevronDown className={cn("size-3.5 transition-transform", makesOpen && "rotate-180")} />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent 
-                          className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
-                          align="start"
-                          sideOffset={8}
-                        >
-                          <Command className="bg-transparent">
-                            <CommandInput placeholder="Search makes..." className="h-10 border-b border-sidebar-border text-subhead" />
-                            <CommandList className="max-h-[280px]">
-                              <CommandEmpty className="py-4 text-center text-subhead text-muted-foreground">No makes found.</CommandEmpty>
-                              <CommandGroup className="p-1.5">
-                                {(facets?.make ?? []).map((make) => {
-                                  const isSelected = params.make?.includes(make.value) ?? false;
-                                  return (
-                                    <CommandItem
-                                      key={make.value}
-                                      value={make.label}
-                                      onSelect={() => toggleMake(make.value)}
-                                      className={cn(
-                                        "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead tracking-tight rounded-md cursor-pointer transition-colors duration-100",
-                                        isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                      )}
-                                    >
-                                      <span className="flex-1 truncate">{make.label}</span>
-                                      <span className="text-caption1 text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
-                                    </CommandItem>
-                                  );
-                                })}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <button
+                        onClick={() => setDesktopShowAllMakes(v => !v)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all"
+                      >
+                        {desktopShowAllMakes ? 'View less' : `View all (${(facets?.make ?? []).length})`}
+                      </button>
                     )}
                   {/* Clear makes */}
                   {(params.make?.length ?? 0) > 0 && (
@@ -1104,7 +941,7 @@ export function ListingsHeader({
                         );
                       })}
                       {/* Unselected models */}
-                      {(facets?.model ?? []).filter(m => !(params.model ?? []).includes(m.value)).slice(0, 8).map((model) => (
+                      {(facets?.model ?? []).filter(m => !(params.model ?? []).includes(m.value)).slice(0, desktopShowAllModels ? undefined : 8).map((model) => (
                         <button
                           key={model.value}
                           onClick={() => toggleModel(model.value)}
@@ -1114,47 +951,14 @@ export function ListingsHeader({
                           <span className="text-caption1 text-muted-foreground/60 tabular-nums">{model.count}</span>
                         </button>
                       ))}
-                      {/* View all button */}
+                      {/* View all / View less models */}
                       {(facets?.model ?? []).length > 8 && (
-                        <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
-                          <PopoverTrigger asChild>
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all">
-                              <span>View all ({(facets?.model ?? []).length})</span>
-                              <ChevronDown className={cn("size-3.5 transition-transform", modelsOpen && "rotate-180")} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent 
-                            className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
-                            align="start"
-                            sideOffset={8}
-                          >
-                            <Command className="bg-transparent">
-                              <CommandInput placeholder="Search models..." className="h-10 border-b border-sidebar-border text-subhead" />
-                              <CommandList className="max-h-[280px]">
-                                <CommandEmpty className="py-4 text-center text-subhead text-muted-foreground">No models found.</CommandEmpty>
-                                <CommandGroup className="p-1.5">
-                                  {(facets?.model ?? []).map((model) => {
-                                    const isSelected = params.model?.includes(model.value) ?? false;
-                                    return (
-                                      <CommandItem
-                                        key={model.value}
-                                        value={model.label}
-                                        onSelect={() => toggleModel(model.value)}
-                                        className={cn(
-                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead tracking-tight rounded-md cursor-pointer transition-colors duration-100",
-                                          isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                        )}
-                                      >
-                                        <span className="flex-1 truncate">{model.label}</span>
-                                        <span className="text-caption1 text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
-                                      </CommandItem>
-                                    );
-                                  })}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        <button
+                          onClick={() => setDesktopShowAllModels(v => !v)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all"
+                        >
+                          {desktopShowAllModels ? 'View less' : `View all (${(facets?.model ?? []).length})`}
+                        </button>
                       )}
                       {/* Clear models */}
                       {(params.model?.length ?? 0) > 0 && (
@@ -1195,7 +999,7 @@ export function ListingsHeader({
                         );
                       })}
                       {/* Unselected trims */}
-                      {(facets?.trim ?? []).filter(t => !(params.trim ?? []).includes(t.value)).slice(0, 8).map((trim) => (
+                      {(facets?.trim ?? []).filter(t => !(params.trim ?? []).includes(t.value)).slice(0, desktopShowAllTrims ? undefined : 8).map((trim) => (
                         <button
                           key={trim.value}
                           onClick={() => toggleTrim(trim.value)}
@@ -1205,47 +1009,14 @@ export function ListingsHeader({
                           <span className="text-caption1 text-muted-foreground/60 tabular-nums">{trim.count}</span>
                         </button>
                       ))}
-                      {/* View all button */}
+                      {/* View all / View less trims */}
                       {(facets?.trim ?? []).length > 8 && (
-                        <Popover open={trimsOpen} onOpenChange={setTrimsOpen}>
-                          <PopoverTrigger asChild>
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all">
-                              <span>View all ({(facets?.trim ?? []).length})</span>
-                              <ChevronDown className={cn("size-3.5 transition-transform", trimsOpen && "rotate-180")} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent 
-                            className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
-                            align="start"
-                            sideOffset={8}
-                          >
-                            <Command className="bg-transparent">
-                              <CommandInput placeholder="Search trims..." className="h-10 border-b border-sidebar-border text-subhead" />
-                              <CommandList className="max-h-[280px]">
-                                <CommandEmpty className="py-4 text-center text-subhead text-muted-foreground">No trims found.</CommandEmpty>
-                                <CommandGroup className="p-1.5">
-                                  {(facets?.trim ?? []).map((trim) => {
-                                    const isSelected = params.trim?.includes(trim.value) ?? false;
-                                    return (
-                                      <CommandItem
-                                        key={trim.value}
-                                        value={trim.label}
-                                        onSelect={() => toggleTrim(trim.value)}
-                                        className={cn(
-                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead tracking-tight rounded-md cursor-pointer transition-colors duration-100",
-                                          isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                        )}
-                                      >
-                                        <span className="flex-1 truncate">{trim.label}</span>
-                                        <span className="text-caption1 text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
-                                      </CommandItem>
-                                    );
-                                  })}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        <button
+                          onClick={() => setDesktopShowAllTrims(v => !v)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all"
+                        >
+                          {desktopShowAllTrims ? 'View less' : `View all (${(facets?.trim ?? []).length})`}
+                        </button>
                       )}
                       {/* Clear trims */}
                       {(params.trim?.length ?? 0) > 0 && (
