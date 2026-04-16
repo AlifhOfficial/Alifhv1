@@ -48,12 +48,10 @@ export function PersonalInfoSection({
   const { showAlert } = useAlert();
 
   const handleEmailPress = () => {
-    if (profile.emailVerified) {
-      showAlert(
-        'Cannot change verified email',
-        'Please email support@revvup.ae to change your verified email address. This protects you from fraudulent activities.'
-      );
-    }
+    showAlert(
+      'Email cannot be changed',
+      'For security purposes, email address changes are disabled. Please contact support@revvup.ae for help.'
+    );
   };
 
   const handlePhoneSave = async () => {
@@ -91,6 +89,7 @@ export function PersonalInfoSection({
         value={user?.email || ''}
         placeholder=""
         disabled
+        allowPressWhenDisabled
         suffix={
           profile.emailVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />

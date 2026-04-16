@@ -24,6 +24,7 @@ interface EditableFieldProps {
   value: string;
   placeholder: string;
   disabled?: boolean;
+  allowPressWhenDisabled?: boolean;
   suffix?: React.ReactNode;
   isEditing: boolean;
   onEdit: () => void;
@@ -43,6 +44,7 @@ export function EditableField({
   value,
   placeholder,
   disabled = false,
+  allowPressWhenDisabled = false,
   suffix,
   isEditing,
   onEdit,
@@ -78,7 +80,7 @@ export function EditableField({
   }, [bgOpacity, isEditing]);
 
   const handlePress = () => {
-    if (disabled) return;
+    if (disabled && !allowPressWhenDisabled) return;
     if (Platform.OS === 'ios') {
       Haptics.selectionAsync();
     }
@@ -165,9 +167,9 @@ export function EditableField({
   return (
     <HapticPressable
       onPress={handlePress}
-      onPressIn={!disabled ? handlePressIn : undefined}
-      onPressOut={!disabled ? handlePressOut : undefined}
-      disabled={disabled}
+      onPressIn={!disabled || allowPressWhenDisabled ? handlePressIn : undefined}
+      onPressOut={!disabled || allowPressWhenDisabled ? handlePressOut : undefined}
+      disabled={disabled && !allowPressWhenDisabled}
     >
       <Animated.View
         style={[
