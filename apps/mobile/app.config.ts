@@ -64,9 +64,6 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       backgroundColor: '#000000',
       package: 'ae.revvup.mobile',
     },
-    androidNavigationBar: {
-      enforceContrast: false,
-    },
     plugins: [
       'expo-router',
       [
