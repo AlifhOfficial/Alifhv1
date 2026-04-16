@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import { AppFontFamilies, Colors, InputTypography, Typography } from '@/constants/theme';
+import { Colors, Typography } from '@/constants/theme';
 import { useThemeSafe } from '@/context/theme-context';
 
 export type TextInputRef = RNTextInput;
@@ -54,25 +54,16 @@ export const TextInput = forwardRef<TextInputRef, TextInputProps>(function TextI
   const flattenedStyle = StyleSheet.flatten(style) || {};
   const {
     fontFamily: _fontFamily,
-    fontSize,
-    fontStyle,
-    fontVariant,
-    fontWeight,
+    fontSize: _fontSize,
+    fontStyle: _fontStyle,
+    fontVariant: _fontVariant,
+    fontWeight: _fontWeight,
     includeFontPadding: _includeFontPadding,
-    letterSpacing,
-    lineHeight,
-    textTransform,
+    letterSpacing: _letterSpacing,
+    lineHeight: _lineHeight,
+    textTransform: _textTransform,
     ...nonTypographyStyle
   } = flattenedStyle;
-  const valueTypographyStyle = {
-    fontSize,
-    fontStyle,
-    fontVariant,
-    fontWeight,
-    letterSpacing,
-    lineHeight,
-    textTransform,
-  };
   const hasValue =
     props.value !== undefined && props.value !== null
       ? String(props.value).length > 0
@@ -95,11 +86,9 @@ export const TextInput = forwardRef<TextInputRef, TextInputProps>(function TextI
         nonTypographyStyle,
         {
           color: colors.label,
-          ...InputTypography,
-          ...styles.enforcedTextTypography,
+          ...Typography.body,
         },
-        valueTypographyStyle,
-        !hasValue && styles.enforcedPlaceholderTypography,
+        !hasValue && styles.placeholderTypography,
         Platform.OS === 'android' && styles.androidTextBase,
       ]}
     />
@@ -107,16 +96,10 @@ export const TextInput = forwardRef<TextInputRef, TextInputProps>(function TextI
 });
 
 const styles = StyleSheet.create({
-  enforcedTextTypography: {
-    fontFamily: AppFontFamilies.regular,
-  },
   androidTextBase: {
     includeFontPadding: false,
   },
-  enforcedPlaceholderTypography: {
-    fontFamily: AppFontFamilies.regular,
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
-    letterSpacing: Typography.subhead.letterSpacing,
+  placeholderTypography: {
+    ...Typography.subhead,
   },
 });
