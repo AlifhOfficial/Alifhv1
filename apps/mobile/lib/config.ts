@@ -496,6 +496,10 @@ export function consumeDataReady(key: string): number | null {
   return value;
 }
 
+export function hasDataReady(key: string): boolean {
+  return dataReadyMarks.has(key);
+}
+
 export function markInteractionStart(key: string): number {
   const now = performance.now();
   interactionMarks.set(key, now);

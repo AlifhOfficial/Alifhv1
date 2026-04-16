@@ -11,7 +11,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { View, LogBox, Platform, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 
@@ -30,9 +30,9 @@ import { NetworkProvider } from '@/context/network-context';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
-import { CustomBootupScreen } from '@/components/ui/custom-bootup-screen';
 import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 import { createFormSheetOptions } from '@/lib/form-sheet';
+import { hasDataReady } from '@/lib/config';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
 // Note: These warnings come from dependencies, not our code
@@ -65,7 +65,7 @@ textInputWithDefaults.defaultProps = {
   style: [{ fontFamily: AppFontFamilies.regular }, textInputWithDefaults.defaultProps?.style].filter(Boolean),
 };
 
-// Prevent splash screen from auto-hiding until fonts load
+// Prevent native splash from auto-hiding until startup readiness completes.
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // Custom themes using our Colors and Fonts
@@ -107,6 +107,7 @@ const CustomDarkTheme: NavTheme = {
 
 const NAVIGATION_LOCK_MS = 600;
 const NAV_LOCK_KEY = '__revvup_nav_lock__';
+const STARTUP_BOOT_MAX_WAIT_MS = 9000;
 
 type NavLockState = {
   locked: boolean;
@@ -436,20 +437,6 @@ export default function RootLayout() {
     [AppFontFamilies.bold]: require('../assets/fonts/Inter/Inter_700Bold.ttf'),
     [AppFontFamilies.extraBold]: require('../assets/fonts/Inter/Inter_800ExtraBold.ttf'),
   });
-  const [bootupVisible, setBootupVisible] = useState(true);
-
-  useEffect(() => {
-    if (!fontsLoaded && !fontError) {
-      return;
-    }
-
-    // Hide bootup screen then native splash after a brief frame delay for smooth fade
-    requestAnimationFrame(() => {
-      setBootupVisible(false);
-      SplashScreen.hideAsync().catch(() => {});
-    });
-  }, [fontError, fontsLoaded]);
-
   if (!fontsLoaded && !fontError) {
     return null;
   }
@@ -471,6 +458,7 @@ export default function RootLayout() {
                             <NotificationWrapper>
                               <RootLayoutNav />
                               <OfflineBanner />
+                              <StartupBootCoordinator />
                             </NotificationWrapper>
                           </WebSocketWrapper>
                         </FavoritesProvider>
@@ -479,8 +467,6 @@ export default function RootLayout() {
                   </NetworkProvider>
                 </KeyboardProvider>
               </AlertProvider>
-        {/* Custom bootup screen overlay */}
-        <CustomBootupScreen isVisible={bootupVisible} />
             </ThemeProvider>
           </QueryClientProvider>
         </SafeAreaProvider>
@@ -524,4 +510,64 @@ function NotificationWrapper({ children }: { children: React.ReactNode }) {
       {children}
     </NotificationProvider>
   );
+}
+
+function StartupBootCoordinator() {
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const [isSplashPending, setIsSplashPending] = useState(true);
+  const startedAtRef = useRef<number | null>(null);
+  const readyRef = useRef({
+    browse: false,
+    messaging: false,
+    saved: false,
+    notifications: false,
+  });
+
+  useEffect(() => {
+    if (!isSplashPending) return;
+
+    if (startedAtRef.current == null) {
+      startedAtRef.current = Date.now();
+    }
+
+    const checkReady = () => {
+      if (!readyRef.current.browse && hasDataReady('startup:browse')) {
+        readyRef.current.browse = true;
+      }
+      if (!readyRef.current.messaging && hasDataReady('startup:messaging')) {
+        readyRef.current.messaging = true;
+      }
+      if (!readyRef.current.saved && hasDataReady('startup:saved')) {
+        readyRef.current.saved = true;
+      }
+      if (!readyRef.current.notifications && hasDataReady('notifications:startup')) {
+        readyRef.current.notifications = true;
+      }
+
+      const authReady = !isAuthLoading || hasDataReady('auth:session');
+      const requiresAuthenticatedStartup = !isAuthLoading && isAuthenticated;
+      const authenticatedDataReady =
+        readyRef.current.messaging && readyRef.current.saved && readyRef.current.notifications;
+      const startupReady =
+        authReady &&
+        readyRef.current.browse &&
+        (!requiresAuthenticatedStartup || authenticatedDataReady);
+
+      const timedOut = (Date.now() - (startedAtRef.current ?? Date.now())) >= STARTUP_BOOT_MAX_WAIT_MS;
+      if (!startupReady && !timedOut) {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        setIsSplashPending(false);
+        SplashScreen.hide();
+      });
+    };
+
+    checkReady();
+    const intervalId = setInterval(checkReady, 100);
+    return () => clearInterval(intervalId);
+  }, [isSplashPending, isAuthLoading, isAuthenticated]);
+
+  return null;
 }

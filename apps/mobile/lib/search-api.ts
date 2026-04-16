@@ -262,6 +262,7 @@ export const searchApi = {
     };
 
     markDataReady('browse:results');
+    markDataReady('startup:browse');
     return result;
   },
 

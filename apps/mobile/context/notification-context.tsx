@@ -6,7 +6,7 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
 import { useAuth } from './auth-context';
-import { API_BASE } from '@/lib/config';
+import { API_BASE, markDataReady } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
 import { setCurrentPushToken } from '@/lib/push-token-store';
 
@@ -130,12 +130,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const registerPushToken = async (): Promise<void> => {
     if (!expoPushToken) {
       console.log('[Notifications] Cannot register: no token');
+      markDataReady('notifications:startup');
       return;
     }
 
     const { session } = await getSession();
     if (!session?.token) {
       console.log('[Notifications] Cannot register: not authenticated');
+      markDataReady('notifications:startup');
       return;
     }
 
@@ -164,6 +166,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       console.log('[Notifications] Token registered successfully:', result);
     } catch (error) {
       console.error('[Notifications] Failed to register token:', error);
+    } finally {
+      markDataReady('notifications:startup');
     }
   };
 
@@ -213,6 +217,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (!Device.isDevice) {
       console.log('[Notifications] Not a physical device, skipping setup');
+      markDataReady('notifications:startup');
       return;
     }
 
@@ -250,16 +255,23 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Auto-register when user logs in
   useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      // First get push token
-      registerForPushNotifications().then((token) => {
-        if (token) {
-          setExpoPushToken(token);
-          setCurrentPushToken(token); // Sync to store for logout
-          setNotificationsEnabled(true);
-        }
-      });
+    if (!isAuthenticated || !user?.id) {
+      markDataReady('notifications:startup');
+      return;
     }
+
+    // First get push token
+    registerForPushNotifications().then((token) => {
+      if (token) {
+        setExpoPushToken(token);
+        setCurrentPushToken(token); // Sync to store for logout
+        setNotificationsEnabled(true);
+        return;
+      }
+
+      // Permission denied or token retrieval failed - don't block startup.
+      markDataReady('notifications:startup');
+    });
   }, [isAuthenticated, user?.id]);
 
   // Register token with API when we have both token and auth

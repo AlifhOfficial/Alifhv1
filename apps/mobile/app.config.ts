@@ -41,43 +41,28 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       userInterfaceStyle: 'automatic',
       supportsTablet: true,
       backgroundColor: '#000000',
+      icon: './assets/images/icon.png',
       bundleIdentifier: 'ae.revvup.mobile',
       associatedDomains,
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSCalendarsUsageDescription: 'Allow Revvup to add your booked test drives to Apple Calendar.',
       },
-      splash: {
-        backgroundColor: '#000000',
-        resizeMode: 'contain',
-        dark: {
-          backgroundColor: '#000000',
-          resizeMode: 'contain',
-        },
-      },
     },
     android: {
       userInterfaceStyle: 'automatic',
       googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
       permissions: ['android.permission.READ_CALENDAR', 'android.permission.WRITE_CALENDAR'],
+      icon: './assets/images/icon.png',
       adaptiveIcon: {
         backgroundColor: '#000000',
-        foregroundImage: './assets/images/android-icon-foreground.png',
-        backgroundImage: './assets/images/android-icon-background.png',
-        monochromeImage: './assets/images/android-icon-monochrome.png',
+        foregroundImage: './assets/images/adaptive-icon.png',
+        monochromeImage: './assets/images/adaptive-icon.png',
       },
       softwareKeyboardLayoutMode: 'resize',
       predictiveBackGestureEnabled: false,
       backgroundColor: '#000000',
       package: 'ae.revvup.mobile',
-      splash: {
-        backgroundColor: '#000000',
-        resizeMode: 'contain',
-        dark: {
-          backgroundColor: '#000000',
-          resizeMode: 'contain',
-        },
-      },
     },
     androidNavigationBar: {
       enforceContrast: false,
@@ -88,8 +73,18 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
         'expo-splash-screen',
         {
           backgroundColor: '#000000',
+          image: './assets/images/Revvup-wordmark-white.png',
+          imageWidth: 340,
           resizeMode: 'contain',
-          dark: {
+          android: {
+            image: './assets/images/icon.png',
+            imageWidth: 180,
+            backgroundColor: '#000000',
+            resizeMode: 'contain',
+          },
+          ios: {
+            image: './assets/images/Revvup-wordmark-white.png',
+            imageWidth: 340,
             backgroundColor: '#000000',
             resizeMode: 'contain',
           },

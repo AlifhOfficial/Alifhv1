@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Passkey as NativePasskey } from 'react-native-passkey';
-import { API_BASE, AUTH_ENDPOINTS } from './config';
+import { API_BASE, AUTH_ENDPOINTS, markDataReady } from './config';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -606,6 +606,8 @@ export async function refreshSession(): Promise<AuthResult> {
   } catch (error) {
     console.error('[Auth] Refresh session error:', error);
     return { success: false };
+  } finally {
+    markDataReady('auth:session');
   }
 }
 

@@ -148,6 +148,7 @@ export const savedApi = {
     
     const { data } = await parseJsonWithPerf<FavoritesStatusData>('saved.status', url, response, requestStartedAt);
     markDataReady('saved:status');
+    markDataReady('startup:saved');
     return data;
   },
 

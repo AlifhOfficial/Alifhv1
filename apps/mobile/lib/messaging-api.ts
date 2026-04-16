@@ -168,6 +168,9 @@ export async function fetchConversations(options?: {
     meta: { scope: options?.scope ?? 'personal' },
   });
   markDataReady(`messaging:conversations:${options?.scope ?? 'personal'}`);
+  if ((options?.scope ?? 'personal') === 'personal') {
+    markDataReady('startup:messaging');
+  }
   return data;
 }
 
