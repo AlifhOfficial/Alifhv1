@@ -20,13 +20,9 @@ import {
   ActionSheetIOS,
 } from "react-native";
 import { Image } from "expo-image";
-import DraggableFlatList, {
-  ScaleDecorator,
-  RenderItemParams,
-} from "react-native-draggable-flatlist";
+
 import * as Haptics from "expo-haptics";
-import { GripVertical, X, ImagePlus } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { X, ImagePlus } from "lucide-react-native";
 
 import {
   Colors,
@@ -69,7 +65,6 @@ type GridItem = CdnItem | UploadingItem;
 export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const imageWidth =
     (width -
@@ -77,19 +72,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
       IMAGE_GAP * (GRID_COLUMNS - 1)) /
     GRID_COLUMNS;
   const imageHeight = Math.round((imageWidth * 9) / 16);
-  const reorderModalHorizontalMargin = Spacing.lg;
-  const reorderModalHorizontalPadding = Spacing.md;
-  const reorderGridWidth =
-    width -
-    reorderModalHorizontalMargin * 2 -
-    reorderModalHorizontalPadding * 2;
-  const reorderImageWidth =
-    (reorderGridWidth - IMAGE_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
-  const reorderImageHeight = Math.round((reorderImageWidth * 9) / 16);
-
   const [uploading, setUploading] = useState(false);
-  const [isReorderOpen, setIsReorderOpen] = useState(false);
-  const [isReorderDragging, setIsReorderDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
   const [perceivedDone, setPerceivedDone] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -238,7 +221,22 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, [data.images, deleteTarget, onUpdate]);
 
-  // Render image item for the main scroll surface (no drag to avoid gesture conflicts)
+  // Set an image as the cover by moving it to position 0
+  const setImageAsCover = useCallback(
+    (url: string) => {
+      const index = data.images.indexOf(url);
+      if (index > 0) {
+        const newOrder = [...data.images];
+        newOrder.splice(index, 1);
+        newOrder.unshift(url);
+        onUpdate({ images: newOrder });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+    },
+    [data.images, onUpdate],
+  );
+
+  // Render image item for the main scroll surface
   const renderPreviewItem = useCallback(
     (item: GridItem, imageIndex: number) => {
       // Only the first CDN item is the cover; uploading items are not yet confirmed
@@ -292,6 +290,24 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             </View>
           )}
 
+          {/* Tap to set as cover — only for confirmed non-cover images */}
+          {!isThumbnail && !isUploading && item.type === "cdn" && (
+            <HapticPressable
+              onPress={() => setImageAsCover(item.url)}
+              style={[
+                styles.setCoverBtn,
+                { backgroundColor: colors.overlay },
+              ]}
+            >
+              <Text
+                variant={SheetTypography.supporting}
+                style={{ color: colors.primaryForeground, fontSize: 11 }}
+              >
+                Set cover
+              </Text>
+            </HapticPressable>
+          )}
+
           {/* Delete button — only for confirmed images */}
           {!isUploading && item.type === "cdn" && (
             <HapticPressable
@@ -312,75 +328,11 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
       handleDeleteImage,
       imageHeight,
       imageWidth,
+      setImageAsCover,
     ],
   );
 
-  const reorderData: CdnItem[] = data.images.map((url) => ({ type: "cdn", url }));
 
-  const renderReorderItem = useCallback(
-    ({ item, drag, isActive, getIndex }: RenderItemParams<CdnItem>) => {
-      const imageIndex = getIndex() ?? 0;
-      const imageUri = getThumbUrl(item.url) ?? toAbsoluteUrl(item.url);
-      const isThumbnail = imageIndex === 0;
-
-      return (
-        <ScaleDecorator>
-          <Pressable
-            onLongPress={() => {
-              Haptics.selectionAsync();
-              drag();
-            }}
-            delayLongPress={180}
-            disabled={isActive}
-            style={[
-              styles.imageCard,
-              { width: reorderImageWidth, height: reorderImageHeight },
-              isActive && styles.imageCardActive,
-            ]}
-          >
-            <Image source={{ uri: imageUri }} style={styles.image} contentFit="cover" />
-
-            {isThumbnail && (
-              <View
-                style={[
-                  styles.thumbnailBadge,
-                  { backgroundColor: colors.primary },
-                ]}
-              >
-                <Text
-                  variant={SheetTypography.supporting}
-                  style={{ color: colors.primaryForeground }}
-                >
-                  Cover
-                </Text>
-              </View>
-            )}
-
-            <View
-              pointerEvents="none"
-              style={[styles.dragHandle, { backgroundColor: colors.overlay }]}
-            >
-              <GripVertical
-                size={14}
-                color={colors.primaryForeground}
-                strokeWidth={2}
-              />
-            </View>
-          </Pressable>
-        </ScaleDecorator>
-      );
-    },
-    [colors, reorderImageHeight, reorderImageWidth],
-  );
-
-  const handleReorderEnd = useCallback(
-    ({ data: newData }: { data: CdnItem[] }) => {
-      setIsReorderDragging(false);
-      onUpdate({ images: newData.map((i) => i.url) });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    },
-    [onUpdate],
-  );
 
   // Combine confirmed CDN images + in-progress optimistic images into one grid
   const gridData: GridItem[] = [
@@ -448,77 +400,18 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
           <View style={styles.previewGrid}>
             {gridData.map((item, index) => renderPreviewItem(item, index))}
           </View>
-          {data.images.length > 1 && (
-            <HapticPressable
-              onPress={() => setIsReorderOpen(true)}
-              style={[styles.reorderButton, { backgroundColor: colors.fill2, borderColor: colors.border }]}
-            >
-              <GripVertical size={14} color={colors.labelSecondary} strokeWidth={2} />
-              <Text variant="subhead" style={{ color: colors.label }}>
-                Reorder photos
-              </Text>
-            </HapticPressable>
-          )}
           <Text
             variant={SheetTypography.supporting}
             tone="muted"
             style={{ marginTop: Spacing.sm }}
           >
-            Scroll here is now independent from drag. Use Reorder photos to change order.
+            Tap Set cover on any image to make it the cover photo.
           </Text>
         </View>
       )}
       </StepContainer>
 
-      <Modal
-        transparent
-        visible={isReorderOpen}
-        animationType="slide"
-        onRequestClose={() => setIsReorderOpen(false)}
-      >
-        <View style={[styles.overlay, { backgroundColor: colors.overlay }]} />
-        <View
-          style={[
-            styles.reorderModalCard,
-            {
-              backgroundColor: colors.surfaceSecondary,
-              marginTop: insets.top + Spacing.sm,
-              marginBottom: insets.bottom + Spacing.md,
-            },
-          ]}
-        >
-          <View style={styles.reorderHeader}>
-            <Text variant="subheadEmphasized" style={{ color: colors.label }}>
-              Reorder photos
-            </Text>
-            <HapticPressable
-              onPress={() => setIsReorderOpen(false)}
-              style={[styles.closeReorderBtn, { backgroundColor: colors.fill2 }]}
-            >
-              <X size={14} color={colors.label} strokeWidth={2.5} />
-            </HapticPressable>
-          </View>
 
-          <DraggableFlatList
-            data={reorderData}
-            keyExtractor={(item) => item.url}
-            renderItem={renderReorderItem}
-            onDragEnd={handleReorderEnd}
-            onDragBegin={() => setIsReorderDragging(true)}
-            onRelease={() => setIsReorderDragging(false)}
-            numColumns={GRID_COLUMNS}
-            columnWrapperStyle={styles.reorderRow}
-            scrollEnabled={!isReorderDragging}
-            activationDistance={8}
-            autoscrollSpeed={120}
-            dragItemOverflow={false}
-            contentContainerStyle={[
-              styles.reorderListContent,
-              { paddingBottom: insets.bottom + Spacing.sm },
-            ]}
-          />
-        </View>
-      </Modal>
 
       {Platform.OS === "android" && (
         <Modal
@@ -602,23 +495,8 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: IMAGE_GAP,
   },
-  reorderButton: {
-    marginTop: Spacing.sm,
-    alignSelf: "flex-start",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.xs,
-    borderWidth: 1,
-    borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-  },
   row: {
     gap: IMAGE_GAP,
-    marginBottom: IMAGE_GAP,
-  },
-  reorderRow: {
-    justifyContent: "space-between",
     marginBottom: IMAGE_GAP,
   },
   imageCard: {
@@ -666,32 +544,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  reorderModalCard: {
-    marginHorizontal: Spacing.lg,
-    borderRadius: Radius.xl,
-    padding: Spacing.md,
-    flex: 1,
-    gap: Spacing.sm,
-  },
-  reorderHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  closeReorderBtn: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Radius.full,
+  setCoverBtn: {
+    position: "absolute",
+    bottom: Spacing.xs,
+    left: Spacing.xs,
+    right: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.md,
     alignItems: "center",
     justifyContent: "center",
   },
-  reorderListContent: {
-    paddingTop: Spacing.xs,
-    paddingBottom: Spacing.sm,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
   },
+
   modalCard: {
     marginHorizontal: 24,
     marginTop: "auto",
