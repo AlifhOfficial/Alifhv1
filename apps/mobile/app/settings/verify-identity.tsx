@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { CheckCircle2 } from 'lucide-react-native';
 import { Linking, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,9 +22,7 @@ export default function VerifyIdentityScreen() {
       <SheetHeader title="Identity Verification" />
 
       <View style={[styles.card, { backgroundColor: colors.sheetSurface }]}> 
-        <View style={[styles.iconWrap, { backgroundColor: colors.primaryMuted }]}> 
-          <Ionicons name="shield-checkmark-outline" size={Sizes.iconMd} color={colors.primary} />
-        </View>
+        <CheckCircle2 size={Sizes.iconLg} color={colors.primary} />
         <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
           Complete KYC on the web
         </Text>
@@ -49,7 +47,6 @@ export default function VerifyIdentityScreen() {
           <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primaryForeground }}>
             Go Now
           </Text>
-          <Ionicons name="arrow-forward" size={Sizes.iconSm} color={colors.primaryForeground} />
         </HapticPressable>
       </View>
 
@@ -79,13 +76,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     marginBottom: Spacing.lg,
   },
-  iconWrap: {
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   actions: {
     flexDirection: 'row',
     gap: Spacing.md,
@@ -99,10 +89,8 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm,
     paddingVertical: SheetChrome.rowPaddingVertical,
     borderRadius: Radius.full,
   },

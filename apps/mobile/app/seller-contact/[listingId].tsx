@@ -310,7 +310,6 @@ export default function SellerContactScreen() {
 
         <SellerStatsGrid
           seller={seller}
-          listingsCount={otherListingsTotal + 1}
           colors={colors}
         />
 
@@ -352,7 +351,6 @@ export default function SellerContactScreen() {
     isChatLoading,
     isOwnListing,
     otherListings,
-    otherListingsTotal,
     router,
     seller,
   ]);

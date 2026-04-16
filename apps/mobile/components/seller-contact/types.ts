@@ -23,7 +23,6 @@ export interface SellerActionsProps extends SellerContactColors {
 
 export interface SellerStatsGridProps extends SellerContactColors {
   seller: SellerInfo;
-  listingsCount: number;
 }
 
 export interface SellerTagsProps extends SellerContactColors {

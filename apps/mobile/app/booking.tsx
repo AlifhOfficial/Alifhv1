@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -76,6 +76,7 @@ export default function BookingScreen() {
   const [confirmationToken, setConfirmationToken] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [bookingsNotAvailable, setBookingsNotAvailable] = useState(false);
+  const [hasLoadedAvailability, setHasLoadedAvailability] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const safeTitle = Array.isArray(listingTitle) ? listingTitle[0] : listingTitle;
@@ -89,12 +90,15 @@ export default function BookingScreen() {
       const data = await getAvailableDates(listingId);
       if (!data.available) {
         setBookingsNotAvailable(true);
+        setAvailableDates([]);
         return;
       }
+      setBookingsNotAvailable(false);
       setAvailableDates(data.dates || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load availability');
     } finally {
+      setHasLoadedAvailability(true);
       setIsLoading(false);
     }
   }, [listingId]);
@@ -166,14 +170,20 @@ export default function BookingScreen() {
     currentMonth.getFullYear() < today.getFullYear() ||
     (currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() <= today.getMonth());
 
-  if (availableDates.length === 0 && !isLoading && !error && !bookingsNotAvailable) {
+  useEffect(() => {
+    setHasLoadedAvailability(false);
     void loadDates();
-  }
+  }, [loadDates]);
 
   const monthLabel = `${MONTH_NAMES[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
   const createdBookingStatus: BookingStatus = 'pending';
   const createdBookingStatusLabel = formatBookingStatus(createdBookingStatus);
   const createdBookingStatusColor = getBookingStatusColor(createdBookingStatus, colors);
+  const showSellerUnavailableState =
+    hasLoadedAvailability &&
+    !isLoading &&
+    !error &&
+    (bookingsNotAvailable || availableDates.length === 0);
 
   const stepHeader = (() => {
     if (step === 'date' || bookingsNotAvailable) {
@@ -194,7 +204,7 @@ export default function BookingScreen() {
     if (step === 'confirm') {
       return (
         <SheetHeader
-          title="Confirm Booking"
+          title="Booking"
           left={
             <HapticPressable onPress={() => setStep('time')} style={[styles.circleBtn, { backgroundColor: colors.surfaceSecondary }]}>
               <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
@@ -203,7 +213,7 @@ export default function BookingScreen() {
         />
       );
     }
-    return <SheetHeader title="Booking Requested" />;
+    return <SheetHeader title="Booking" />;
   })();
 
   if (isLoading || isSubmitting) {
@@ -245,17 +255,17 @@ export default function BookingScreen() {
       ) : null}
 
       {/* ── Not Available State ── */}
-      {bookingsNotAvailable && !isLoading ? (
+      {showSellerUnavailableState ? (
         <EmptyState
           icon={CalendarX2}
-          title="Not taking bookings."
-          subtitle="Check back later."
+          title="Seller is not accepting bookings right now"
+          subtitle="Please check back later for available booking times."
           style={styles.unavailableState}
         />
       ) : null}
 
       {/* ── Date Step ── */}
-      {step === 'date' && !isLoading && !bookingsNotAvailable ? (
+      {step === 'date' && !isLoading && !showSellerUnavailableState ? (
         <Animated.View entering={FadeIn.duration(200)} style={styles.stack}>
           {/* Month nav */}
           <View style={styles.monthNav}>

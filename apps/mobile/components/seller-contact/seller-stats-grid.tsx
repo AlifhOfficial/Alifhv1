@@ -1,7 +1,7 @@
 /**
  * Seller Stats Grid
  * 
- * Stats for private sellers: verification status, listings count.
+ * Stats for private sellers: verification status.
  * Follows profile/settings card pattern for consistency.
  */
 
@@ -15,7 +15,6 @@ import type { SellerStatsGridProps } from './types';
 
 export const SellerStatsGrid = memo(function SellerStatsGrid({
   seller,
-  listingsCount,
   colors,
 }: SellerStatsGridProps) {
   if (seller.isDealer) return null;
@@ -48,10 +47,6 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
           </View>
         ))}
-        <View style={styles.row}>
-          <Text variant="subhead" tone="secondary" style={styles.rowLabel}>Listings</Text>
-          <Text variant="subheadEmphasized">{listingsCount}</Text>
-        </View>
       </View>
     </Animated.View>
   );
