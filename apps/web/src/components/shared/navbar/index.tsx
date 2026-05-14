@@ -60,6 +60,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { user, isSignedIn: isAuthenticated } = useUser();
   const { openChat } = useFloatingChatSafe();
+  const hasStaffMembership = (user?.partnerMemberships?.length ?? 0) > 0;
 
   // Mark as mounted after hydration
   useEffect(() => {
@@ -313,7 +314,7 @@ export function Navbar() {
               {mounted && isAuthenticated && user?.id && (
                 <>
                   <div className="hidden regular:flex h-10 items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                    <NavbarMessaging userId={user.id} onOpenChat={openChat} />
+                    <NavbarMessaging userId={user.id} showStaffScope={hasStaffMembership} onOpenChat={openChat} />
                     <NavbarFavorites userId={user.id} />
 
                     <div className="pl-0.5">

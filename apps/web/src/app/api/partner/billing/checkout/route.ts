@@ -123,6 +123,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!priceId.startsWith('price_')) {
+      console.error(`[Checkout] Invalid Stripe price ID for ${plan}: expected price_..., got ${priceId.slice(0, 5)}...`);
+      return NextResponse.json(
+        { error: 'Billing price is misconfigured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     // Get current partner tier from DB (flow or black)
     const currentTier = partnerData?.tier || 'flow';
     const isUpgrade = currentTier !== 'black' && plan === 'black';

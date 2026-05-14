@@ -24,6 +24,7 @@ export function PublicNavbarAuthControls({ navItems }: PublicNavbarAuthControlsP
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isSignedIn: isAuthenticated } = useUser();
+  const hasStaffMembership = (user?.partnerMemberships?.length ?? 0) > 0;
 
   useEffect(() => {
     if (!showProfileMenu) {
@@ -122,7 +123,10 @@ export function PublicNavbarAuthControls({ navItems }: PublicNavbarAuthControlsP
   return (
     <>
       <div className="flex h-10 items-center gap-1.5 rounded-full border border-border/50 bg-muted/25 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-        <NavbarMessaging userId={isAuthenticated ? user?.id : undefined} />
+        <NavbarMessaging
+          userId={isAuthenticated ? user?.id : undefined}
+          showStaffScope={hasStaffMembership}
+        />
         <NavbarFavorites userId={isAuthenticated ? user?.id : undefined} />
 
         <div className="pl-0.5">

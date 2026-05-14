@@ -78,6 +78,15 @@ export async function GET(req: NextRequest) {
     const scope = searchParams.get('scope'); // 'staff' | 'personal' | null
 
     const partnerIds = (user.partnerMemberships ?? []).map((m) => m.partnerId).filter(Boolean);
+
+    if (scope === 'staff' && partnerIds.length === 0) {
+      return NextResponse.json({
+        conversations: [],
+        totalUnread: 0,
+        hasMore: false,
+      });
+    }
+
     const partnerScope =
       partnerIds.length > 0
         ? scope === 'staff'

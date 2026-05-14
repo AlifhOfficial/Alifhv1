@@ -29,10 +29,11 @@ type NavGroup = {
 
 interface NavbarMessagingProps {
   userId?: string;
+  showStaffScope?: boolean;
   onOpenChat?: (conversation: Conversation) => void;
 }
 
-export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
+export function NavbarMessaging({ userId, showStaffScope = false, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scope, setScope] = useState<Scope>('personal');
   const router = useRouter();
@@ -48,13 +49,14 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     userId,
     scope: 'staff',
     limit: MESSAGING_CONVERSATIONS_PAGE_SIZE * 2,
-    enabled: !!userId,
+    enabled: !!userId && showStaffScope,
   });
 
-  const allConversations = scope === 'personal' ? personalConversations : staffConversations;
-  const isLoading = scope === 'personal' ? isLoadingPersonal : isLoadingStaff;
+  const activeScope = showStaffScope ? scope : 'personal';
+  const allConversations = activeScope === 'personal' ? personalConversations : staffConversations;
+  const isLoading = activeScope === 'personal' ? isLoadingPersonal : isLoadingStaff;
   const personalUnread = personalConversations.reduce((sum, c) => sum + c.unreadCount, 0);
-  const staffUnread = staffConversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const staffUnread = showStaffScope ? staffConversations.reduce((sum, c) => sum + c.unreadCount, 0) : 0;
 
   const conversations = allConversations
     .filter((c) => c.messageCount > 0)
@@ -66,7 +68,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
   const groups = Object.values(
     conversations.reduce((acc, conv) => {
-      const isStaffScope = scope === 'staff';
+      const isStaffScope = activeScope === 'staff';
       const groupUser = isStaffScope ? conv.otherParticipant : (conv.partner ?? conv.otherParticipant);
       const key = groupUser?.id || 'unknown';
 
@@ -95,6 +97,12 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     });
 
   useEffect(() => {
+    if (!showStaffScope && scope === 'staff') {
+      setScope('personal');
+    }
+  }, [showStaffScope, scope]);
+
+  useEffect(() => {
     if (!isOpen) return;
     const handle = (e: MouseEvent) => {
       if (!(e.target as HTMLElement).closest('[data-messaging-dropdown]')) setIsOpen(false);
@@ -113,11 +121,11 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const handleOpenChat = useCallback((conversation: Conversation) => {
     setIsOpen(false);
     if (onOpenChat) { onOpenChat(conversation); return; }
-    const messagingBasePath = scope === 'staff'
+    const messagingBasePath = activeScope === 'staff'
       ? '/staff-dashboard/messaging'
       : '/user-dashboard/messaging';
     router.push(`${messagingBasePath}?conversationId=${conversation.id}`);
-  }, [onOpenChat, router, scope]);
+  }, [activeScope, onOpenChat, router]);
 
   if (!userId) return null;
 
@@ -143,40 +151,42 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
       {isOpen && (
         <div className="absolute right-0 top-full mt-3 w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-2xl z-[70] overflow-hidden flex flex-col">
           {/* Tabs */}
-          <div className="flex border-b border-sidebar-border">
-            <button
-              onClick={() => setScope('personal')}
-              className={cn(
-                'flex-1 px-4 py-3 text-subhead font-semibold transition-colors inline-flex items-center justify-center gap-1.5',
-                scope === 'personal'
-                  ? 'text-sidebar-foreground border-b-2 border-sidebar-border'
-                  : 'text-sidebar-foreground/60 hover:text-sidebar-foreground/80'
-              )}
-            >
-              Personal
-              {personalUnread > 0 && (
-                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full tabular-nums">
-                  {personalUnread > 9 ? '9+' : personalUnread}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setScope('staff')}
-              className={cn(
-                'flex-1 px-4 py-3 text-subhead font-semibold transition-colors inline-flex items-center justify-center gap-1.5',
-                scope === 'staff'
-                  ? 'text-sidebar-foreground border-b-2 border-sidebar-border'
-                  : 'text-sidebar-foreground/60 hover:text-sidebar-foreground/80'
-              )}
-            >
-              Staff
-              {staffUnread > 0 && (
-                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full tabular-nums">
-                  {staffUnread > 9 ? '9+' : staffUnread}
-                </span>
-              )}
-            </button>
-          </div>
+          {showStaffScope ? (
+            <div className="flex border-b border-sidebar-border">
+              <button
+                onClick={() => setScope('personal')}
+                className={cn(
+                  'flex-1 px-4 py-3 text-subhead font-semibold transition-colors inline-flex items-center justify-center gap-1.5',
+                  scope === 'personal'
+                    ? 'text-sidebar-foreground border-b-2 border-sidebar-border'
+                    : 'text-sidebar-foreground/60 hover:text-sidebar-foreground/80'
+                )}
+              >
+                Personal
+                {personalUnread > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full tabular-nums">
+                    {personalUnread > 9 ? '9+' : personalUnread}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setScope('staff')}
+                className={cn(
+                  'flex-1 px-4 py-3 text-subhead font-semibold transition-colors inline-flex items-center justify-center gap-1.5',
+                  scope === 'staff'
+                    ? 'text-sidebar-foreground border-b-2 border-sidebar-border'
+                    : 'text-sidebar-foreground/60 hover:text-sidebar-foreground/80'
+                )}
+              >
+                Staff
+                {staffUnread > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full tabular-nums">
+                    {staffUnread > 9 ? '9+' : staffUnread}
+                  </span>
+                )}
+              </button>
+            </div>
+          ) : null}
 
           <div className="max-h-[400px] overflow-y-auto flex-1">
             {isLoading ? (
@@ -199,7 +209,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
           <div className="border-t border-sidebar-border">
             <Link
-              href={scope === 'staff' ? '/staff-dashboard/messaging' : '/user-dashboard/messaging'}
+              href={activeScope === 'staff' ? '/staff-dashboard/messaging' : '/user-dashboard/messaging'}
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-center gap-1.5 px-4 py-3.5 text-subhead font-semibold text-primary hover:bg-sidebar-accent transition-colors"
             >
