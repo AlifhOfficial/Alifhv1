@@ -8,6 +8,7 @@
  */
 
 import type { ListingFormPayload } from '@/lib/sell-car-user-api';
+import { normalizeListingImageStorageKey } from '@/lib/config';
 
 // ─── Form State ──────────────────────────────────────────────────────────────
 
@@ -221,6 +222,9 @@ export function dataToPayload(
 ): ListingFormPayload {
   const mileage = parseInt(data.mileage, 10) || 0;
   const condition: 'new' | 'used' = mileage < 5000 ? 'new' : 'used';
+  const imageKeys = data.images
+    .map((image) => normalizeListingImageStorageKey(image))
+    .filter((image): image is string => Boolean(image));
 
   return {
     vin: data.vin,
@@ -257,8 +261,8 @@ export function dataToPayload(
     isNegotiable: data.isNegotiable,
     emirate: data.emirate,
     city: data.city || undefined,
-    images: data.images.length > 0 ? data.images : undefined,
-    thumbnail: data.images[0] || undefined,
+    images: imageKeys.length > 0 ? imageKeys : undefined,
+    thumbnail: imageKeys[0] || undefined,
     description: data.description || undefined,
     specialNotes:
       data.specialNotes.length > 0 ? { ownerRemarks: data.specialNotes } : undefined,

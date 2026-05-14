@@ -239,6 +239,39 @@ export function getAppThumbUrl(url: string | null | undefined): string | null {
 }
 
 /**
+ * Normalize listing media before writing to the API.
+ *
+ * Listing uploads are stored as full/thumb pairs in R2, but database `images`
+ * should always point at the full-size object. Display helpers derive the
+ * thumbnail URL from that full key.
+ */
+export function normalizeListingImageStorageKey(url: string | null | undefined): string | null {
+  if (!url) return null;
+
+  let key = url.trim();
+  if (!key) return null;
+
+  const queryIndex = key.search(/[?#]/);
+  if (queryIndex >= 0) key = key.slice(0, queryIndex);
+
+  if (key.startsWith('http://') || key.startsWith('https://')) {
+    try {
+      const parsed = new URL(key);
+      if (!CDN_HOSTS.has(parsed.hostname)) return key;
+      key = parsed.pathname;
+    } catch {
+      return key;
+    }
+  }
+
+  if (key.startsWith('/')) key = key.slice(1);
+
+  return key
+    .replace('_thumb.webp', '_full.webp')
+    .replace('_thumb.jpg', '_full.jpg');
+}
+
+/**
  * Get listing image URLs with both thumb and full variants.
  * Useful for galleries where thumb is used for grid/thumbnails
  * and full is used for main view/lightbox.

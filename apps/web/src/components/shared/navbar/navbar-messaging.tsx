@@ -186,7 +186,11 @@ export function NavbarMessaging({ userId, showStaffScope = false, onOpenChat }: 
                 )}
               </button>
             </div>
-          ) : null}
+          ) : (
+            <div className="border-b border-sidebar-border px-4 py-3">
+              <p className="text-subhead font-semibold text-sidebar-foreground">Chats</p>
+            </div>
+          )}
 
           <div className="max-h-[400px] overflow-y-auto flex-1">
             {isLoading ? (
