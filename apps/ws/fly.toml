@@ -14,14 +14,17 @@ primary_region = "sin"
 [http_service]
   internal_port = 3001
   force_https = true
-  # Keep at least one machine always warm for messaging reliability.
+  # Keep exactly one machine warm while broadcasts use Bun's in-memory server.publish.
+  # Scaling this service above one machine requires shared pub/sub fanout first
+  # (for example Redis), otherwise /broadcast can land on a machine that does not
+  # hold the recipient's WebSocket connection.
   auto_stop_machines = false
   auto_start_machines = true
   min_machines_running = 1
 
   [http_service.concurrency]
     type = "connections"
-    # Let one machine carry more sockets before scaling a second machine.
+    # One machine can carry this many sockets before we need pub/sub-backed scale-out.
     hard_limit = 1400
     soft_limit = 1000
 

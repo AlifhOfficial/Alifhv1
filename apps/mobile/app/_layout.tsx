@@ -271,6 +271,14 @@ function RootLayoutNav() {
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="auth/callback"
+            options={{
+              headerShown: false,
+              animation: 'none',
+              contentStyle: { backgroundColor: colors.background },
+            }}
+          />
           <Stack.Screen name="listing/[id]" options={{ title: 'Listing' }} />
           <Stack.Screen
             name="auth-prompt"

@@ -19,10 +19,11 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import { CarFront, Search, Sparkles } from 'lucide-react-native';
 
 import { Text, HapticPressable } from '@/components/ui';
 import { CarCardM, CarCardMSkeleton } from '@/components/cards';
-import { Layout, Radius, Spacing } from '@/constants/theme';
+import { Layout, Radius, Sizes, Spacing, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useHomeFeed } from '@/hooks/use-home-feed';
@@ -107,6 +108,9 @@ function CardSkeletonRow({ cardWidth }: { cardWidth: number }) {
 interface FeedSectionProps {
   title: string;
   description: string;
+  emptyTitle: string;
+  emptyDescription: string;
+  EmptyIcon: React.ComponentType<{ size: number; color: string; strokeWidth?: number }>;
   listings: ListingCard[];
   isLoading: boolean;
   cardWidth: number;
@@ -118,6 +122,9 @@ interface FeedSectionProps {
 function FeedSection({
   title,
   description,
+  emptyTitle,
+  emptyDescription,
+  EmptyIcon,
   listings,
   isLoading,
   cardWidth,
@@ -165,15 +172,36 @@ function FeedSection({
             snapToAlignment="start"
             removeClippedSubviews
           />
-        ) : null}
+        ) : (
+          <View style={[styles.emptyPanel, { backgroundColor: colors.fill3, borderColor: colors.border }]}>
+            <View style={[styles.emptyIconWrap, { backgroundColor: colors.fill2 }]}>
+              <EmptyIcon size={Sizes.iconLg} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
+            </View>
+            <View style={styles.emptyCopy}>
+              <Text variant="subheadEmphasized" style={{ color: colors.label, textAlign: 'center' }}>
+                {emptyTitle}
+              </Text>
+              <Text variant="footnote" style={{ color: colors.labelSecondary, textAlign: 'center' }}>
+                {emptyDescription}
+              </Text>
+            </View>
+            <HapticPressable onPress={onViewAll} hitSlop={Layout.hitSlop} style={styles.emptyAction}>
+              <Text variant="subheadEmphasized" style={{ color: colors.primary }}>
+                Browse cars
+              </Text>
+            </HapticPressable>
+          </View>
+        )}
       </View>
 
       {/* View all — bottom right */}
-      <HapticPressable onPress={onViewAll} hitSlop={Layout.hitSlop} style={styles.viewAllButton}>
-        <Text variant="subheadEmphasized" style={{ color: colors.primary }}>
-          View all
-        </Text>
-      </HapticPressable>
+      {(isLoading || listings.length > 0) ? (
+        <HapticPressable onPress={onViewAll} hitSlop={Layout.hitSlop} style={styles.viewAllButton}>
+          <Text variant="subheadEmphasized" style={{ color: colors.primary }}>
+            View all
+          </Text>
+        </HapticPressable>
+      ) : null}
     </Animated.View>
   );
 }
@@ -235,6 +263,9 @@ export const HomeFeed = memo(function HomeFeed() {
       <FeedSection
         title="BLK Collection"
         description="Premium black cars from verified sellers across the UAE"
+        emptyTitle="No BLK cars right now"
+        emptyDescription="Fresh premium listings will appear here as soon as they go live."
+        EmptyIcon={Sparkles}
         listings={blk}
         isLoading={isLoadingBlk}
         cardWidth={cardWidth}
@@ -246,6 +277,9 @@ export const HomeFeed = memo(function HomeFeed() {
       <FeedSection
         title="New Arrivals"
         description="Just listed — be the first to see what's fresh on the market"
+        emptyTitle="No new arrivals yet"
+        emptyDescription="Browse the market while we look for the latest listings."
+        EmptyIcon={CarFront}
         listings={justListed}
         isLoading={isLoadingJustListed}
         cardWidth={cardWidth}
@@ -257,6 +291,9 @@ export const HomeFeed = memo(function HomeFeed() {
       <FeedSection
         title="Hidden Gems"
         description="Low mileage picks priced well below market — worth a look"
+        emptyTitle="No hidden gems found"
+        emptyDescription="Try browsing all listings or loosening filters to discover more cars."
+        EmptyIcon={Search}
         listings={hiddenGems}
         isLoading={isLoadingHiddenGems}
         cardWidth={cardWidth}
@@ -308,6 +345,33 @@ const styles = StyleSheet.create({
   cardListContent: {
     paddingHorizontal: Spacing.lg,
     gap: Spacing.lg,
+  },
+  emptyPanel: {
+    minHeight: 210,
+    marginHorizontal: Spacing.lg,
+    borderRadius: Radius.xl,
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing['2xl'],
+  },
+  emptyIconWrap: {
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyCopy: {
+    gap: Spacing.xs,
+    maxWidth: 280,
+  },
+  emptyAction: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
   },
 
   // ── View all — bottom right ────────────────────────────────────────────────
