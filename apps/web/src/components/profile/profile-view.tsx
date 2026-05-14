@@ -513,6 +513,8 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                   avatarUploading && "opacity-50"
                 )}
                 useGeneratedAvatar={profile?.preferences?.useGeneratedAvatar ?? true}
+                loading="eager"
+                fetchPriority="high"
               />
               <div className={cn(
                 "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",

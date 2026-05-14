@@ -205,6 +205,8 @@ function SidebarFooterContent({
                       logoUrl={staffOverride?.companyLogo}
                       brandName={staffOverride?.companyName || 'Company'}
                       size="sm"
+                      loading="eager"
+                      fetchPriority="high"
                     />
                   ) : (
                     <UserAvatar
@@ -212,6 +214,8 @@ function SidebarFooterContent({
                       name={displayName}
                       size="sm"
                       useGeneratedAvatar={useGeneratedAvatar}
+                      loading="eager"
+                      fetchPriority="high"
                     />
                   )}
                 </div>
@@ -224,6 +228,8 @@ function SidebarFooterContent({
                         logoUrl={staffOverride?.companyLogo}
                         brandName={staffOverride?.companyName || 'Company'}
                         size="md"
+                        loading="eager"
+                        fetchPriority="high"
                       />
                     ) : (
                       <UserAvatar
@@ -231,6 +237,8 @@ function SidebarFooterContent({
                         name={displayName}
                         size="md"
                         useGeneratedAvatar={useGeneratedAvatar}
+                        loading="eager"
+                        fetchPriority="high"
                       />
                     )}
                   </div>

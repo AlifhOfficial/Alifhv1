@@ -55,6 +55,12 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   
   /** Updated timestamp for cache busting (Date, string, or timestamp) */
   updatedAt?: Date | string | number | null;
+
+  /** Native image loading behavior for the avatar photo */
+  loading?: React.ImgHTMLAttributes<HTMLImageElement>["loading"];
+
+  /** Native image fetch priority for above-the-fold avatars */
+  fetchPriority?: React.ImgHTMLAttributes<HTMLImageElement>["fetchPriority"];
 }
 
 type CanonicalAvatarSize = "compact" | "regular" | "large" | "xlarge" | "xxlarge";
@@ -100,6 +106,8 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
      
     useGeneratedAvatar: _useGeneratedAvatar, // deprecated, ignored
     updatedAt,
+    loading = "lazy",
+    fetchPriority,
     ...props 
   }, ref) => {
     const [imageError, setImageError] = React.useState(false);
@@ -144,7 +152,8 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
             className="absolute inset-0 h-full w-full object-cover"
             onError={() => setImageError(true)}
             referrerPolicy="no-referrer"
-            loading="lazy"
+            loading={loading}
+            fetchPriority={fetchPriority}
             decoding="async"
           />
         )}

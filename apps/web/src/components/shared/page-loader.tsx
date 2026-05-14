@@ -56,6 +56,9 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
             src={BRAND_LOGO_SVG}
             alt="Revvup"
             className="h-14 w-auto invert dark:invert-0"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
         </div>
         

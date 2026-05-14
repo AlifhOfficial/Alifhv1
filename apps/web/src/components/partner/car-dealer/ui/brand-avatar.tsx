@@ -26,6 +26,10 @@ interface BrandAvatarProps {
   className?: string;
   /** Updated timestamp for cache busting (Date, string, or timestamp) */
   updatedAt?: Date | string | number | null;
+  /** Native image loading behavior for the brand logo */
+  loading?: React.ImgHTMLAttributes<HTMLImageElement>['loading'];
+  /** Native image fetch priority for above-the-fold brand logos */
+  fetchPriority?: React.ImgHTMLAttributes<HTMLImageElement>['fetchPriority'];
 }
 
 type CanonicalBrandAvatarSize = 'compact' | 'regular' | 'large' | 'xlarge' | 'xxlarge';
@@ -69,7 +73,9 @@ export function BrandAvatar({
   brandName, 
   size = 'xlarge',
   className = '',
-  updatedAt
+  updatedAt,
+  loading = 'lazy',
+  fetchPriority,
 }: BrandAvatarProps) {
   const [hasError, setHasError] = React.useState(false);
 
@@ -104,6 +110,9 @@ export function BrandAvatar({
           className="w-full h-full object-cover"
           onError={() => setHasError(true)}
           referrerPolicy="no-referrer"
+          loading={loading}
+          fetchPriority={fetchPriority}
+          decoding="async"
         />
       ) : (
         <span className="font-bold text-muted-foreground">

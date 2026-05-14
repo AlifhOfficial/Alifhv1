@@ -5,7 +5,7 @@ app = "revvup-preprocessing"
 primary_region = "bom"
 
 [build]
-  dockerfile = "apps/preprocessing/Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
   PREPROCESSING_PORT = "3002"

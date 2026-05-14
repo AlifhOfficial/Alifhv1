@@ -27,6 +27,9 @@ export function Logo({ className, width = 100, height = 30, priority = false }: 
         width={width}
         height={height}
         className="block h-full w-full object-contain invert dark:invert-0"
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
+        decoding="async"
       />
     </span>
   );

@@ -158,6 +158,8 @@ export function ProfileMenu({
             size="sm"
             className="hover:opacity-90 transition-opacity"
             useGeneratedAvatar={useGeneratedAvatar}
+            loading="eager"
+            fetchPriority="high"
           />
         </button>
 

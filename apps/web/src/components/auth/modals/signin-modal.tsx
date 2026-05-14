@@ -86,7 +86,14 @@ export function SignInModal({
           
           {/* Logo - Center */}
           <div className="flex-1 flex items-center justify-center">
-            <img src={BRAND_LOGO_SVG} alt="Revvup" className="h-12 w-auto" />
+            <img
+              src={BRAND_LOGO_SVG}
+              alt="Revvup"
+              className="h-12 w-auto"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
           </div>
           
           {/* Tagline - Bottom */}
